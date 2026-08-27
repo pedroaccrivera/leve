@@ -85,5 +85,5 @@ Cada branch de feature, fix ou refatoração possui um arquivo dedicado no diret
 | Branch | Tipo | Status | Documentação |
 | :--- | :--- | :--- | :--- |
 | `main` | Baseline Principal | Ativa | [docs/branches/main.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/docs/branches/main.md) |
-| `feat/visual-redesign` | Feature / Visual Redesign | Em andamento | [docs/branches/feat-visual-redesign.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/docs/branches/feat-visual-redesign.md) |
+| `feat/visual-redesign` | Feature / Visual Redesign | Merged | [docs/branches/feat-visual-redesign.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/docs/branches/feat-visual-redesign.md) |
 

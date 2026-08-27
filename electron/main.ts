@@ -51,11 +51,13 @@ const indexHtml = path.join(process.env.DIST, 'index.html');
 async function createWindow() {
   win = new BrowserWindow({
     title: 'leve — 100% Local Image Resizer & Compressor',
-    width: 1100,
-    height: 800,
+    width: 1080,
+    height: 860,
     minWidth: 840,
-    minHeight: 620,
-    backgroundColor: '#0f172a',
+    minHeight: 680,
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+    trafficLightPosition: process.platform === 'darwin' ? { x: 18, y: 18 } : undefined,
+    backgroundColor: '#121624',
     webPreferences: {
       preload,
       contextIsolation: true,

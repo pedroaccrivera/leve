@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import {
-  Play,
   Loader2,
   FolderOpen,
   CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 import type {
   ImageItem,
@@ -38,7 +38,7 @@ export const App: React.FC = () => {
     targetWidth: 1920,
     withoutEnlargement: true,
     compressionLevel: 'balanced',
-    stripMetadata: true,
+    stripMetadata: false, // In default UI: "Keep metadata" is checked by default
     outputFormat: 'original',
     destinationMode: 'subfolder',
     subfolderName: 'resized',
@@ -118,7 +118,7 @@ export const App: React.FC = () => {
 
     setProgress({ current: 0, total: items.length });
 
-    // Process sequentially to keep memory usage low and UI smooth
+    // Process sequentially to keep memory usage low and UI responsive
     for (let i = 0; i < items.length; i++) {
       const currentItem = items[i];
       originalTotalBytes += currentItem.size || 0;
@@ -202,103 +202,96 @@ export const App: React.FC = () => {
   const doneCount = items.filter((i) => i.status === 'done').length;
 
   return (
-    <div className="flex flex-col h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Header
         itemCount={items.length}
         onClear={handleClearAll}
         isProcessing={isProcessing}
       />
 
-      <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 max-w-7xl mx-auto w-full">
-        {items.length === 0 ? (
-          <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
-            <DropZone onAddItems={handleAddItems} />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
-            {/* Left Column: Settings Panel */}
-            <div className="lg:col-span-5 space-y-4">
-              <SettingsPanel
-                config={config}
-                onChangeConfig={setConfig}
-                presets={presets}
-                onAddPreset={handleAddPreset}
-                onDeletePreset={handleDeletePreset}
-                disabled={isProcessing}
-              />
-            </div>
+      <main className="flex-1 overflow-y-auto px-8 pb-10 flex flex-col items-center">
+        <div className="w-full max-w-2xl flex flex-col gap-6">
+          {/* Drop & Upload Area */}
+          <DropZone
+            onAddItems={handleAddItems}
+            isCompact={items.length > 0}
+          />
 
-            {/* Right Column: Queue & Processing */}
-            <div className="lg:col-span-7 flex flex-col gap-4 flex-1">
-              <DropZone onAddItems={handleAddItems} isCompact />
+          {/* Queue of selected images if any */}
+          {items.length > 0 && (
+            <ImageQueue
+              items={items}
+              config={config}
+              onRemoveItem={handleRemoveItem}
+              isProcessing={isProcessing}
+            />
+          )}
 
-              <ImageQueue
-                items={items}
-                config={config}
-                onRemoveItem={handleRemoveItem}
-                isProcessing={isProcessing}
-              />
+          {/* Settings Panel */}
+          <SettingsPanel
+            config={config}
+            onChangeConfig={setConfig}
+            presets={presets}
+            onAddPreset={handleAddPreset}
+            onDeletePreset={handleDeletePreset}
+            disabled={isProcessing}
+          />
 
-              {/* Action Bar */}
-              <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xl sticky bottom-0 z-20">
-                <div className="text-xs text-slate-400">
-                  {isProcessing ? (
-                    <div className="flex items-center gap-2 text-emerald-400 font-medium">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>
-                        Processing {progress.current} of {progress.total} images...
-                      </span>
-                    </div>
-                  ) : doneCount > 0 ? (
-                    <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>{doneCount} images successfully resized</span>
-                    </div>
-                  ) : (
-                    <span>
-                      Ready to resize {items.length} {items.length === 1 ? 'image' : 'images'}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {doneCount > 0 && !isProcessing && (
-                    <button
-                      onClick={handleOpenOutputFolder}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition-all cursor-pointer"
-                    >
-                      <FolderOpen className="w-4 h-4 text-emerald-400" />
-                      Open Folder
-                    </button>
-                  )}
-
-                  <button
-                    onClick={handleStartProcessing}
-                    disabled={isProcessing || items.length === 0}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 fill-current" />
-                        <span>
-                          {doneCount > 0 ? 'Re-run Resize' : `Resize ${items.length} Images`}
-                        </span>
-                      </>
-                    )}
-                  </button>
-                </div>
+          {/* Processing and Status / Open Folder */}
+          {doneCount > 0 && !isProcessing && (
+            <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+              <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{doneCount} images successfully resized!</span>
               </div>
+              <button
+                type="button"
+                onClick={handleOpenOutputFolder}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg shadow-sm transition-all cursor-pointer"
+              >
+                <FolderOpen className="w-3.5 h-3.5" />
+                <span>Open Folder</span>
+              </button>
             </div>
+          )}
+
+          {/* Primary CTA Button */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={handleStartProcessing}
+              disabled={isProcessing || items.length === 0}
+              className={`w-full py-3.5 px-6 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+                items.length === 0
+                  ? 'bg-slate-200 dark:bg-[#1e263f] text-slate-400 dark:text-[#4f5f8b] cursor-not-allowed border border-transparent'
+                  : isProcessing
+                  ? 'bg-blue-600 text-white cursor-wait opacity-90'
+                  : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white shadow-blue-600/25 border border-blue-500'
+              }`}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>
+                    Resizing {progress.current} of {progress.total} images...
+                  </span>
+                </>
+              ) : items.length === 0 ? (
+                <span>Resize Images</span>
+              ) : doneCount > 0 ? (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  <span>Re-run Resize ({items.length} Images)</span>
+                </>
+              ) : (
+                <span>Resize {items.length} {items.length === 1 ? 'Image' : 'Images'}</span>
+              )}
+            </button>
           </div>
-        )}
+        </div>
       </main>
 
-      {/* Summary Modal */}
+      {/* Summary Modal on completion */}
       <SummaryModal
         summary={summary}
         onClose={() => setSummary(null)}

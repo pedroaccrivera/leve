@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Sliders,
-  BookmarkPlus,
-  Trash2,
-  Lock,
+  Save,
   FolderTree,
   FileText,
   FolderDown,
-  Shield,
+  ChevronDown,
+  Trash2,
 } from 'lucide-react';
 import type {
   ResizeConfig,
   ResizePreset,
-  CompressionLevel,
   OutputFormat,
 } from '../types';
 
@@ -33,14 +30,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onDeletePreset,
   disabled = false,
 }) => {
-  const [newPresetName, setNewPresetName] = useState('');
   const [isSavingPreset, setIsSavingPreset] = useState(false);
+  const [newPresetName, setNewPresetName] = useState('');
+  const [showAdvancedDest, setShowAdvancedDest] = useState(false);
 
   const handleWidthChange = (val: number) => {
     onChangeConfig({
       ...config,
       targetWidth: Math.max(1, Math.min(10000, val)),
     });
+  };
+
+  const handlePresetSelect = (presetWidth: number | string) => {
+    if (presetWidth === 'custom') return;
+    handleWidthChange(Number(presetWidth));
   };
 
   const handleSavePreset = (e: React.FormEvent) => {
@@ -63,26 +66,38 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     }
   };
 
+  // Find if current width matches any preset
+  const matchedPreset = presets.find((p) => p.width === config.targetWidth);
+  const currentSelectValue = matchedPreset ? matchedPreset.width.toString() : 'custom';
+
   return (
-    <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 space-y-6">
-      <div className="flex items-center gap-2 pb-3 border-b border-slate-700/60 text-slate-200 font-medium text-sm">
-        <Sliders className="w-4 h-4 text-emerald-400" />
-        <span>Resize & Compression Settings</span>
-      </div>
+    <div className="space-y-6">
+      {/* 1. Output Width */}
+      <div className="space-y-2">
+        <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+          Output Width
+        </label>
 
-      {/* 1. Target Width & Presets */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-            Target Width (Pixels)
-          </label>
-          <div className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-            <Lock className="w-3 h-3" />
-            <span>Height auto-calculated to maintain proportions</span>
+        <div className="flex items-center gap-2">
+          {/* Preset dropdown */}
+          <div className="relative w-1/2">
+            <select
+              value={currentSelectValue}
+              onChange={(e) => handlePresetSelect(e.target.value)}
+              disabled={disabled}
+              className="w-full appearance-none bg-slate-100 dark:bg-[#1c2339] border border-slate-300 dark:border-[#2b3658] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-xl px-3.5 py-2.5 pr-8 focus:outline-none focus:border-blue-500 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <option value="custom">Custom</option>
+              {presets.map((p) => (
+                <option key={p.id} value={p.width}>
+                  {p.name} ({p.width}px)
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
+          {/* Width in px input */}
           <div className="relative flex-1">
             <input
               type="number"
@@ -91,216 +106,140 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               value={config.targetWidth || ''}
               onChange={(e) => handleWidthChange(parseInt(e.target.value, 10) || 0)}
               disabled={disabled}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-medium text-base focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50"
-              placeholder="e.g. 1920"
+              placeholder="Width in px"
+              className="w-full bg-slate-100 dark:bg-[#1c2339] border border-slate-300 dark:border-[#2b3658] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium pointer-events-none">
-              px
-            </span>
           </div>
 
+          {/* Delete custom preset button if selected */}
+          {matchedPreset?.isCustom && (
+            <button
+              type="button"
+              onClick={() => onDeletePreset(matchedPreset.id)}
+              disabled={disabled}
+              className="p-2.5 bg-slate-100 dark:bg-[#1c2339] hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-slate-300 dark:border-[#2b3658] text-slate-500 hover:text-rose-500 rounded-xl transition-all cursor-pointer shadow-sm disabled:opacity-50"
+              title={`Delete custom preset "${matchedPreset.name}"`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Save preset button */}
           <button
             type="button"
             onClick={() => setIsSavingPreset(!isSavingPreset)}
             disabled={disabled}
-            className="flex items-center gap-1.5 px-3 py-2.5 bg-slate-700/70 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-600/60 transition-all whitespace-nowrap"
-            title="Save this width as a reusable preset"
+            className="p-2.5 bg-slate-100 dark:bg-[#1c2339] hover:bg-slate-200 dark:hover:bg-[#25304e] border border-slate-300 dark:border-[#2b3658] text-slate-600 dark:text-slate-300 rounded-xl transition-all cursor-pointer shadow-sm disabled:opacity-50"
+            title="Save current width as preset"
           >
-            <BookmarkPlus className="w-4 h-4 text-emerald-400" />
-            Save Preset
+            <Save className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Modal/Input to save custom preset */}
+        {/* Save preset form inline */}
         {isSavingPreset && (
           <form
             onSubmit={handleSavePreset}
-            className="p-3 bg-slate-900/90 rounded-xl border border-emerald-500/30 flex items-center gap-2 animate-in fade-in duration-150"
+            className="p-2.5 bg-slate-100 dark:bg-[#181f34] rounded-xl border border-blue-500/40 flex items-center gap-2 animate-in fade-in duration-150"
           >
             <input
               type="text"
               autoFocus
-              placeholder="Preset Name (e.g. Social Media, Blog Hero)"
+              placeholder="Preset Name (e.g. Instagram Square, Banner)"
               value={newPresetName}
               onChange={(e) => setNewPresetName(e.target.value)}
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+              className="flex-1 bg-white dark:bg-[#121727] border border-slate-300 dark:border-[#2c375a] rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500"
             />
             <button
               type="submit"
               disabled={!newPresetName.trim()}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-all"
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-all cursor-pointer"
             >
               Save
             </button>
             <button
               type="button"
               onClick={() => setIsSavingPreset(false)}
-              className="px-2.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-medium rounded-lg"
+              className="px-2 py-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs font-medium cursor-pointer"
             >
               Cancel
             </button>
           </form>
         )}
-
-        {/* Presets Chips */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          <span className="text-[11px] text-slate-400 mr-1">Presets:</span>
-          {presets.map((preset) => {
-            const isSelected = config.targetWidth === preset.width;
-            return (
-              <div
-                key={preset.id}
-                className={`group inline-flex items-center rounded-lg text-xs transition-all border ${
-                  isSelected
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-medium'
-                    : 'bg-slate-900/60 text-slate-300 border-slate-700/80 hover:bg-slate-700/60'
-                }`}
-              >
-                <button
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => handleWidthChange(preset.width)}
-                  className="px-2.5 py-1"
-                >
-                  {preset.name} ({preset.width}px)
-                </button>
-                {preset.isCustom && (
-                  <button
-                    type="button"
-                    disabled={disabled}
-                    onClick={() => onDeletePreset(preset.id)}
-                    className="pr-2 pl-1 py-1 text-slate-500 hover:text-rose-400 transition-colors"
-                    title={`Delete custom preset "${preset.name}"`}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Option: Don't enlarge */}
-        <label className="flex items-center gap-2 pt-1 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={config.withoutEnlargement}
-            onChange={(e) =>
-              onChangeConfig({ ...config, withoutEnlargement: e.target.checked })
-            }
-            disabled={disabled}
-            className="w-4 h-4 rounded text-emerald-600 bg-slate-900 border-slate-700 focus:ring-emerald-500 focus:ring-offset-slate-900"
-          />
-          <span className="text-xs text-slate-300">
-            Don't upscale if image is already smaller than target width
-          </span>
-        </label>
       </div>
 
-      {/* 2. Compression Level (Human Friendly) */}
-      <div className="space-y-2.5">
-        <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center justify-between">
-          <span>Compression Method</span>
-          <span className="text-[11px] font-normal text-slate-400">Clear & plain language</span>
+      {/* 2. Compression */}
+      <div className="space-y-2">
+        <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+          Compression
         </label>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {(
-            [
-              {
-                id: 'balanced',
-                title: 'Balanced',
-                badge: 'Recommended',
-                desc: 'Great quality with substantial file size reduction',
-              },
-              {
-                id: 'light',
-                title: 'Maximum Quality',
-                badge: 'Light Compression',
-                desc: 'Preserves fine details, best for photography & portfolios',
-              },
-              {
-                id: 'aggressive',
-                title: 'Smallest File Size',
-                badge: 'Aggressive',
-                desc: 'Maximum size reduction for websites, messaging & emails',
-              },
-              {
-                id: 'lossless',
-                title: 'Lossless',
-                badge: 'No Quality Loss',
-                desc: 'Zero degradation (ideal for PNGs and icons)',
-              },
-            ] as const
-          ).map((opt) => {
-            const isSelected = config.compressionLevel === opt.id;
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                disabled={disabled}
-                onClick={() =>
-                  onChangeConfig({
-                    ...config,
-                    compressionLevel: opt.id as CompressionLevel,
-                  })
-                }
-                className={`p-3 rounded-xl text-left border transition-all flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-emerald-500/15 border-emerald-500 text-white shadow-sm ring-1 ring-emerald-500/30'
-                    : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-800/80'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold">{opt.title}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-                      isSelected
-                        ? 'bg-emerald-500/30 text-emerald-300'
-                        : 'bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {opt.badge}
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 leading-snug">{opt.desc}</p>
-              </button>
-            );
-          })}
-        </div>
+        <div className="grid grid-cols-3 gap-2.5">
+          {/* Card 1: Good Quality */}
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChangeConfig({ ...config, compressionLevel: 'light' })}
+            className={`p-3 rounded-xl text-left border transition-all flex flex-col justify-center cursor-pointer ${
+              config.compressionLevel === 'light'
+                ? 'bg-blue-500/10 dark:bg-blue-600/20 border-blue-500 dark:border-blue-500 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-500/30'
+                : 'bg-slate-100/70 dark:bg-[#1b2238] border-slate-200 dark:border-[#283254] text-slate-700 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#222b46]'
+            }`}
+          >
+            <span className="text-xs font-semibold block mb-0.5">
+              Good Quality
+            </span>
+            <span className="text-[10px] text-slate-500 dark:text-darkTextMuted leading-tight">
+              Larger file, best quality
+            </span>
+          </button>
 
-        {/* Metadata Removal Checkbox */}
-        <div className="pt-1">
-          <label className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900/60 border border-slate-700/80 cursor-pointer hover:bg-slate-900 transition-all select-none">
-            <input
-              type="checkbox"
-              checked={config.stripMetadata}
-              onChange={(e) =>
-                onChangeConfig({ ...config, stripMetadata: e.target.checked })
-              }
-              disabled={disabled}
-              className="w-4 h-4 rounded text-emerald-600 bg-slate-800 border-slate-700 focus:ring-emerald-500 focus:ring-offset-slate-900"
-            />
-            <div className="flex items-center gap-2 flex-1">
-              <Shield className="w-3.5 h-3.5 text-emerald-400" />
-              <div>
-                <span className="text-xs font-medium text-slate-200 block">
-                  Strip metadata (EXIF, GPS, camera model)
-                </span>
-                <span className="text-[11px] text-slate-400 block">
-                  Improves privacy and further shaves off unnecessary file size.
-                </span>
-              </div>
-            </div>
-          </label>
+          {/* Card 2: Balanced */}
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChangeConfig({ ...config, compressionLevel: 'balanced' })}
+            className={`p-3 rounded-xl text-left border transition-all flex flex-col justify-center cursor-pointer ${
+              config.compressionLevel === 'balanced'
+                ? 'bg-blue-500/10 dark:bg-blue-600/20 border-blue-500 dark:border-blue-500 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-500/30'
+                : 'bg-slate-100/70 dark:bg-[#1b2238] border-slate-200 dark:border-[#283254] text-slate-700 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#222b46]'
+            }`}
+          >
+            <span className="text-xs font-semibold block mb-0.5">
+              Balanced
+            </span>
+            <span className="text-[10px] text-slate-500 dark:text-darkTextMuted leading-tight">
+              Middle ground
+            </span>
+          </button>
+
+          {/* Card 3: Smallest File */}
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChangeConfig({ ...config, compressionLevel: 'aggressive' })}
+            className={`p-3 rounded-xl text-left border transition-all flex flex-col justify-center cursor-pointer ${
+              config.compressionLevel === 'aggressive'
+                ? 'bg-blue-500/10 dark:bg-blue-600/20 border-blue-500 dark:border-blue-500 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-500/30'
+                : 'bg-slate-100/70 dark:bg-[#1b2238] border-slate-200 dark:border-[#283254] text-slate-700 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#222b46]'
+            }`}
+          >
+            <span className="text-xs font-semibold block mb-0.5">
+              Smallest File
+            </span>
+            <span className="text-[10px] text-slate-500 dark:text-darkTextMuted leading-tight">
+              More compression
+            </span>
+          </button>
         </div>
       </div>
 
       {/* 3. Output Format */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+        <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
           Output Format
         </label>
+
         <div className="grid grid-cols-4 gap-2">
           {(
             [
@@ -322,10 +261,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     outputFormat: fmt.id as OutputFormat,
                   })
                 }
-                className={`py-2 px-3 rounded-xl text-xs font-medium border text-center transition-all ${
+                className={`py-2 px-3 rounded-xl text-xs font-medium border text-center transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md shadow-emerald-500/20'
-                    : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-700/50'
+                    ? 'bg-blue-600 dark:bg-blue-600/90 text-white border-blue-600 shadow-sm shadow-blue-500/20 font-semibold'
+                    : 'bg-slate-100/70 dark:bg-[#1b2238] border-slate-200 dark:border-[#283254] text-slate-700 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#222b46]'
                 }`}
               >
                 {fmt.label}
@@ -335,155 +274,121 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         </div>
       </div>
 
-      {/* 4. Output Destination */}
-      <div className="space-y-3 pt-1">
-        <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center justify-between">
-          <span>Destination & Output Location</span>
+      {/* 4. Keep Metadata Checkbox */}
+      <div className="space-y-1">
+        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={!config.stripMetadata}
+            onChange={(e) =>
+              onChangeConfig({ ...config, stripMetadata: !e.target.checked })
+            }
+            disabled={disabled}
+            className="mt-0.5 w-4 h-4 rounded text-blue-600 bg-slate-100 dark:bg-[#1b2238] border-slate-300 dark:border-[#283254] focus:ring-blue-500 cursor-pointer"
+          />
+          <div>
+            <span className="text-xs font-medium text-slate-800 dark:text-slate-200 block">
+              Keep image metadata (EXIF, location, camera info)
+            </span>
+            <span className="text-[11px] text-slate-500 dark:text-darkTextMuted block">
+              Unchecking reduces file size by removing embedded data
+            </span>
+          </div>
         </label>
+      </div>
 
-        <div className="space-y-2">
-          {/* Subfolder mode */}
-          <label
-            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-              config.destinationMode === 'subfolder'
-                ? 'bg-emerald-500/10 border-emerald-500/60 text-white'
-                : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-800/80'
+      {/* 5. Destination & Output Settings (Optional Accordion) */}
+      <div className="pt-2 border-t border-slate-200 dark:border-[#283254]/60">
+        <button
+          type="button"
+          onClick={() => setShowAdvancedDest(!showAdvancedDest)}
+          className="flex items-center justify-between w-full text-xs font-medium text-slate-500 dark:text-darkTextMuted hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer py-1"
+        >
+          <span>
+            Output Destination:{' '}
+            <strong className="text-slate-700 dark:text-slate-300">
+              {config.destinationMode === 'subfolder'
+                ? `Subfolder (${config.subfolderName || 'resized'})`
+                : config.destinationMode === 'suffix'
+                ? `Suffix (${config.suffix || '-resized'})`
+                : 'Custom Directory'}
+            </strong>
+          </span>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${
+              showAdvancedDest ? 'rotate-180' : ''
             }`}
-          >
-            <input
-              type="radio"
-              name="destinationMode"
-              checked={config.destinationMode === 'subfolder'}
-              onChange={() =>
-                onChangeConfig({ ...config, destinationMode: 'subfolder' })
-              }
-              disabled={disabled}
-              className="mt-0.5 text-emerald-600 bg-slate-900 border-slate-700 focus:ring-emerald-500"
-            />
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5 text-xs font-medium">
-                <FolderTree className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Create subfolder in each original directory</span>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Automatically places images in a dedicated folder inside their respective parent folder.
-              </p>
-              {config.destinationMode === 'subfolder' && (
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-[11px] text-slate-400">Folder name:</span>
-                  <input
-                    type="text"
-                    value={config.subfolderName}
-                    onChange={(e) =>
-                      onChangeConfig({
-                        ...config,
-                        subfolderName: e.target.value,
-                      })
-                    }
-                    disabled={disabled}
-                    placeholder="resized"
-                    className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-emerald-500 w-32"
-                  />
-                  <span className="text-[11px] text-slate-400 italic">
-                    (e.g. /original_folder/{config.subfolderName || 'resized'}/)
-                  </span>
-                </div>
+          />
+        </button>
+
+        {showAdvancedDest && (
+          <div className="mt-3 space-y-2 pl-1 animate-in fade-in duration-150">
+            {/* Subfolder */}
+            <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+              <input
+                type="radio"
+                name="dest"
+                checked={config.destinationMode === 'subfolder'}
+                onChange={() => onChangeConfig({ ...config, destinationMode: 'subfolder' })}
+                className="text-blue-600 cursor-pointer"
+              />
+              <FolderTree className="w-3.5 h-3.5 text-blue-500" />
+              <span>Save into subfolder:</span>
+              <input
+                type="text"
+                value={config.subfolderName}
+                onChange={(e) => onChangeConfig({ ...config, subfolderName: e.target.value })}
+                className="bg-white dark:bg-[#141a2e] border border-slate-300 dark:border-[#2b3658] rounded px-2 py-0.5 text-xs text-slate-800 dark:text-slate-200 w-24"
+              />
+            </label>
+
+            {/* Suffix */}
+            <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+              <input
+                type="radio"
+                name="dest"
+                checked={config.destinationMode === 'suffix'}
+                onChange={() => onChangeConfig({ ...config, destinationMode: 'suffix' })}
+                className="text-blue-600 cursor-pointer"
+              />
+              <FileText className="w-3.5 h-3.5 text-blue-500" />
+              <span>Save with filename suffix:</span>
+              <input
+                type="text"
+                value={config.suffix}
+                onChange={(e) => onChangeConfig({ ...config, suffix: e.target.value })}
+                className="bg-white dark:bg-[#141a2e] border border-slate-300 dark:border-[#2b3658] rounded px-2 py-0.5 text-xs text-slate-800 dark:text-slate-200 w-24"
+              />
+            </label>
+
+            {/* Custom Folder */}
+            <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="dest"
+                  checked={config.destinationMode === 'custom_folder'}
+                  onChange={() => onChangeConfig({ ...config, destinationMode: 'custom_folder' })}
+                  className="text-blue-600 cursor-pointer"
+                />
+                <FolderDown className="w-3.5 h-3.5 text-blue-500" />
+                <span>Custom directory:</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleSelectFolder}
+                className="px-2 py-0.5 bg-slate-200 dark:bg-[#202944] hover:bg-slate-300 dark:hover:bg-[#283556] border border-slate-300 dark:border-[#2c395c] rounded text-[11px] text-slate-800 dark:text-slate-200 cursor-pointer"
+              >
+                Browse...
+              </button>
+              {config.customFolderPath && (
+                <span className="text-[11px] text-slate-500 truncate max-w-[180px]">
+                  {config.customFolderPath}
+                </span>
               )}
             </div>
-          </label>
-
-          {/* Suffix mode */}
-          <label
-            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-              config.destinationMode === 'suffix'
-                ? 'bg-emerald-500/10 border-emerald-500/60 text-white'
-                : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-800/80'
-            }`}
-          >
-            <input
-              type="radio"
-              name="destinationMode"
-              checked={config.destinationMode === 'suffix'}
-              onChange={() =>
-                onChangeConfig({ ...config, destinationMode: 'suffix' })
-              }
-              disabled={disabled}
-              className="mt-0.5 text-emerald-600 bg-slate-900 border-slate-700 focus:ring-emerald-500"
-            />
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5 text-xs font-medium">
-                <FileText className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Save next to original with suffix</span>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Saved in the same folder without overwriting the original file.
-              </p>
-              {config.destinationMode === 'suffix' && (
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-[11px] text-slate-400">File suffix:</span>
-                  <input
-                    type="text"
-                    value={config.suffix}
-                    onChange={(e) =>
-                      onChangeConfig({ ...config, suffix: e.target.value })
-                    }
-                    disabled={disabled}
-                    placeholder="-resized"
-                    className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-emerald-500 w-32"
-                  />
-                  <span className="text-[11px] text-slate-400 italic">
-                    (e.g. photo{config.suffix || '-resized'}.jpg)
-                  </span>
-                </div>
-              )}
-            </div>
-          </label>
-
-          {/* Custom destination folder */}
-          <label
-            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-              config.destinationMode === 'custom_folder'
-                ? 'bg-emerald-500/10 border-emerald-500/60 text-white'
-                : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-800/80'
-            }`}
-          >
-            <input
-              type="radio"
-              name="destinationMode"
-              checked={config.destinationMode === 'custom_folder'}
-              onChange={() =>
-                onChangeConfig({ ...config, destinationMode: 'custom_folder' })
-              }
-              disabled={disabled}
-              className="mt-0.5 text-emerald-600 bg-slate-900 border-slate-700 focus:ring-emerald-500"
-            />
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5 text-xs font-medium">
-                <FolderDown className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Save everything to a specific folder</span>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Collect all resized outputs into a single chosen directory.
-              </p>
-              {config.destinationMode === 'custom_folder' && (
-                <div className="mt-2 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSelectFolder}
-                    disabled={disabled}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition-all flex items-center gap-1.5"
-                  >
-                    <FolderDown className="w-3.5 h-3.5 text-emerald-400" />
-                    {config.customFolderPath ? 'Change Folder' : 'Select Folder'}
-                  </button>
-                  <span className="text-[11px] text-slate-300 truncate max-w-xs bg-slate-950/60 px-2 py-1 rounded border border-slate-800">
-                    {config.customFolderPath || 'No folder selected yet'}
-                  </span>
-                </div>
-              )}
-            </div>
-          </label>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, FolderPlus, FileImage, Plus, AlertTriangle } from 'lucide-react';
+import { Upload, FolderPlus, Plus, AlertTriangle } from 'lucide-react';
 import type { ImageItem } from '../types';
 
 interface DropZoneProps {
@@ -15,7 +15,6 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
   useEffect(() => {
     const available = typeof window !== 'undefined' && Boolean(window.electronAPI);
     setHasElectronAPI(available);
-    console.log('[DropZone] Initialized. window.electronAPI available:', available, window.electronAPI);
   }, []);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -35,7 +34,6 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
     e.stopPropagation();
     setIsDragging(false);
 
-    console.log('[DropZone] handleDrop event fired. dataTransfer files:', e.dataTransfer.files.length);
     const files = Array.from(e.dataTransfer.files);
     if (!files.length) return;
 
@@ -44,22 +42,15 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
       const paths = files
         .map((f: any) => {
           if (window.electronAPI?.getPathForFile) {
-            const p = window.electronAPI.getPathForFile(f);
-            console.log('[DropZone] Got path via getPathForFile:', p);
-            return p;
+            return window.electronAPI.getPathForFile(f);
           }
-          console.log('[DropZone] Got path via f.path:', f.path);
           return f.path;
         })
         .filter(Boolean);
 
-      console.log('[DropZone] Extracted paths to scan:', paths);
       if (paths.length && window.electronAPI) {
         const items = await window.electronAPI.scanDroppedPaths(paths);
-        console.log('[DropZone] scanDroppedPaths returned items:', items.length);
         onAddItems(items);
-      } else {
-        console.warn('[DropZone] No valid paths or electronAPI missing');
       }
     } catch (err) {
       console.error('[DropZone] Error dropping files:', err);
@@ -69,17 +60,13 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
   };
 
   const handleSelectFiles = async () => {
-    console.log('[DropZone] handleSelectFiles clicked. window.electronAPI:', window.electronAPI);
     try {
       setIsLoading(true);
       if (window.electronAPI) {
         const items = await window.electronAPI.selectFiles();
-        console.log('[DropZone] selectFiles returned items:', items);
         if (items && items.length) {
           onAddItems(items);
         }
-      } else {
-        console.error('[DropZone] window.electronAPI is undefined!');
       }
     } catch (err) {
       console.error('[DropZone] Error selecting files:', err);
@@ -89,17 +76,13 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
   };
 
   const handleSelectFolder = async () => {
-    console.log('[DropZone] handleSelectFolder clicked. window.electronAPI:', window.electronAPI);
     try {
       setIsLoading(true);
       if (window.electronAPI) {
         const items = await window.electronAPI.selectFolder();
-        console.log('[DropZone] selectFolder returned items:', items);
         if (items && items.length) {
           onAddItems(items);
         }
-      } else {
-        console.error('[DropZone] window.electronAPI is undefined!');
       }
     } catch (err) {
       console.error('[DropZone] Error selecting folder:', err);
@@ -109,13 +92,11 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
   };
 
   return (
-    <div className="space-y-3">
+    <div className="w-full">
       {!hasElectronAPI && (
-        <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-400" />
-          <span>
-            Connecting to local background engine... Please check the DevTools Console tab for diagnostics.
-          </span>
+        <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-500 dark:text-amber-300 text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500" />
+          <span>Electron engine connecting...</span>
         </div>
       )}
 
@@ -124,30 +105,36 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-xl p-4 text-center transition-all ${
+          className={`border border-dashed rounded-xl py-3 px-4 text-center transition-all flex items-center justify-between ${
             isDragging
-              ? 'border-emerald-400 bg-emerald-500/10'
-              : 'border-slate-700 hover:border-slate-600 bg-slate-800/40'
+              ? 'border-brand-500 bg-brand-500/10'
+              : 'border-slate-300 dark:border-darkBorder bg-slate-100/60 dark:bg-darkCard/50 hover:border-slate-400 dark:hover:border-slate-600'
           }`}
         >
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-darkTextMuted">
+            <Upload className="w-4 h-4 text-brand-500" />
+            <span>Drop more images or folders here</span>
+          </div>
+
+          <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleSelectFiles}
               disabled={isLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 text-xs font-medium rounded-lg transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-darkCard hover:bg-slate-50 dark:hover:bg-darkCardHover border border-slate-300 dark:border-darkBorder text-slate-700 dark:text-slate-200 text-xs font-medium rounded-lg transition-all cursor-pointer shadow-sm disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add Images
+              Add Files
             </button>
             <button
+              type="button"
               onClick={handleSelectFolder}
               disabled={isLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 text-xs font-medium rounded-lg transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-darkCard hover:bg-slate-50 dark:hover:bg-darkCardHover border border-slate-300 dark:border-darkBorder text-slate-700 dark:text-slate-200 text-xs font-medium rounded-lg transition-all cursor-pointer shadow-sm disabled:opacity-50"
             >
               <FolderPlus className="w-3.5 h-3.5" />
               Add Folder
             </button>
-            <span className="text-xs text-slate-400">or drop more files here</span>
           </div>
         </div>
       ) : (
@@ -155,45 +142,44 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-2xl p-10 text-center transition-all flex flex-col items-center justify-center min-h-[340px] ${
+          className={`border border-dashed rounded-2xl py-12 px-6 text-center transition-all flex flex-col items-center justify-center ${
             isDragging
-              ? 'border-emerald-400 bg-emerald-500/10 scale-[0.99]'
-              : 'border-slate-700 hover:border-slate-600 bg-slate-800/30'
+              ? 'border-brand-500 bg-brand-500/10 scale-[0.99]'
+              : 'border-slate-300 dark:border-[#283556] bg-slate-50/50 dark:bg-darkCard/30 hover:border-slate-400 dark:hover:border-[#384a77]'
           }`}
         >
-          <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-emerald-400 mb-4 shadow-xl">
-            <UploadCloud className="w-8 h-8" />
+          {/* Upload Icon */}
+          <div className="w-12 h-12 flex items-center justify-center text-slate-400 dark:text-slate-400 mb-3">
+            <Upload className="w-8 h-8 stroke-[1.75]" />
           </div>
 
-          <h3 className="text-lg font-medium text-slate-200 mb-1">
+          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
             Drag & drop images or folders here
           </h3>
-          <p className="text-sm text-slate-400 max-w-sm mb-6">
-            Supports JPG, PNG, WebP, AVIF, TIFF, GIF, and SVG files. Entire directories are scanned automatically.
-          </p>
 
+          {/* Action Buttons */}
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={handleSelectFiles}
               disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-medium rounded-xl shadow-lg shadow-emerald-600/20 transition-all cursor-pointer"
+              className="px-4 py-2 bg-white dark:bg-[#222b44] hover:bg-slate-100 dark:hover:bg-[#2b3656] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200 dark:border-[#313e63] shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
-              <FileImage className="w-4 h-4" />
-              Choose Images
+              Select Files
             </button>
             <button
+              type="button"
               onClick={handleSelectFolder}
               disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-sm font-medium rounded-xl border border-slate-700 transition-all cursor-pointer"
+              className="px-4 py-2 bg-white dark:bg-[#222b44] hover:bg-slate-100 dark:hover:bg-[#2b3656] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200 dark:border-[#313e63] shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
-              <FolderPlus className="w-4 h-4" />
-              Choose Folder
+              Select Folder
             </button>
           </div>
 
           {isLoading && (
-            <div className="mt-4 text-xs text-emerald-400 animate-pulse">
-              Scanning images...
+            <div className="mt-3 text-xs text-brand-500 animate-pulse">
+              Scanning files...
             </div>
           )}
         </div>

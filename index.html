@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>leve — 100% Local Image Resizer & Compressor</title>
+    <!-- Content Security Policy to enforce 100% offline local isolation -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: local-file: blob:; font-src 'self' data:;" />
+  </head>
+  <body class="bg-slate-900 text-slate-100 min-h-screen antialiased select-none font-sans overflow-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -66,15 +66,11 @@ This document tracks the current architecture, implemented modules, execution fl
 ## 3. Next Steps & Roadmap
 
 ### Short Term
-- [ ] Relative resizing by percentage (e.g., 50%, 75%).
-- [ ] Smart crop with focal-point detection or fixed aspect ratios (1:1, 16:9, 4:5).
-- [ ] Optional text or image watermarking.
 - [ ] UI internationalization (i18n: English, Portuguese, Spanish).
 
 ### Mid / Long Term
 - [ ] OS system shortcuts / context menu integration ("Open with leve").
 - [ ] Parallel processing via worker threads for massive batches (1,000+ images).
-- [ ] CLI / Terminal mode for pipeline automations without a GUI.
 
 ---
 

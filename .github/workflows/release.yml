@@ -19,7 +19,7 @@ jobs:
             eb_platform: --mac
             artifact: leve-darwin-arm64
 
-          - os: macos-13
+          - os: macos-26-intel
             arch: x64
             eb_platform: --mac
             artifact: leve-darwin-x64
@@ -29,7 +29,7 @@ jobs:
             eb_platform: --win
             artifact: leve-win32-x64
 
-          - os: windows-latest
+          - os: windows-11-arm
             arch: arm64
             eb_platform: --win
             artifact: leve-win32-arm64

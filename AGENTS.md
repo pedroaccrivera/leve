@@ -1,30 +1,30 @@
-# Regras de Desenvolvimento e Fluxo Git do Projeto `leve`
+# `leve` — Development Workflow & Git Rules
 
-As diretrizes a seguir são mandatórias para qualquer alteração ou desenvolvimento no projeto:
+The following guidelines are mandatory for any change or development work on this project:
 
-## 1. Aprovação Prévia Obrigatória
-- Toda nova funcionalidade, refatoração ou correção de bug deve primeiro ser apresentada com escopo/plano claro.
-- **Nenhum código de feature ou fix deve ser implementado antes da aprovação explícita do usuário.**
+## 1. Mandatory Prior Approval
+- Every new feature, refactor, or bug fix must first be presented with a clear scope/plan.
+- **No feature or fix code may be implemented before the user's explicit approval.**
 
-## 2. Estratégia de Branches no Git
-- Sempre criar uma branch dedicada a partir da `main` antes de iniciar as alterações:
-  - **Novas Funcionalidades**: `feat/nome-da-feat` (ex.: `feat/relative-resizing`, `feat/smart-crop`)
-  - **Correções de Bugs**: `fix/nome-do-fix` (ex.: `fix/metadata-exif-stripping`)
-  - **Refatorações**: `refactor/nome-do-refactor`
-  - **Documentação / Tarefas de Manutenção**: `docs/nome` ou `chore/nome`
-- Manter commits atômicos, descritivos e seguindo o padrão Conventional Commits.
+## 2. Git Branching Strategy
+- Always create a dedicated branch from `main` before starting any changes:
+  - **New Features**: `feat/feature-name` (e.g., `feat/relative-resizing`, `feat/smart-crop`)
+  - **Bug Fixes**: `fix/fix-name` (e.g., `fix/metadata-exif-stripping`)
+  - **Refactors**: `refactor/refactor-name`
+  - **Docs / Maintenance tasks**: `docs/name` or `chore/name`
+- Keep commits atomic, descriptive, and following the Conventional Commits standard.
 
-## 3. Documentação Obrigatória por Branch (`docs/branches/` e `PROJECT_STATUS.md`)
-- **Toda branch criada deve possuir um arquivo de documentação correspondente** em `docs/branches/` (ex.: `docs/branches/feat-relative-resizing.md` ou `docs/branches/fix-nome.md`).
-- O arquivo da branch deve conter:
-  - Objetivo e escopo da branch.
-  - Lista de arquivos criados / modificados.
-  - Testes realizados e resultados.
-  - Histórico de decisões e commits.
-- **Atualização do [PROJECT_STATUS.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/PROJECT_STATUS.md)**: A tabela de branches em `PROJECT_STATUS.md` deve ser atualizada para referenciar a nova branch e o status atual (Em andamento, Concluída, Merged).
+## 3. Mandatory Branch Documentation (`docs/branches/` and `PROJECT_STATUS.md`)
+- **Every created branch must have a corresponding documentation file** in `docs/branches/` (e.g., `docs/branches/feat-relative-resizing.md` or `docs/branches/fix-name.md`).
+- The branch file must contain:
+  - Goal and scope of the branch.
+  - List of files created / modified.
+  - Tests performed and results.
+  - Decision log and commit history.
+- **Update [PROJECT_STATUS.md](./PROJECT_STATUS.md)**: The branch table in `PROJECT_STATUS.md` must be updated to reference the new branch and its current status (In Progress, Done, Merged).
 
-## 4. Conclusão e Merge na `main`
-- Ao concluir as alterações, testes e documentação na branch:
-  1. Apresentar o resumo das mudanças e resultados dos testes.
-  2. **Perguntar explicitamente ao usuário se está tudo aprovado para realizar o merge na branch `main`.**
-  3. Somente após a confirmação/aprovação do usuário, executar o merge na `main` e atualizar o status em `PROJECT_STATUS.md` e no arquivo da branch.
+## 4. Completion & Merge into `main`
+- Upon completing changes, tests, and documentation on the branch:
+  1. Present a summary of changes and test results.
+  2. **Explicitly ask the user whether everything is approved to merge into `main`.**
+  3. Only after the user's confirmation, execute the merge into `main` and update the status in `PROJECT_STATUS.md` and in the branch file.

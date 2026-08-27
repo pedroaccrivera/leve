@@ -1,89 +1,88 @@
-# Plano e Estado de Execução do Projeto — `leve`
+# Project Plan & Execution State — `leve`
 
-Este documento registra o estado atual da arquitetura, os módulos implementados, os fluxos de execução e o roadmap para evolução do **leve**.
+This document tracks the current architecture, implemented modules, execution flows, and roadmap for the **leve** project.
 
 ---
 
-## 1. Visão Geral do Projeto
+## 1. Project Overview
 
-**leve** é um aplicativo desktop 100% local, offline e focado em privacidade para redimensionamento e compressão em lote de imagens (macOS e Windows).
+**leve** is a 100% local, offline, privacy-focused desktop application for batch image resizing and compression (macOS and Windows).
 
-- **Princípio Fundamental**: Nenhum dado ou imagem sai da máquina do usuário (zero chamadas de rede, zero telemetria).
-- **Stack Tecnológica**:
+- **Core Principle**: No image or data ever leaves the user's machine (zero network calls, zero telemetry).
+- **Tech Stack**:
   - **Frontend**: React 18, TypeScript, Tailwind CSS, Lucide Icons, Vite.
-  - **Runtime Desktop**: Electron (com isolamento de contexto e IPC assíncrono).
-  - **Processamento de Imagens**: Sharp (baseado em `libvips` de alta performance nativa em C/C++).
+  - **Desktop Runtime**: Electron (with context isolation and async IPC).
+  - **Image Processing**: Sharp (backed by `libvips`, a high-performance native C/C++ library).
 
 ---
 
-## 2. Estado Atual de Execução (O que já foi implementado)
+## 2. Current Execution State (Already Implemented)
 
-### 2.1. Arquitetura e Estrutura do Código
-- [x] **Configuração Vite + Electron**: Pipeline de build configurado com `vite-plugin-electron` e `vite-plugin-electron-renderer`.
-- [x] **Segurança e Comunicação IPC**:
-  - Script de preload (`electron/preload.cjs`) expondo `window.electronAPI` via `contextBridge`.
-  - Isolamento de contexto ativo (`contextIsolation: true`, `nodeIntegration: false`).
-  - Handlers IPC no processo principal (`electron/main.ts`) para diálogo com SO, leitura de metadados, geração de thumbnails e processamento de imagem via Sharp.
+### 2.1. Architecture & Code Structure
+- [x] **Vite + Electron Setup**: Build pipeline configured with `vite-plugin-electron` and `vite-plugin-electron-renderer`.
+- [x] **Security & IPC Communication**:
+  - Preload script (`electron/preload.cjs`) exposing `window.electronAPI` via `contextBridge`.
+  - Context isolation active (`contextIsolation: true`, `nodeIntegration: false`).
+  - IPC handlers in the main process (`electron/main.ts`) for OS dialogs, metadata reading, thumbnail generation, and image processing via Sharp.
 
-### 2.2. Motor de Processamento (`electron/services/imageProcessor.ts`)
-- [x] **Redimensionamento Proporcional**: Cálculo automático de altura proporcional mantendo aspect ratio. Opção de evitar upscale de imagens menores que a resolução alvo.
-- [x] **Compressão Inteligente (Presets)**:
-  - *Balanced (Recomendado)*: Equilíbrio ótimo entre tamanho e fidelidade visual.
-  - *Maximum Quality*: Compressão suave preservando detalhes finos.
-  - *Smallest File Size*: Otimização agressiva com mozjpeg / oxipng / avif.
-  - *Lossless*: Compressão sem perda para PNG e WebP.
-  - *Custom*: Ajuste manual de slider de qualidade (1 a 100).
-- [x] **Suporte a Múltiplos Formatos**: JPG, PNG, WebP, AVIF, TIFF, GIF, SVG.
-- [x] **Conversão de Formato**: Manter original ou converter em lote para JPG, PNG, WebP ou AVIF.
-- [x] **Privacidade e Metadados**: Limpeza seletiva ou total de dados EXIF, modelo de câmera e localização GPS via flag `stripMetadata`.
-- [x] **Estratégias de Destino de Saída**:
-  - Subpasta dedicada (ex.: `resized/` dentro da pasta de cada imagem).
-  - Sufixo no mesmo diretório (ex.: `imagem-resized.jpg`).
-  - Pasta customizada escolhida pelo usuário com criação automática de diretório.
-  - Resolução de colisões de nome de arquivo para não sobrescrever arquivos existentes.
+### 2.2. Image Processing Engine (`electron/services/imageProcessor.ts`)
+- [x] **Proportional Resizing**: Automatic proportional height calculation preserving aspect ratio. Option to prevent upscaling images smaller than the target resolution.
+- [x] **Smart Compression Presets**:
+  - *Balanced (Recommended)*: Optimal quality-to-size ratio.
+  - *Maximum Quality*: Light compression preserving fine photographic detail.
+  - *Smallest File Size*: Aggressive optimization with mozjpeg / oxipng / avif.
+  - *Lossless*: Zero compression artifacts for PNG and WebP.
+  - *Custom*: Manual quality slider (1 to 100).
+- [x] **Multi-Format Support**: JPG, PNG, WebP, AVIF, TIFF, GIF, SVG.
+- [x] **Format Conversion**: Keep original format or batch-convert to JPG, PNG, WebP, or AVIF.
+- [x] **Privacy & Metadata**: Selective or full removal of EXIF data, camera model, and GPS location via `stripMetadata` flag.
+- [x] **Output Destination Strategies**:
+  - Dedicated subfolder (e.g., `resized/` inside each source image's directory).
+  - Suffix in the same directory (e.g., `photo-resized.jpg`).
+  - Custom folder chosen by the user, with automatic directory creation.
+  - Filename collision resolution to prevent overwriting existing files.
 
-### 2.3. Interface de Usuário (`src/`)
-- [x] **Header Moderno**: Identidade visual, status da fila e ações rápidas.
-- [x] **DropZone Interativa**: Suporte a drag-and-drop de múltiplos arquivos e pastas, além de botões nativos de seleção de arquivos/pastas.
-- [x] **Fila de Imagens (ImageQueue)**:
-  - Miniaturas geradas sob demanda com dimensões originais e tamanho em disco.
-  - Status em tempo real (Pendente, Processando, Concluído, Erro).
-  - Remoção individual de itens e limpeza de fila.
-- [x] **Painel de Configurações (SettingsPanel)**:
-  - Seleção de largura (800px, 1280px, 1920px, 2560px, 3840px ou valor customizado).
-  - Gestão de presets personalizados (criação, seleção e exclusão persistidos em localStorage).
-  - Configuração de compressão, conversão de formato, remoção de metadados e destino.
-- [x] **Feedback e Modal de Resumo (SummaryModal)**:
-  - Relatório estatístico pós-processamento: total de arquivos processados, economia de espaço em bytes/porcentagem e tempo decorrido.
-  - Acesso direto com 1 clique para abrir a pasta de destino no Finder / Explorer.
+### 2.3. User Interface (`src/`)
+- [x] **Modern Header**: Visual identity, queue status, and quick actions.
+- [x] **Interactive DropZone**: Supports drag-and-drop for multiple files and folders, plus native file/folder selection dialogs.
+- [x] **Image Queue (`ImageQueue`)**:
+  - On-demand thumbnails with original dimensions and file size on disk.
+  - Real-time status per item (Pending, Processing, Done, Error).
+  - Individual item removal and full queue clear.
+- [x] **Settings Panel (`SettingsPanel`)**:
+  - Width selection (800px, 1280px, 1920px, 2560px, 3840px, or custom value).
+  - Custom preset management (create, select, delete — persisted in `localStorage`).
+  - Compression, format conversion, metadata removal, and output destination configuration.
+- [x] **Summary Modal (`SummaryModal`)**:
+  - Post-processing statistics: total files processed, space saved in bytes/percentage, and elapsed time.
+  - One-click shortcut to open the output folder in Finder / Explorer.
 
-### 2.4. Testes e Empacotamento
-- [x] Script de teste automatizado de processamento (`test/testProcessor.js`).
-- [x] Configuração `electron-builder` em `package.json` para geração de instaladores (.dmg / .zip para macOS e .exe / portable para Windows).
-
----
-
-## 3. Próximos Passos e Roadmap
-
-### Curto Prazo
-- [ ] Suporte a redimensionamento por porcentagem relativa (ex.: 50%, 75%).
-- [ ] Recorte inteligente (smart crop) com detecção de ponto focal ou proporções fixas (1:1, 16:9, 4:5).
-- [ ] Adição de marcas d'água (watermarking) de texto ou imagem opcional.
-- [ ] Internacionalização da interface (i18n: Inglês, Português, Espanhol).
-
-### Médio / Longo Prazo
-- [ ] Integração com atalhos de sistema / menu de contexto do SO ("Abrir com leve").
-- [ ] Processamento paralelo em worker threads para lotes massivos (1.000+ imagens).
-- [ ] Modo CLI / Terminal para automações de pipeline sem interface gráfica.
+### 2.4. Tests & Packaging
+- [x] Automated processing test script (`test/testProcessor.js`).
+- [x] `electron-builder` configuration in `package.json` for generating installers (.dmg / .zip for macOS, .exe / portable for Windows).
 
 ---
 
-## 4. Registro e Histórico de Branches (`docs/branches/`)
+## 3. Next Steps & Roadmap
 
-Cada branch de feature, fix ou refatoração possui um arquivo dedicado no diretório `docs/branches/` documentando escopo, decisões técnicas, testes e histórico.
+### Short Term
+- [ ] Relative resizing by percentage (e.g., 50%, 75%).
+- [ ] Smart crop with focal-point detection or fixed aspect ratios (1:1, 16:9, 4:5).
+- [ ] Optional text or image watermarking.
+- [ ] UI internationalization (i18n: English, Portuguese, Spanish).
 
-| Branch | Tipo | Status | Documentação |
+### Mid / Long Term
+- [ ] OS system shortcuts / context menu integration ("Open with leve").
+- [ ] Parallel processing via worker threads for massive batches (1,000+ images).
+- [ ] CLI / Terminal mode for pipeline automations without a GUI.
+
+---
+
+## 4. Branch Registry & History
+
+Each feature, fix, or refactor branch has a dedicated documentation file in the `docs/branches/` directory covering scope, technical decisions, tests, and commit history.
+
+| Branch | Type | Status | Documentation |
 | :--- | :--- | :--- | :--- |
-| `main` | Baseline Principal | Ativa | [docs/branches/main.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/docs/branches/main.md) |
-| `feat/visual-redesign` | Feature / Visual Redesign | Merged | [docs/branches/feat-visual-redesign.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/docs/branches/feat-visual-redesign.md) |
-
+| `main` | Main Baseline | Active | [docs/branches/main.md](./docs/branches/main.md) |
+| `feat/visual-redesign` | Feature — Visual Redesign | Merged | [docs/branches/feat-visual-redesign.md](./docs/branches/feat-visual-redesign.md) |

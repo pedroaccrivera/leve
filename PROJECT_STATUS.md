@@ -75,3 +75,14 @@ Este documento registra o estado atual da arquitetura, os módulos implementados
 - [ ] Integração com atalhos de sistema / menu de contexto do SO ("Abrir com leve").
 - [ ] Processamento paralelo em worker threads para lotes massivos (1.000+ imagens).
 - [ ] Modo CLI / Terminal para automações de pipeline sem interface gráfica.
+
+---
+
+## 4. Registro e Histórico de Branches (`docs/branches/`)
+
+Cada branch de feature, fix ou refatoração possui um arquivo dedicado no diretório `docs/branches/` documentando escopo, decisões técnicas, testes e histórico.
+
+| Branch | Tipo | Status | Documentação |
+| :--- | :--- | :--- | :--- |
+| `main` | Baseline Principal | Ativa | [docs/branches/main.md](file:///Users/pedrorivera/Library/CloudStorage/GoogleDrive-pedro.rivera@q4inc.com/My%20Drive/Projects/SIDE/resize-agy/docs/branches/main.md) |
+

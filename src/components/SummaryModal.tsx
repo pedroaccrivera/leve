@@ -17,6 +17,7 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
   if (!summary) return null;
 
   const seconds = (summary.durationMs / 1000).toFixed(1);
+  const mediaLabel = summary.mediaLabel ?? 'Images';
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -47,7 +48,7 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3">
             <span className="text-[11px] text-slate-500 dark:text-darkTextMuted block mb-1">
-              Images Processed
+              {mediaLabel} Processed
             </span>
             <span className="text-lg font-bold text-slate-900 dark:text-white">
               {summary.processedCount} / {summary.totalImages}

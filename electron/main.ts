@@ -9,7 +9,13 @@ import {
   getImageMetadata,
   SUPPORTED_EXTENSIONS
 } from './services/imageProcessor';
-import type { ImageItem, ResizeConfig } from '../src/types';
+import {
+  processSingleVideo,
+  getVideoMetadata,
+  getVideoThumbnail,
+  SUPPORTED_VIDEO_EXTENSIONS,
+} from './services/videoProcessor';
+import type { ImageItem, ResizeConfig, VideoItem, VideoConfig } from '../src/types';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -230,6 +236,119 @@ ipcMain.handle('image:getThumbnail', async (_event, filePath: string) => {
 
 ipcMain.handle('image:process', async (_event, item: ImageItem, config: ResizeConfig) => {
   return processSingleImage(item, config);
+});
+
+// ---------------------------------------------------------------------------
+// Video compression for web (feat/video-compression)
+// ---------------------------------------------------------------------------
+
+async function getVideosFromDirectory(dirPath: string): Promise<string[]> {
+  const results: string[] = [];
+  try {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+      if (entry.isDirectory()) {
+        const subVideos = await getVideosFromDirectory(fullPath);
+        results.push(...subVideos);
+      } else if (entry.isFile()) {
+        const ext = path.extname(entry.name).toLowerCase();
+        if (SUPPORTED_VIDEO_EXTENSIONS.has(ext)) {
+          results.push(fullPath);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[Main Process] Error reading directory:', dirPath, err);
+  }
+  return results;
+}
+
+async function buildVideoItems(filePaths: string[]): Promise<VideoItem[]> {
+  const items: VideoItem[] = [];
+  for (const filePath of filePaths) {
+    const parsed = path.parse(filePath);
+    const meta = await getVideoMetadata(filePath);
+    items.push({
+      id: `${filePath}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      path: filePath,
+      name: parsed.base,
+      size: meta.size,
+      originalWidth: meta.width,
+      originalHeight: meta.height,
+      durationSec: meta.durationSec,
+      status: 'pending',
+    });
+  }
+  return items;
+}
+
+ipcMain.handle('dialog:selectVideoFiles', async () => {
+  console.log('[Main Process] IPC: dialog:selectVideoFiles requested');
+  if (!win) return [];
+  const result = await dialog.showOpenDialog(win, {
+    title: 'Select Videos to Compress',
+    properties: ['openFile', 'multiSelections'],
+    filters: [
+      {
+        name: 'Videos',
+        extensions: ['mp4', 'mov', 'mkv', 'webm', 'avi', 'm4v'],
+      },
+    ],
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return [];
+  }
+  return buildVideoItems(result.filePaths);
+});
+
+ipcMain.handle('dialog:selectVideoFolder', async () => {
+  console.log('[Main Process] IPC: dialog:selectVideoFolder requested');
+  if (!win) return [];
+  const result = await dialog.showOpenDialog(win, {
+    title: 'Select Folder with Videos',
+    properties: ['openDirectory'],
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return [];
+  }
+
+  const videos = await getVideosFromDirectory(result.filePaths[0]);
+  return buildVideoItems(videos);
+});
+
+ipcMain.handle('app:scanDroppedVideoPaths', async (_event, paths: string[]) => {
+  const allVideos: string[] = [];
+  for (const p of paths) {
+    try {
+      const stat = await fs.stat(p);
+      if (stat.isDirectory()) {
+        const dirVideos = await getVideosFromDirectory(p);
+        allVideos.push(...dirVideos);
+      } else if (stat.isFile()) {
+        const ext = path.extname(p).toLowerCase();
+        if (SUPPORTED_VIDEO_EXTENSIONS.has(ext)) {
+          allVideos.push(p);
+        }
+      }
+    } catch (e) {
+      console.error('[Main Process] Error stating dropped path:', p, e);
+    }
+  }
+  return buildVideoItems(allVideos);
+});
+
+ipcMain.handle('video:getThumbnail', async (_event, filePath: string) => {
+  return getVideoThumbnail(filePath);
+});
+
+ipcMain.handle('video:process', async (event, item: VideoItem, config: VideoConfig) => {
+  return processSingleVideo(item, config, (percent) => {
+    // Live progress: the renderer subscribes via `onVideoProgress`.
+    event.sender.send('video:progress', item.id, percent);
+  });
 });
 
 ipcMain.handle('app:openInFolder', async (_event, targetPath: string) => {

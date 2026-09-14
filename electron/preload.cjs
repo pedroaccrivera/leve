@@ -16,6 +16,17 @@ const api = {
       return file ? (file.path || '') : '';
     }
   },
+  // Video compression for web
+  selectVideoFiles: () => ipcRenderer.invoke('dialog:selectVideoFiles'),
+  selectVideoFolder: () => ipcRenderer.invoke('dialog:selectVideoFolder'),
+  scanDroppedVideoPaths: (paths) => ipcRenderer.invoke('app:scanDroppedVideoPaths', paths),
+  getVideoThumbnail: (filePath) => ipcRenderer.invoke('video:getThumbnail', filePath),
+  processVideo: (item, config) => ipcRenderer.invoke('video:process', item, config),
+  onVideoProgress: (callback) => {
+    const listener = (_event, id, progress) => callback(id, progress);
+    ipcRenderer.on('video:progress', listener);
+    return () => ipcRenderer.removeListener('video:progress', listener);
+  },
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

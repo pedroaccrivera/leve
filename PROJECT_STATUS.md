@@ -83,4 +83,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `main` | Main Baseline | Active | — |
 | `feat/visual-redesign` | Feature — Visual Redesign | Merged | [docs/branches/feat-visual-redesign.md](docs/branches/feat-visual-redesign.md) |
 | `chore/gh-actions-releases` | Chore — CI/CD | Merged | [docs/branches/chore-gh-actions-releases.md](docs/branches/chore-gh-actions-releases.md) |
-| `docs/branch-docs-registry` | Docs — Retroactive branch documentation | In Progress | — |
+| `docs/branch-docs-registry` | Docs — Retroactive branch documentation | Merged | — |

@@ -84,4 +84,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/visual-redesign` | Feature — Visual Redesign | Merged | [docs/branches/feat-visual-redesign.md](docs/branches/feat-visual-redesign.md) |
 | `chore/gh-actions-releases` | Chore — CI/CD | Merged | [docs/branches/chore-gh-actions-releases.md](docs/branches/chore-gh-actions-releases.md) |
 | `docs/branch-docs-registry` | Docs — Retroactive branch documentation | Merged | — |
-| `feat/video-compression` | Feature — Video Compression for Web | In Progress | [docs/branches/feat-video-compression.md](docs/branches/feat-video-compression.md) |
+| `feat/video-compression` | Feature — Video Compression for Web | Merged | [docs/branches/feat-video-compression.md](docs/branches/feat-video-compression.md) |

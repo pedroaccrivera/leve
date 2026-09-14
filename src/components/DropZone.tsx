@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, FolderPlus, Plus, AlertTriangle } from 'lucide-react';
-import type { ImageItem } from '../types';
+import type { ImageItem, VideoItem } from '../types';
+
+export type DropMediaType = 'images' | 'videos';
 
 interface DropZoneProps {
   onAddItems: (items: ImageItem[]) => void;
+  onAddVideoItems?: (items: VideoItem[]) => void;
+  mediaType?: DropMediaType;
   isCompact?: boolean;
 }
 
-export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = false }) => {
+export const DropZone: React.FC<DropZoneProps> = ({
+  onAddItems,
+  onAddVideoItems,
+  mediaType = 'images',
+  isCompact = false,
+}) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasElectronAPI, setHasElectronAPI] = useState(true);
@@ -49,8 +58,13 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
         .filter(Boolean);
 
       if (paths.length && window.electronAPI) {
-        const items = await window.electronAPI.scanDroppedPaths(paths);
-        onAddItems(items);
+        if (mediaType === 'videos') {
+          const items = await window.electronAPI.scanDroppedVideoPaths(paths);
+          onAddVideoItems?.(items);
+        } else {
+          const items = await window.electronAPI.scanDroppedPaths(paths);
+          onAddItems(items);
+        }
       }
     } catch (err) {
       console.error('[DropZone] Error dropping files:', err);
@@ -63,9 +77,16 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
     try {
       setIsLoading(true);
       if (window.electronAPI) {
-        const items = await window.electronAPI.selectFiles();
-        if (items && items.length) {
-          onAddItems(items);
+        if (mediaType === 'videos') {
+          const items = await window.electronAPI.selectVideoFiles();
+          if (items && items.length) {
+            onAddVideoItems?.(items);
+          }
+        } else {
+          const items = await window.electronAPI.selectFiles();
+          if (items && items.length) {
+            onAddItems(items);
+          }
         }
       }
     } catch (err) {
@@ -79,9 +100,16 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
     try {
       setIsLoading(true);
       if (window.electronAPI) {
-        const items = await window.electronAPI.selectFolder();
-        if (items && items.length) {
-          onAddItems(items);
+        if (mediaType === 'videos') {
+          const items = await window.electronAPI.selectVideoFolder();
+          if (items && items.length) {
+            onAddVideoItems?.(items);
+          }
+        } else {
+          const items = await window.electronAPI.selectFolder();
+          if (items && items.length) {
+            onAddItems(items);
+          }
         }
       }
     } catch (err) {
@@ -90,6 +118,8 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
       setIsLoading(false);
     }
   };
+
+  const noun = mediaType === 'videos' ? 'videos' : 'images';
 
   return (
     <div className="w-full">
@@ -113,7 +143,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
         >
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-darkTextMuted">
             <Upload className="w-4 h-4 text-brand-500" />
-            <span>Drop more images or folders here</span>
+            <span>Drop more {noun} or folders here</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -154,7 +184,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ onAddItems, isCompact = fals
           </div>
 
           <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
-            Drag & drop images or folders here
+            Drag & drop {noun} or folders here
           </h3>
 
           {/* Action Buttons */}

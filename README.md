@@ -4,6 +4,14 @@
 
 No images or data ever leave your machine. Built with **Electron**, **React**, **Vite**, **Tailwind CSS**, and **Sharp (libvips)**.
 
+> ### 🍺 macOS: install with Homebrew (recommended)
+> ```bash
+> brew tap pedroaccrivera/tap
+> brew install --cask leve
+> ```
+> This is the smoothest way to install on Mac — no Gatekeeper warnings,
+> no quarantine flags, updates via `brew upgrade --cask leve`.
+
 ---
 
 ## Key Features
@@ -100,6 +108,9 @@ The compiled binaries will be output to the `release/` folder.
 ---
 
 ## Installing from GitHub Releases
+
+> **Mac users:** prefer the Homebrew cask above — it skips the Gatekeeper
+> hassle below entirely.
 
 Download the **Latest** release (not older versions) for your platform:
 

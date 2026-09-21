@@ -30,10 +30,56 @@ No images or data ever leave your machine. Built with **Electron**, **React**, *
 
 ## How to Run in Development
 
+Prerequisites: **Node.js 20+** (see `.nvmrc`; `nvm use` if you use nvm).
+
 ```bash
 npm install
 npm run dev
 ```
+
+> `npm run dev` first runs `npm run doctor`, a quick environment check
+> (Electron binary, Sharp binding, ffmpeg/ffprobe binaries). If it fails,
+> follow the printed fix, then re-run. You can also run it any time with
+> `npm run doctor`.
+
+---
+
+## Troubleshooting
+
+### `Error: Electron failed to install correctly`
+
+The `electron` npm package downloads its prebuilt binary from GitHub Releases
+during `npm install`. If that download was blocked or incomplete:
+
+1. Check network access to `github.com` (a corporate proxy is the usual suspect).
+2. Behind a restricted network, use a mirror:
+   ```bash
+   ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ npm install
+   ```
+3. Otherwise reinstall the package:
+   ```bash
+   rm -rf node_modules/electron && npm install
+   ```
+4. Verify with `npm run doctor`.
+
+### `Sharp` fails to load / wrong platform binary
+
+```bash
+rm -rf node_modules/sharp && npm install
+```
+
+Native packages (Sharp, ffmpeg/ffprobe) download platform-specific binaries on
+install — always run `npm install` on the machine that will run/dev the app,
+never copy `node_modules` across OS/architectures.
+
+### `ffmpeg-static` / `ffprobe-static` binary missing or not executable
+
+```bash
+rm -rf node_modules/ffmpeg-static node_modules/ffprobe-static && npm install
+```
+
+If antivirus/Gatekeeper stripped the executable bit: `chmod +x <binary-path>`
+(the exact path is printed by `npm run doctor`).
 
 ---
 

@@ -53,7 +53,8 @@
     },
     "files": [
       "dist",
-      "dist-electron"
+      "dist-electron",
+      "assets/icon.png"
     ],
     "asarUnpack": [
       "**/node_modules/sharp/**/*",
@@ -62,6 +63,7 @@
       "**/node_modules/ffprobe-static/**/*"
     ],
     "mac": {
+      "icon": "assets/icon.icns",
       "target": [
         "dmg",
         "zip"
@@ -69,6 +71,7 @@
       "category": "public.app-category.graphics-design"
     },
     "win": {
+      "icon": "assets/icon.ico",
       "target": [
         "nsis",
         "portable"

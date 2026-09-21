@@ -51,12 +51,24 @@ function resolvePreloadPath(): string {
 const preload = resolvePreloadPath();
 console.log('[Main Process] Using preload script at:', preload, 'exists:', fsSync.existsSync(preload));
 
+// App icon: packaged resources in production, project build/ dir in dev.
+// (macOS dock icon comes from the bundle .icns; this covers dev + Windows.)
+function resolveAppIcon(): string | undefined {
+  const candidates = [
+    path.join(process.resourcesPath, 'assets/icon.png'),
+    path.join(process.cwd(), 'assets/icon.png'),
+  ];
+  return candidates.find((p) => fsSync.existsSync(p));
+}
+
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = path.join(process.env.DIST, 'index.html');
 
 async function createWindow() {
+  const appIcon = resolveAppIcon();
   win = new BrowserWindow({
     title: 'leve — 100% Local Image Resizer & Compressor',
+    ...(appIcon ? { icon: appIcon } : {}),
     width: 1080,
     height: 860,
     minWidth: 840,

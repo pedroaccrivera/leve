@@ -17,22 +17,17 @@ jobs:
           - os: macos-latest
             arch: arm64
             eb_platform: --mac
-            artifact: leve-darwin-arm64
-
-          - os: macos-26-intel
-            arch: x64
-            eb_platform: --mac
-            artifact: leve-darwin-x64
+            artifact: leve-mac-arm64
 
           - os: windows-latest
             arch: x64
             eb_platform: --win
-            artifact: leve-win32-x64
+            artifact: leve-win-x64
 
           - os: windows-11-arm
             arch: arm64
             eb_platform: --win
-            artifact: leve-win32-arm64
+            artifact: leve-win-arm64
 
     runs-on: ${{ matrix.os }}
     name: Build · ${{ matrix.artifact }}

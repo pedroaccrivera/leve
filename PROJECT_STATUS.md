@@ -92,3 +92,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.2.0` | Chore — Release 1.2.0 | Merged | [docs/branches/chore-release-1.2.0.md](docs/branches/chore-release-1.2.0.md) |
 | `fix/drop-win-arm64` | Fix — Drop Windows ARM64 Target | Merged | [docs/branches/fix-drop-win-arm64.md](docs/branches/fix-drop-win-arm64.md) |
 | `fix/mac-install-experience` | Fix — Install Experience & Missing Mac Zip | Merged | [docs/branches/fix-mac-install-experience.md](docs/branches/fix-mac-install-experience.md) |
+| `fix/electron-publish-never` | Fix — Explicitly Disable Builder Publish | In Progress | [docs/branches/fix-electron-publish-never.md](docs/branches/fix-electron-publish-never.md) |

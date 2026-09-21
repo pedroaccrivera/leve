@@ -1,6 +1,6 @@
 {
   "name": "leve",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "leve — 100% Local & Private Image Resizer and Compressor",
   "type": "module",
   "main": "dist-electron/main.js",
@@ -70,6 +70,39 @@
         "zip"
       ],
       "category": "public.app-category.graphics-design"
+    },
+    "dmg": {
+      "backgroundColor": "#121624",
+      "iconSize": 110,
+      "window": {
+        "width": 660,
+        "height": 420
+      },
+      "contents": [
+        {
+          "x": 150,
+          "y": 200,
+          "type": "file"
+        },
+        {
+          "x": 510,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 150,
+          "y": 340,
+          "type": "file",
+          "path": "assets/README-If-blocked.txt"
+        },
+        {
+          "x": 510,
+          "y": 340,
+          "type": "file",
+          "path": "assets/Fix-leve.command"
+        }
+      ]
     },
     "win": {
       "icon": "assets/icon.ico",

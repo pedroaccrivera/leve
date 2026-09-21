@@ -109,15 +109,18 @@ Download the **Latest** release (not older versions) for your platform:
 ### macOS: "leve is damaged and can't be opened"
 
 The app is not Apple-signed yet, so Gatekeeper blocks the first launch after
-a browser download. The app itself is 100% local and safe — clear the
-quarantine flag once:
+a browser download. The app itself is 100% local and safe. Easiest fix: in the
+installer window, double-click **Fix-leve** (right-click → Open on first use).
+It clears the quarantine flag and shows a confirmation dialog.
+
+Manual alternative:
 
 ```bash
 xattr -d com.apple.quarantine /Applications/leve.app
 ```
 
 Then open normally. (Proper Developer ID signing + notarization is planned;
-until then this step is required.)
+until then one of these steps is required.)
 
 ### Windows: SmartScreen warning
 

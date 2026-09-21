@@ -1,16 +1,16 @@
 #!/bin/bash
-# Fix-leve — 1-clique para liberar o leve no macOS (Gatekeeper/quarentena).
-# Uso: duplo clique neste arquivo dentro do DMG do leve.
+# Fix-leve — 1-click quarantine fix for leve on macOS (Gatekeeper).
+# Usage: double-click this file inside the leve installer window.
 APP="/Applications/leve.app"
 
 if [ ! -d "$APP" ]; then
-  osascript -e 'display alert "leve não encontrado" message "Arraste o leve para a pasta Applications primeiro e rode este Fix de novo." as critical'
+  osascript -e 'display alert "leve not found" message "Drag leve to the Applications folder first, then run this Fix again." as critical'
   exit 1
 fi
 
 if xattr -d com.apple.quarantine "$APP" 2>/dev/null; then
-  osascript -e 'display alert "leve liberado ✓" message "Abra o leve normalmente. Bom uso!"'
+  osascript -e 'display alert "leve is ready ✓" message "Open leve normally. Enjoy!"'
 else
-  osascript -e 'display alert "Não consegui liberar" message "Abra o Terminal e cole: xattr -d com.apple.quarantine /Applications/leve.app" as critical'
+  osascript -e 'display alert "Could not fix automatically" message "Open Terminal and paste: xattr -d com.apple.quarantine /Applications/leve.app" as critical'
   exit 1
 fi

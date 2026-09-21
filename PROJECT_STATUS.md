@@ -95,4 +95,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `fix/electron-publish-never` | Fix — Explicitly Disable Builder Publish | Merged | [docs/branches/fix-electron-publish-never.md](docs/branches/fix-electron-publish-never.md) |
 | `feat/dmg-guided-install` | Feature — Guided DMG Install + Homebrew Tap | Merged | [docs/branches/feat-dmg-guided-install.md](docs/branches/feat-dmg-guided-install.md) |
 | `chore/release-1.2.5` | Chore — Release 1.2.5 (Guided DMG) | Merged | [docs/branches/chore-release-1.2.5.md](docs/branches/chore-release-1.2.5.md) |
-| `docs/homebrew-cask-readme` | Docs — Spotlight Homebrew Cask in README | In Progress | [docs/branches/docs-homebrew-cask-readme.md](docs/branches/docs-homebrew-cask-readme.md) |
+| `docs/homebrew-cask-readme` | Docs — Spotlight Homebrew Cask in README | Merged | [docs/branches/docs-homebrew-cask-readme.md](docs/branches/docs-homebrew-cask-readme.md) |

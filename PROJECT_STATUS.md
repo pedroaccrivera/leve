@@ -94,3 +94,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `fix/mac-install-experience` | Fix — Install Experience & Missing Mac Zip | Merged | [docs/branches/fix-mac-install-experience.md](docs/branches/fix-mac-install-experience.md) |
 | `fix/electron-publish-never` | Fix — Explicitly Disable Builder Publish | Merged | [docs/branches/fix-electron-publish-never.md](docs/branches/fix-electron-publish-never.md) |
 | `feat/dmg-guided-install` | Feature — Guided DMG Install + Homebrew Tap | Merged | [docs/branches/feat-dmg-guided-install.md](docs/branches/feat-dmg-guided-install.md) |
+| `chore/release-1.2.5` | Chore — Release 1.2.5 (Guided DMG) | In Progress | [docs/branches/chore-release-1.2.5.md](docs/branches/chore-release-1.2.5.md) |

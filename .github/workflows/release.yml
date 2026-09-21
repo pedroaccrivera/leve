@@ -24,11 +24,6 @@ jobs:
             eb_platform: --win
             artifact: leve-win-x64
 
-          - os: windows-11-arm
-            arch: arm64
-            eb_platform: --win
-            artifact: leve-win-arm64
-
     runs-on: ${{ matrix.os }}
     name: Build · ${{ matrix.artifact }}
 
@@ -42,9 +37,8 @@ jobs:
           node-version: 20
           cache: npm
 
-      # npm_config_arch ensures npm installs the correct Sharp prebuilt binary
-      # for the target arch (critical for the Windows arm64 cross-compilation job,
-      # which runs on a Windows x64 runner).
+      # npm_config_arch ensures npm installs the correct Sharp/ffmpeg prebuilt
+      # binaries for the target arch.
       - name: Install dependencies
         run: npm ci
         env:

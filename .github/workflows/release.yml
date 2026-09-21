@@ -31,10 +31,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
+      - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       # npm_config_arch ensures npm installs the correct Sharp/ffmpeg prebuilt
@@ -48,11 +48,15 @@ jobs:
         shell: bash
         run: npx tsc && npx vite build
 
+      # NOTE: GH_TOKEN is deliberately NOT passed here. electron-builder would
+      # otherwise auto-publish artifacts to its own draft release, racing with
+      # the "Upload to GitHub Release" step below (duplicate drafts + asset
+      # deletes — this silently dropped the mac .zip in v1.2.1). The action
+      # below is the single uploader; it gets GH_TOKEN via softprops default.
       - name: Package with electron-builder
         shell: bash
         run: npx electron-builder ${{ matrix.eb_platform }} --${{ matrix.arch }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Disable automatic code-signing discovery on macOS (no cert configured).
           CSC_IDENTITY_AUTO_DISCOVERY: false
 

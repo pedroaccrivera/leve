@@ -91,4 +91,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/app-icon` | Feature — Application Icon | Merged | [docs/branches/feat-app-icon.md](docs/branches/feat-app-icon.md) |
 | `chore/release-1.2.0` | Chore — Release 1.2.0 | Merged | [docs/branches/chore-release-1.2.0.md](docs/branches/chore-release-1.2.0.md) |
 | `fix/drop-win-arm64` | Fix — Drop Windows ARM64 Target | Merged | [docs/branches/fix-drop-win-arm64.md](docs/branches/fix-drop-win-arm64.md) |
-| `fix/mac-install-experience` | Fix — Install Experience & Missing Mac Zip | In Progress | [docs/branches/fix-mac-install-experience.md](docs/branches/fix-mac-install-experience.md) |
+| `fix/mac-install-experience` | Fix — Install Experience & Missing Mac Zip | Merged | [docs/branches/fix-mac-install-experience.md](docs/branches/fix-mac-install-experience.md) |

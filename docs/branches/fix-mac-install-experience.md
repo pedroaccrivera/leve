@@ -31,7 +31,7 @@ Changes:
 - Repaired `v1.2.1` directly: built the zip locally (`npm run package:mac`;
   a stale `/Volumes/leve 1.2.1-arm64` mount had to be ejected first) and
   `gh release upload`ed it — release now has all 4 assets.
-- No version bump, no tag (docs + pipeline only).
+- Patch bump `1.2.1 → 1.2.2` on user request; publish via tag `v1.2.2`.
 
 Out of scope: Developer ID signing/notarization (needs paid Apple account —
 future work), DMG layout.

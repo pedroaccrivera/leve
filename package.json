@@ -1,6 +1,6 @@
 {
   "name": "leve",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "leve — 100% Local & Private Image Resizer and Compressor",
   "type": "module",
   "main": "dist-electron/main.js",
@@ -64,6 +64,7 @@
     ],
     "mac": {
       "icon": "assets/icon.icns",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "target": [
         "dmg",
         "zip"
@@ -76,6 +77,12 @@
         "nsis",
         "portable"
       ]
+    },
+    "nsis": {
+      "artifactName": "${productName}-${version}-win-${arch}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-win-${arch}-portable.${ext}"
     }
   }
 }

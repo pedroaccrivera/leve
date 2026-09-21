@@ -85,4 +85,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/gh-actions-releases` | Chore — CI/CD | Merged | [docs/branches/chore-gh-actions-releases.md](docs/branches/chore-gh-actions-releases.md) |
 | `docs/branch-docs-registry` | Docs — Retroactive branch documentation | Merged | — |
 | `feat/video-compression` | Feature — Video Compression for Web | Merged | [docs/branches/feat-video-compression.md](docs/branches/feat-video-compression.md) |
-| `fix/vite-externals-ffmpeg` | Fix — Electron Main Externals | In Progress | [docs/branches/fix-vite-externals-ffmpeg.md](docs/branches/fix-vite-externals-ffmpeg.md) |
+| `fix/vite-externals-ffmpeg` | Fix — Electron Main Externals | Merged | [docs/branches/fix-vite-externals-ffmpeg.md](docs/branches/fix-vite-externals-ffmpeg.md) |

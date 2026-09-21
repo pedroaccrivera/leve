@@ -1,6 +1,6 @@
 {
   "name": "leve",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "leve — 100% Local & Private Image Resizer and Compressor",
   "type": "module",
   "main": "dist-electron/main.js",

@@ -96,3 +96,30 @@ npm run package:win
 ```
 
 The compiled binaries will be output to the `release/` folder.
+
+---
+
+## Installing from GitHub Releases
+
+Download the **Latest** release (not older versions) for your platform:
+
+- macOS (Apple Silicon): `leve-<version>-mac-arm64.dmg`
+- Windows (x64): `leve-<version>-win-x64.exe` (installer) or `...-portable.exe`
+
+### macOS: "leve is damaged and can't be opened"
+
+The app is not Apple-signed yet, so Gatekeeper blocks the first launch after
+a browser download. The app itself is 100% local and safe — clear the
+quarantine flag once:
+
+```bash
+xattr -d com.apple.quarantine /Applications/leve.app
+```
+
+Then open normally. (Proper Developer ID signing + notarization is planned;
+until then this step is required.)
+
+### Windows: SmartScreen warning
+
+The installer is unsigned, so SmartScreen may warn on first run. Click
+**More info → Run anyway**.

@@ -18,7 +18,7 @@ export default defineConfig({
           build: {
             outDir: 'dist-electron',
             rollupOptions: {
-              external: ['sharp', 'electron'],
+              external: ['sharp', 'electron', 'ffmpeg-static', 'ffprobe-static'],
             },
           },
           plugins: [

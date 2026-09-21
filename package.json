@@ -6,6 +6,8 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
+    "predev": "npm run doctor",
+    "doctor": "node scripts/doctor.cjs",
     "build": "tsc && vite build && electron-builder --dir",
     "package:mac": "tsc && vite build && electron-builder --mac",
     "package:mac:arm64": "tsc && vite build && electron-builder --mac --arm64",
@@ -14,6 +16,9 @@
     "package:win:x64": "tsc && vite build && electron-builder --win --x64",
     "package:win:arm64": "tsc && vite build && electron-builder --win --arm64",
     "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "clsx": "^2.1.1",

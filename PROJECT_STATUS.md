@@ -87,4 +87,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/video-compression` | Feature — Video Compression for Web | Merged | [docs/branches/feat-video-compression.md](docs/branches/feat-video-compression.md) |
 | `fix/vite-externals-ffmpeg` | Fix — Electron Main Externals | Merged | [docs/branches/fix-vite-externals-ffmpeg.md](docs/branches/fix-vite-externals-ffmpeg.md) |
 | `chore/bump-version-1.1.0` | Chore — Version Bump to 1.1.0 | Merged | [docs/branches/chore-bump-version-1.1.0.md](docs/branches/chore-bump-version-1.1.0.md) |
-| `chore/dev-setup-doctor` | Chore — Dev Environment Doctor | In Progress | [docs/branches/chore-dev-setup-doctor.md](docs/branches/chore-dev-setup-doctor.md) |
+| `chore/dev-setup-doctor` | Chore — Dev Environment Doctor | Merged | [docs/branches/chore-dev-setup-doctor.md](docs/branches/chore-dev-setup-doctor.md) |

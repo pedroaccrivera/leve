@@ -90,4 +90,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/dev-setup-doctor` | Chore — Dev Environment Doctor | Merged | [docs/branches/chore-dev-setup-doctor.md](docs/branches/chore-dev-setup-doctor.md) |
 | `feat/app-icon` | Feature — Application Icon | Merged | [docs/branches/feat-app-icon.md](docs/branches/feat-app-icon.md) |
 | `chore/release-1.2.0` | Chore — Release 1.2.0 | Merged | [docs/branches/chore-release-1.2.0.md](docs/branches/chore-release-1.2.0.md) |
-| `fix/drop-win-arm64` | Fix — Drop Windows ARM64 Target | In Progress | [docs/branches/fix-drop-win-arm64.md](docs/branches/fix-drop-win-arm64.md) |
+| `fix/drop-win-arm64` | Fix — Drop Windows ARM64 Target | Merged | [docs/branches/fix-drop-win-arm64.md](docs/branches/fix-drop-win-arm64.md) |

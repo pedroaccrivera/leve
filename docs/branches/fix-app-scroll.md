@@ -30,8 +30,8 @@ Fora de escopo: virtualização da fila, paginação, mudanças visuais no CTA, 
 
 ## 3. Tests Performed and Results
 
-- `npx tsc --noEmit` → (preencher)
-- `npx vite build` → (preencher)
+- `npx tsc --noEmit` → clean (exit 0).
+- `npx vite build` → green (`dist-electron/main.js` 16.05 kB).
 - Verificação manual com fila longa + janela pequena (680px altura mínima) → pendente no review do usuário.
 
 ## 4. Decision Log and Commit History
@@ -42,4 +42,6 @@ Fora de escopo: virtualização da fila, paginação, mudanças visuais no CTA, 
 
 | Commit | Message |
 | :--- | :--- |
-| (preencher) | fix(layout): ... |
+| `087d176` | fix(layout): restore app scroll and keep action button always visible |
+| `5019bd1` | docs: mark video-compression merged and register fix/app-scroll |
+| `8656002` | chore: ignore local tooling dirs and icon drafts |

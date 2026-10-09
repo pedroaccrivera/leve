@@ -69,4 +69,6 @@ JPG→PNG specifically), virtualized queues.
 
 | Commit | Message |
 | :--- | :--- |
-| (preencher) | (preencher) |
+| `6758112` | fix(media): refuse compression that would enlarge the original file |
+| `4ef68a4` | test: cover oversized-output refusal for images and videos |
+| `fd0e211` | docs: register fix/oversized-output-guard |

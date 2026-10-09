@@ -1,7 +1,7 @@
 # Branch `feat/video-compression` — Video Compression for Web
 
 - **Type:** Feature — video compression (MP4/WebM) via bundled ffmpeg
-- **Status:** In Progress (awaiting merge approval)
+- **Status:** Merged into `main`
 - **Base:** `main` @ `b8ab911`
 
 ## 1. Goal and Scope

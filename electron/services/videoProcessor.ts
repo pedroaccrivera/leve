@@ -185,6 +185,17 @@ export async function processSingleVideo(
       fs.stat(outputPath),
       getVideoMetadata(outputPath),
     ]);
+    // Refuse to "compress" into a larger file: the source is already better
+    // optimized than anything this config can produce. Discard the output
+    // and let the UI suggest a quality/format change or keeping the original.
+    if (item.size > 0 && newStats.size >= item.size) {
+      await fs.unlink(outputPath).catch(() => undefined);
+      return {
+        id: item.id,
+        success: false,
+        skipped: true,
+      };
+    }
     return {
       id: item.id,
       success: true,

@@ -18,7 +18,7 @@ export interface ImageItem {
   size: number;
   originalWidth?: number;
   originalHeight?: number;
-  status: 'pending' | 'processing' | 'done' | 'error';
+  status: 'pending' | 'processing' | 'done' | 'skipped' | 'error';
   newSize?: number;
   newWidth?: number;
   newHeight?: number;
@@ -42,6 +42,8 @@ export interface ResizeConfig {
 export interface ProcessResult {
   id: string;
   success: boolean;
+  /** True when the output was larger than the original and was discarded. */
+  skipped?: boolean;
   outputPath?: string;
   newSize?: number;
   newWidth?: number;
@@ -53,6 +55,8 @@ export interface BatchSummary {
   totalImages: number;
   processedCount: number;
   failedCount: number;
+  /** Items refused because the output would be larger than the original. */
+  skippedCount: number;
   originalTotalBytes: number;
   newTotalBytes: number;
   totalSavedBytes: number;
@@ -78,7 +82,7 @@ export interface VideoItem {
   originalWidth?: number;
   originalHeight?: number;
   durationSec?: number;
-  status: 'pending' | 'processing' | 'done' | 'error';
+  status: 'pending' | 'processing' | 'done' | 'skipped' | 'error';
   /** Live 0–100 progress of the in-flight ffmpeg job. */
   progress?: number;
   newSize?: number;
@@ -105,6 +109,8 @@ export interface VideoConfig {
 export interface VideoProcessResult {
   id: string;
   success: boolean;
+  /** True when the output was larger than the original and was discarded. */
+  skipped?: boolean;
   outputPath?: string;
   newSize?: number;
   newWidth?: number;

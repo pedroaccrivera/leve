@@ -110,6 +110,13 @@ async function processSingleImage(item, config) {
 
     await pipeline.toFile(outputPath);
     const newStats = await fs.stat(outputPath);
+
+    // Mirror of the oversized-output guard in electron/services/imageProcessor.ts
+    if (item.size > 0 && newStats.size >= item.size) {
+      await fs.unlink(outputPath).catch(() => undefined);
+      return { id: item.id, success: false, skipped: true };
+    }
+
     const newMeta = await sharp(outputPath).metadata();
 
     return {
@@ -208,6 +215,42 @@ async function runTest() {
     throw new Error(`Expected dimensions 800x533, got ${meta2.width}x${meta2.height}`);
   }
   console.log('✓ Proportional height maintained: 3000x2000 -> 800x533 px!');
+
+  // Test 3: already-optimized input must be refused (skipped), not enlarged
+  console.log('\n[Test 3] Already-optimized PNG re-encoded at same size (expect skip)...');
+  const tinyPath = path.join(testDir, 'tiny_opt.png');
+  await sharp({
+    create: {
+      width: 64,
+      height: 64,
+      channels: 4,
+      background: { r: 10, g: 10, b: 10, alpha: 1 },
+    },
+  })
+    .png({ compressionLevel: 9 })
+    .toFile(tinyPath);
+  const tinyStat = await fs.stat(tinyPath);
+  const tinyItem = { id: 'test-3', path: tinyPath, name: 'tiny_opt.png', size: tinyStat.size };
+  const res3 = await processSingleImage(tinyItem, {
+    targetWidth: 4096, // larger than source + withoutEnlargement → no resize
+    withoutEnlargement: true,
+    compressionLevel: 'light', // weaker zlib level than the source
+    stripMetadata: true,
+    outputFormat: 'png',
+    destinationMode: 'suffix',
+    suffix: '-resized',
+    subfolderName: 'resized',
+  });
+  console.log('Result 3:', res3);
+  if (!res3.skipped) {
+    throw new Error(`Expected skipped=true, got ${JSON.stringify(res3)}`);
+  }
+  const skippedOutputPath = path.join(testDir, 'tiny_opt-resized.png');
+  const stillExists = await fs.stat(skippedOutputPath).then(() => true).catch(() => false);
+  if (stillExists) {
+    throw new Error('Oversized output was not discarded');
+  }
+  console.log(`✓ Refused to enlarge ${tinyStat.size} B file (output discarded, skipped=true)`);
 
   // Cleanup test artifacts
   await fs.rm(testDir, { recursive: true, force: true });

@@ -98,4 +98,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `docs/homebrew-cask-readme` | Docs — Spotlight Homebrew Cask in README | Merged | [docs/branches/docs-homebrew-cask-readme.md](docs/branches/docs-homebrew-cask-readme.md) |
 | `fix/app-scroll` | Fix — App Scroll + Sticky Action Footer | Merged | [docs/branches/fix-app-scroll.md](docs/branches/fix-app-scroll.md) |
 | `chore/release-1.2.7` | Chore — Release 1.2.7 | Merged | [docs/branches/chore-release-1.2.7.md](docs/branches/chore-release-1.2.7.md) |
-| `fix/oversized-output-guard` | Fix — Refuse Compression That Enlarges Files | In Progress | [docs/branches/fix-oversized-output-guard.md](docs/branches/fix-oversized-output-guard.md) |
+| `fix/oversized-output-guard` | Fix — Refuse Compression That Enlarges Files | Merged | [docs/branches/fix-oversized-output-guard.md](docs/branches/fix-oversized-output-guard.md) |

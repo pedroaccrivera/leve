@@ -1,7 +1,7 @@
 # Branch `fix/oversized-output-guard` — Refuse Compression That Enlarges Files
 
 - **Type:** Fix — output guard (app premise: never return larger files)
-- **Status:** In Progress
+- **Status:** Merged into `main`
 - **Base:** `main` @ `c18b7a4`
 
 ## 1. Goal and Scope

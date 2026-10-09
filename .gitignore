@@ -40,3 +40,11 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Local agent/tooling dirs (not versioned)
+.opencode/
+.stitch/
+
+# Local icon drafts (kept out of git; release icons live in assets/)
+icon.png
+icon-v2.png

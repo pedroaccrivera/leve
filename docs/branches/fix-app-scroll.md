@@ -1,7 +1,7 @@
 # Branch `fix/app-scroll` — App Scroll + Sticky Action Footer
 
 - **Type:** Fix — layout/scroll (CTA unreachable with long queues)
-- **Status:** In Progress
+- **Status:** Merged into `main` (`2a2dffe`)
 - **Base:** `main` @ `6ba7b50`
 - **Decisões do usuário (09/10/2026):** roadmap (i18n, worker-threads) fica para depois; manter app sem assinatura Apple/Microsoft; ignorar via `.gitignore` os artefatos locais `.opencode/`, `.stitch/`, `icon.png`, `icon-v2.png`.
 

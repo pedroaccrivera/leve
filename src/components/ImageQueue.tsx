@@ -107,6 +107,13 @@ const ImageRow: React.FC<{
             <span className="text-emerald-600 dark:text-emerald-400 font-medium">
               {formatDimensions(item.newWidth, item.newHeight)} ({formatBytes(item.newSize || 0)})
             </span>
+          ) : item.status === 'skipped' ? (
+            <span
+              className="text-amber-600 dark:text-amber-400 font-medium"
+              title="Already optimized — no smaller file could be produced. Try a different format or keep the original."
+            >
+              Original kept ({formatBytes(item.size)})
+            </span>
           ) : (
             <span className="text-slate-700 dark:text-slate-300">
               ~{formatDimensions(targetWidthDisplay, estHeight)}
@@ -128,6 +135,15 @@ const ImageRow: React.FC<{
         {item.status === 'pending' && (
           <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium px-2 py-0.5 rounded bg-slate-100 dark:bg-[#131929] border border-slate-200 dark:border-[#263150]">
             Pending
+          </span>
+        )}
+
+        {item.status === 'skipped' && (
+          <span
+            className="text-[10px] text-amber-600 dark:text-amber-400 font-medium px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-500/10 border border-amber-500/20"
+            title="Already optimized — no smaller file could be produced. Try a different format or keep the original."
+          >
+            Skipped
           </span>
         )}
 

@@ -168,6 +168,7 @@ export const App: React.FC = () => {
     const startTime = Date.now();
     let processedCount = 0;
     let failedCount = 0;
+    let skippedCount = 0;
     let originalTotalBytes = 0;
     let newTotalBytes = 0;
 
@@ -188,7 +189,21 @@ export const App: React.FC = () => {
 
       const result = await window.electronAPI.processImage(currentItem, config);
 
-      if (result.success) {
+      if (result.skipped) {
+        skippedCount++;
+        newTotalBytes += currentItem.size || 0;
+        setItems((prev) =>
+          prev.map((item, idx) =>
+            idx === i
+              ? {
+                  ...item,
+                  status: 'skipped',
+                  newSize: currentItem.size,
+                }
+              : item
+          )
+        );
+      } else if (result.success) {
         processedCount++;
         newTotalBytes += result.newSize || 0;
         setItems((prev) =>
@@ -232,6 +247,7 @@ export const App: React.FC = () => {
       totalImages: items.length,
       processedCount,
       failedCount,
+      skippedCount,
       originalTotalBytes,
       newTotalBytes,
       totalSavedBytes,
@@ -250,6 +266,7 @@ export const App: React.FC = () => {
     const startTime = Date.now();
     let processedCount = 0;
     let failedCount = 0;
+    let skippedCount = 0;
     let originalTotalBytes = 0;
     let newTotalBytes = 0;
 
@@ -270,7 +287,22 @@ export const App: React.FC = () => {
 
       const result = await window.electronAPI.processVideo(currentItem, videoConfig);
 
-      if (result.success) {
+      if (result.skipped) {
+        skippedCount++;
+        newTotalBytes += currentItem.size || 0;
+        setVideoItems((prev) =>
+          prev.map((item, idx) =>
+            idx === i
+              ? {
+                  ...item,
+                  status: 'skipped',
+                  progress: 100,
+                  newSize: currentItem.size,
+                }
+              : item
+          )
+        );
+      } else if (result.success) {
         processedCount++;
         newTotalBytes += result.newSize || 0;
         setVideoItems((prev) =>
@@ -311,6 +343,7 @@ export const App: React.FC = () => {
       totalImages: videoItems.length,
       processedCount,
       failedCount,
+      skippedCount,
       originalTotalBytes,
       newTotalBytes,
       totalSavedBytes,

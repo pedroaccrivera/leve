@@ -58,6 +58,14 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
                 ({summary.failedCount} failed)
               </span>
             )}
+            {summary.skippedCount > 0 && (
+              <span
+                className="text-[10px] text-amber-600 dark:text-amber-400 block mt-0.5"
+                title="Already optimized — no smaller file could be produced. Try a different format or keep the original."
+              >
+                ({summary.skippedCount} skipped — already optimized)
+              </span>
+            )}
           </div>
 
           <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3">

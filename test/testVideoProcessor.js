@@ -114,6 +114,11 @@ async function processVideo(item, config, onProgress) {
   });
 
   const newStats = await fs.stat(outputPath);
+  // Mirror of the oversized-output guard in electron/services/videoProcessor.ts
+  if (item.size > 0 && newStats.size >= item.size) {
+    await fs.unlink(outputPath).catch(() => undefined);
+    return { id: item.id, success: false, skipped: true };
+  }
   const newMeta = await probe(outputPath);
   const vStream = (newMeta.streams || []).find((s) => s.codec_type === 'video') || {};
   return {
@@ -209,6 +214,39 @@ async function runTest() {
   await fs.unlink(thumbTmp).catch(() => undefined);
   if (!thumbBuf.length) throw new Error('Empty thumbnail');
   console.log(`✓ Thumbnail generated (${(thumbBuf.length / 1024).toFixed(1)} KB JPEG)`);
+
+  // Test 4: already-optimized input must be refused (skipped), not enlarged
+  console.log('\n[Test 4] Already-compressed video re-encoded at higher quality (expect skip)...');
+  const tinySample = path.join(testDir, 'tiny_sample.mp4');
+  await runBin(FFMPEG, [
+    '-y', '-v', 'error',
+    '-f', 'lavfi', '-i', 'testsrc=size=320x180:rate=15:duration=1',
+    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '32',
+    '-pix_fmt', 'yuv420p', '-an', tinySample,
+  ]);
+  const tinyStat = await fs.stat(tinySample);
+  const tinyItem = { id: 'vtest-4', path: tinySample, name: 'tiny_sample.mp4', size: tinyStat.size };
+  const res4 = await processVideo(tinyItem, {
+    maxWidth: 640, // larger than source → no downscale
+    withoutEnlargement: true,
+    quality: 'light', // CRF 18 slow + 128k AAC: heavier than the source
+    outputFormat: 'mp4',
+    stripMetadata: true,
+    muteAudio: false,
+    destinationMode: 'suffix',
+    subfolderName: 'compressed',
+    suffix: '-web',
+  });
+  console.log('Result 4:', res4);
+  if (!res4.skipped) {
+    throw new Error(`Expected skipped=true, got ${JSON.stringify(res4)}`);
+  }
+  const tinyOutput = path.join(testDir, 'tiny_sample-web.mp4');
+  const tinyExists = await fs.stat(tinyOutput).then(() => true).catch(() => false);
+  if (tinyExists) {
+    throw new Error('Oversized output was not discarded');
+  }
+  console.log(`✓ Refused to enlarge ${(tinyStat.size / 1024).toFixed(1)} KB file (output discarded, skipped=true)`);
 
   await fs.rm(testDir, { recursive: true, force: true });
   console.log('\n✓ All video processing tests passed successfully!');

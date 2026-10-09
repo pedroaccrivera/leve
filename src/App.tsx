@@ -354,14 +354,14 @@ export const App: React.FC = () => {
     isVideoTab ? setVideoSummary(null) : setSummary(null);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Header
         itemCount={isVideoTab ? videoItems.length : items.length}
         onClear={isVideoTab ? handleClearVideos : handleClearAll}
         isProcessing={isVideoTab ? isProcessingVideo : isProcessing}
       />
 
-      <main className="flex-1 overflow-y-auto px-8 pb-10 flex flex-col items-center">
+      <main className="flex-1 min-h-0 overflow-y-auto px-8 pb-10 flex flex-col items-center">
         <div className="w-full max-w-2xl flex flex-col gap-6">
           {/* Media type tabs */}
           <div className="flex items-center gap-1 p-1 bg-slate-200/60 dark:bg-[#1a2138] border border-slate-200 dark:border-[#283254] rounded-xl">
@@ -470,9 +470,13 @@ export const App: React.FC = () => {
             </div>
           )}
 
-          {/* Primary CTA Button */}
-          <div className="pt-2">
-            {!isVideoTab ? (
+        </div>
+      </main>
+
+      {/* Sticky action footer — always visible regardless of queue length or window height */}
+      <footer className="flex-shrink-0 border-t border-slate-200 dark:border-[#283254] bg-white/90 dark:bg-[#10162b]/95 backdrop-blur px-8 py-4">
+        <div className="w-full max-w-2xl mx-auto">
+          {!isVideoTab ? (
               <button
                 type="button"
                 onClick={handleStartProcessing}
@@ -535,9 +539,8 @@ export const App: React.FC = () => {
                 )}
               </button>
             )}
-          </div>
         </div>
-      </main>
+      </footer>
 
       {/* Summary Modal on completion */}
       <SummaryModal

@@ -97,3 +97,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.2.5` | Chore — Release 1.2.5 (Guided DMG) | Merged | [docs/branches/chore-release-1.2.5.md](docs/branches/chore-release-1.2.5.md) |
 | `docs/homebrew-cask-readme` | Docs — Spotlight Homebrew Cask in README | Merged | [docs/branches/docs-homebrew-cask-readme.md](docs/branches/docs-homebrew-cask-readme.md) |
 | `fix/app-scroll` | Fix — App Scroll + Sticky Action Footer | Merged | [docs/branches/fix-app-scroll.md](docs/branches/fix-app-scroll.md) |
+| `chore/release-1.2.7` | Chore — Release 1.2.7 | In Progress | [docs/branches/chore-release-1.2.7.md](docs/branches/chore-release-1.2.7.md) |

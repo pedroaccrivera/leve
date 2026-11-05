@@ -51,6 +51,7 @@
     "directories": {
       "output": "release"
     },
+    "afterPack": "scripts/afterPack.cjs",
     "files": [
       "dist",
       "dist-electron",

@@ -112,3 +112,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `fix/oversized-output-guard` | Fix — Refuse Compression That Enlarges Files | Merged | [docs/branches/fix-oversized-output-guard.md](docs/branches/fix-oversized-output-guard.md) |
 | `feat/favicon-ico` | Feature — Favicon `.ico` Generator | Merged | [docs/branches/feat-favicon-ico.md](docs/branches/feat-favicon-ico.md) |
 | `chore/release-1.3.0` | Chore — Release 1.3.0 | Merged | [docs/branches/chore-release-1.3.0.md](docs/branches/chore-release-1.3.0.md) |
+| `chore/prune-ffprobe-static` | Chore — Prune Dead `ffprobe` Binaries | In Progress | [docs/branches/chore-prune-ffprobe-static.md](docs/branches/chore-prune-ffprobe-static.md) |

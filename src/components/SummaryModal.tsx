@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, FolderOpen, ArrowRight, X } from 'lucide-react';
+import { CheckCircle, FolderOpen, ArrowRight, X, Globe } from 'lucide-react';
 import type { BatchSummary } from '../types';
 import { formatBytes } from '../utils/formatters';
 
@@ -18,6 +18,8 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
 
   const seconds = (summary.durationMs / 1000).toFixed(1);
   const mediaLabel = summary.mediaLabel ?? 'Images';
+  const isFavicon = summary.mode === 'favicon';
+  const SummaryIcon = isFavicon ? Globe : CheckCircle;
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -32,14 +34,18 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
 
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-            <CheckCircle className="w-6 h-6" />
+            <SummaryIcon className="w-6 h-6" />
           </div>
           <div>
             <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-              Batch Complete!
+              {isFavicon ? 'Favicon Complete!' : 'Batch Complete!'}
             </h3>
             <p className="text-xs text-slate-500 dark:text-darkTextMuted">
-              Finished processing in {seconds}s
+              {isFavicon
+                ? `${summary.processedCount} ${
+                    summary.processedCount === 1 ? 'favicon' : 'favicons'
+                  } generated in ${seconds}s`
+                : `Finished processing in ${seconds}s`}
             </p>
           </div>
         </div>
@@ -48,7 +54,7 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3">
             <span className="text-[11px] text-slate-500 dark:text-darkTextMuted block mb-1">
-              {mediaLabel} Processed
+              {isFavicon ? 'Favicons Generated' : `${mediaLabel} Processed`}
             </span>
             <span className="text-lg font-bold text-slate-900 dark:text-white">
               {summary.processedCount} / {summary.totalImages}
@@ -69,38 +75,78 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({
           </div>
 
           <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3">
-            <span className="text-[11px] text-slate-500 dark:text-darkTextMuted block mb-1">
-              Disk Space Saved
-            </span>
-            <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-              {formatBytes(summary.totalSavedBytes)}
-            </span>
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">
-              {summary.percentageSaved}% reduction
-            </span>
+            {isFavicon ? (
+              <>
+                <span className="text-[11px] text-slate-500 dark:text-darkTextMuted block mb-1">
+                  ICO File Size
+                </span>
+                <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  {formatBytes(summary.newTotalBytes)}
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-darkTextMuted block mt-0.5">
+                  {summary.generatedSizes?.length
+                    ? `${summary.generatedSizes.join(', ')} px`
+                    : 'Multi-size ICO'}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-[11px] text-slate-500 dark:text-darkTextMuted block mb-1">
+                  Disk Space Saved
+                </span>
+                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  {formatBytes(summary.totalSavedBytes)}
+                </span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">
+                  {summary.percentageSaved}% reduction
+                </span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Size comparison */}
-        <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3 mb-6 flex items-center justify-between text-xs">
-          <div>
-            <span className="text-slate-500 dark:text-darkTextMuted block text-[11px]">
-              Original Total
-            </span>
-            <span className="font-mono text-slate-700 dark:text-slate-300">
-              {formatBytes(summary.originalTotalBytes)}
-            </span>
+        {/* Size comparison / favicon details */}
+        {isFavicon ? (
+          <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3 mb-6">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <div className="min-w-0">
+                <span className="text-slate-700 dark:text-slate-300 block text-[11px] font-medium">
+                  Multi-resolution ICO container
+                </span>
+                <span className="text-slate-500 dark:text-darkTextMuted block text-[11px] font-mono">
+                  {summary.generatedSizes?.length
+                    ? summary.generatedSizes.map((size) => `${size}px`).join(' · ')
+                    : 'No sizes generated'}
+                </span>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-500 dark:text-darkTextMuted mt-2 leading-relaxed">
+              ICO files pack several resolutions, so their size is not directly
+              comparable to the source image.
+            </p>
           </div>
-          <ArrowRight className="w-4 h-4 text-slate-400" />
-          <div className="text-right">
-            <span className="text-slate-500 dark:text-darkTextMuted block text-[11px]">
-              New Total
-            </span>
-            <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-              {formatBytes(summary.newTotalBytes)}
-            </span>
+        ) : (
+          <div className="bg-slate-50 dark:bg-[#131929] border border-slate-200 dark:border-[#263150] rounded-xl p-3 mb-6 flex items-center justify-between text-xs">
+            <div>
+              <span className="text-slate-500 dark:text-darkTextMuted block text-[11px]">
+                Original Total
+              </span>
+              <span className="font-mono text-slate-700 dark:text-slate-300">
+                {formatBytes(summary.originalTotalBytes)}
+              </span>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400" />
+            <div className="text-right">
+              <span className="text-slate-500 dark:text-darkTextMuted block text-[11px]">
+                New Total
+              </span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                {formatBytes(summary.newTotalBytes)}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex items-center gap-3">
           {onOpenFolder && (

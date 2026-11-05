@@ -1,7 +1,7 @@
 # Branch `chore/release-1.3.1` — Release 1.3.1 (Packaging Size)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress (awaiting merge approval)
+- **Status:** Merged into `main`
 - **Base:** `main` @ `c5bf36c`
 
 ## 1. Goal and Scope
@@ -58,6 +58,6 @@ Release.
 
 | Commit | Message |
 | :--- | :--- |
-| — | `chore(release): bump version to 1.3.1` |
-| — | `chore: merge chore/release-1.3.1 into main` |
+| `6de9965` | `chore(release): bump version to 1.3.1` |
+| `0eae660` | `chore: merge chore/release-1.3.1 into main` |
 | — | `docs: mark chore/release-1.3.1 as merged` |

@@ -15,7 +15,8 @@ import {
   getVideoThumbnail,
   SUPPORTED_VIDEO_EXTENSIONS,
 } from './services/videoProcessor';
-import type { ImageItem, ResizeConfig, VideoItem, VideoConfig } from '../src/types';
+import { processSingleFavicon } from './services/icoProcessor';
+import type { ImageItem, ResizeConfig, VideoItem, VideoConfig, FaviconItem, FaviconConfig } from '../src/types';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -248,6 +249,14 @@ ipcMain.handle('image:getThumbnail', async (_event, filePath: string) => {
 
 ipcMain.handle('image:process', async (_event, item: ImageItem, config: ResizeConfig) => {
   return processSingleImage(item, config);
+});
+
+// ---------------------------------------------------------------------------
+// Favicon generation (`feat/favicon-ico`)
+// ---------------------------------------------------------------------------
+
+ipcMain.handle('favicon:process', async (_event, item: FaviconItem, config: FaviconConfig) => {
+  return processSingleFavicon(item, config);
 });
 
 // ---------------------------------------------------------------------------

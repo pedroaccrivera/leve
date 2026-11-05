@@ -27,6 +27,8 @@ const api = {
     ipcRenderer.on('video:progress', listener);
     return () => ipcRenderer.removeListener('video:progress', listener);
   },
+  // Favicon generation
+  generateFavicon: (item, config) => ipcRenderer.invoke('favicon:process', item, config),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

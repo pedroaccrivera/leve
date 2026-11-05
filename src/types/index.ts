@@ -64,6 +64,10 @@ export interface BatchSummary {
   durationMs: number;
   /** Label for the processed media, e.g. 'Images' or 'Videos'. Defaults to 'Images'. */
   mediaLabel?: string;
+  /** Rendering mode for the summary modal. Defaults to 'media'. */
+  mode?: 'media' | 'favicon';
+  /** Sizes packed into the generated favicon (favicon mode only). */
+  generatedSizes?: number[];
 }
 
 // ---------------------------------------------------------------------------
@@ -119,6 +123,48 @@ export interface VideoProcessResult {
   error?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Favicon generation (`feat/favicon-ico`)
+// ---------------------------------------------------------------------------
+
+export const FAVICON_SIZES = [16, 32, 48, 64, 128, 256] as const;
+
+export type FaviconSize = (typeof FAVICON_SIZES)[number];
+
+export type FaviconFit = 'cover' | 'contain';
+
+export type FaviconNameMode = 'favicon' | 'source';
+
+export type FaviconDestinationMode = 'same_folder' | 'subfolder' | 'custom_folder';
+
+export interface FaviconConfig {
+  sizes: FaviconSize[];
+  fit: FaviconFit;
+  /** Hex color (e.g. `#ffffff`) used to pad `contain` renders. Undefined = transparent. */
+  backgroundColor?: string;
+  nameMode: FaviconNameMode;
+  destinationMode: FaviconDestinationMode;
+  subfolderName: string;
+  customFolderPath?: string;
+}
+
+export interface FaviconItem extends ImageItem {
+  /** Sizes actually written into the generated ICO. */
+  generatedSizes?: FaviconSize[];
+  /** Selected sizes skipped because the source is smaller than them. */
+  skippedSizes?: FaviconSize[];
+}
+
+export interface FaviconResult {
+  id: string;
+  success: boolean;
+  outputPath?: string;
+  newSize?: number;
+  generatedSizes?: FaviconSize[];
+  skippedSizes?: FaviconSize[];
+  error?: string;
+}
+
 export interface ElectronAPI {
   selectFiles: () => Promise<ImageItem[]>;
   selectFolder: () => Promise<ImageItem[]>;
@@ -136,6 +182,8 @@ export interface ElectronAPI {
   getVideoThumbnail: (filePath: string) => Promise<string>;
   processVideo: (item: VideoItem, config: VideoConfig) => Promise<VideoProcessResult>;
   onVideoProgress: (callback: (id: string, progress: number) => void) => () => void;
+  // Favicon generation
+  generateFavicon: (item: FaviconItem, config: FaviconConfig) => Promise<FaviconResult>;
 }
 
 declare global {

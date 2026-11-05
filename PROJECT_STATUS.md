@@ -59,7 +59,18 @@ This document tracks the current architecture, implemented modules, execution fl
 
 ### 2.4. Tests & Packaging
 - [x] Automated processing test script (`test/testProcessor.js`).
+- [x] Automated favicon/ICO test script (`test/testIcoProcessor.js`).
 - [x] `electron-builder` configuration in `package.json` for generating installers (.dmg / .zip for macOS, .exe / portable for Windows).
+
+### 2.5. Favicon Generation Engine (`electron/services/icoProcessor.ts`)
+- [x] **Custom ICO Encoder**: Builds a PNG-in-ICO container (ICONDIR + 16-byte entries + PNG payloads) without adding dependencies; 256 px is written as `0` per the ICO spec.
+- [x] **Multi-Resolution Output**: 16, 32, 48, 64, 128 and 256 px in one file, with a *Lean (16–64)* preset.
+- [x] **Square Rendering**: Crop-to-square (cover) or fit-with-padding (contain), with transparent or solid-color padding.
+- [x] **No Upscaling**: Sizes above the source are skipped and reported; when every selected size is too large, the item fails with an actionable message.
+- [x] **Efficient Pipeline**: A single square master is rendered at the largest useful size, then downscaled per entry; palette quantization for ≤64 px, truecolor for 128/256.
+- [x] **Output Handling**: `favicon.ico` or source-matched name, `favicons/` subfolder by default, same/custom folder options, and `favicon-N.ico` collision resolution.
+- [x] **Dedicated UI**: Third **Favicon** tab with its own queue, settings panel and summary modal (file size + generated sizes, no savings claim).
+- [x] **IPC Bridge**: `favicon:process` handler and `generateFavicon` preload method.
 
 ---
 
@@ -99,3 +110,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `fix/app-scroll` | Fix — App Scroll + Sticky Action Footer | Merged | [docs/branches/fix-app-scroll.md](docs/branches/fix-app-scroll.md) |
 | `chore/release-1.2.7` | Chore — Release 1.2.7 | Merged | [docs/branches/chore-release-1.2.7.md](docs/branches/chore-release-1.2.7.md) |
 | `fix/oversized-output-guard` | Fix — Refuse Compression That Enlarges Files | Merged | [docs/branches/fix-oversized-output-guard.md](docs/branches/fix-oversized-output-guard.md) |
+| `feat/favicon-ico` | Feature — Favicon `.ico` Generator | In Progress | [docs/branches/feat-favicon-ico.md](docs/branches/feat-favicon-ico.md) |

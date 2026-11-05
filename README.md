@@ -32,7 +32,22 @@ No images or data ever leave your machine. Built with **Electron**, **React**, *
   - *Subfolder*: Automatically creates a dedicated folder (e.g. `resized/`) inside each source image directory.
   - *Suffix*: Saves right next to the original file (e.g. `photo-resized.jpg`).
   - *Custom Folder*: Chooses a specific output directory via native system dialog.
+- **Favicon Generator**: A dedicated **Favicon** tab packs any logo into one multi-resolution `favicon.ico` (16–256 px) with PNG entries, crop or padded fit, and no upscaling.
 - **Supported Formats**: JPG/JPEG, PNG, WebP, AVIF, TIFF, GIF, SVG.
+
+---
+
+## Favicon Generation
+
+Open the **Favicon** tab, drop an image or logo (PNG, JPG, WebP, AVIF, TIFF, GIF, SVG), choose the resolutions and generate a single `.ico` file — entirely offline.
+
+- **Default sizes**: 16, 32, 48, 64, 128 and 256 px. The **Lean (16–64)** preset produces a much smaller file when only tabs/bookmarks are needed.
+- **Fit**: *Crop to square* (default) or *Fit with padding* (transparent or a solid color).
+- **No upscaling**: sizes larger than the source are skipped and reported in the queue; if every selected size is too large, the item fails with a clear message.
+- **Output name**: `favicon.ico` by default, or match the source file name (`logo.png` → `logo.ico`). Existing files are never overwritten — collisions become `favicon-2.ico`, `favicon-3.ico`, and so on.
+- **Destination**: `favicons/` subfolder (default), the source folder, or a custom folder.
+- **Format**: every resolution is stored as a PNG entry inside the ICO (the modern format used by Windows Vista+ and current Chrome, Firefox, Safari, and Edge). Legacy IE/Windows XP BMP-in-ICO compatibility is intentionally out of scope.
+- **Not a compression feature**: the generated ICO contains several resolutions, so it can be larger than the source image. The favicon summary reports the real file size and resolutions instead of "disk space saved".
 
 ---
 

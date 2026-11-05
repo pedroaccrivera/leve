@@ -110,4 +110,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `fix/app-scroll` | Fix — App Scroll + Sticky Action Footer | Merged | [docs/branches/fix-app-scroll.md](docs/branches/fix-app-scroll.md) |
 | `chore/release-1.2.7` | Chore — Release 1.2.7 | Merged | [docs/branches/chore-release-1.2.7.md](docs/branches/chore-release-1.2.7.md) |
 | `fix/oversized-output-guard` | Fix — Refuse Compression That Enlarges Files | Merged | [docs/branches/fix-oversized-output-guard.md](docs/branches/fix-oversized-output-guard.md) |
-| `feat/favicon-ico` | Feature — Favicon `.ico` Generator | In Progress | [docs/branches/feat-favicon-ico.md](docs/branches/feat-favicon-ico.md) |
+| `feat/favicon-ico` | Feature — Favicon `.ico` Generator | Merged | [docs/branches/feat-favicon-ico.md](docs/branches/feat-favicon-ico.md) |

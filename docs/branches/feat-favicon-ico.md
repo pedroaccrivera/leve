@@ -1,7 +1,7 @@
 # Branch `feat/favicon-ico` — Favicon `.ico` Generator
 
 - **Type:** Feature — dedicated favicon generation flow
-- **Status:** In Progress (implemented and tested; awaiting merge approval)
+- **Status:** Merged into `main`
 - **Base:** `main` @ `492b135`
 
 ## 1. Goal and Scope
@@ -117,4 +117,5 @@ Out of scope:
 | `c3aa174` | feat(favicon): add PNG-in-ICO processing service |
 | `8800afe` | feat(favicon): add dedicated Favicon tab and queue |
 | `26578e2` | test(favicon): cover ICO container and processing edge cases |
-| — | docs(favicon): document feature and register branch |
+| `c8bc370` | docs(favicon): document feature and register branch |
+| `1db74bb` | feat: merge feat/favicon-ico into main |

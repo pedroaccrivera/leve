@@ -6,6 +6,7 @@ import {
   Sparkles,
   FileImage,
   FileVideo,
+  Globe,
 } from 'lucide-react';
 import type {
   ImageItem,
@@ -14,6 +15,9 @@ import type {
   BatchSummary,
   VideoItem,
   VideoConfig,
+  FaviconItem,
+  FaviconConfig,
+  FaviconSize,
 } from './types';
 import { Header } from './components/Header';
 import { DropZone } from './components/DropZone';
@@ -22,6 +26,8 @@ import { ImageQueue } from './components/ImageQueue';
 import { SummaryModal } from './components/SummaryModal';
 import { VideoSettingsPanel } from './components/VideoSettingsPanel';
 import { VideoQueue } from './components/VideoQueue';
+import { FaviconSettingsPanel } from './components/FaviconSettingsPanel';
+import { FaviconQueue } from './components/FaviconQueue';
 
 const DEFAULT_PRESETS: ResizePreset[] = [
   { id: 'web-800', name: 'Web Small', width: 800 },
@@ -33,7 +39,7 @@ const DEFAULT_PRESETS: ResizePreset[] = [
 
 const PRESETS_STORAGE_KEY = 'user_custom_resize_presets';
 
-type MediaTab = 'images' | 'videos';
+type MediaTab = 'images' | 'videos' | 'favicon';
 
 export const App: React.FC = () => {
   const [mediaTab, setMediaTab] = useState<MediaTab>('images');
@@ -70,6 +76,20 @@ export const App: React.FC = () => {
     });
     return unsubscribe;
   }, []);
+
+  // Favicon generation state (feat/favicon-ico)
+  const [faviconItems, setFaviconItems] = useState<FaviconItem[]>([]);
+  const [isProcessingFavicon, setIsProcessingFavicon] = useState(false);
+  const [faviconProgress, setFaviconProgress] = useState({ current: 0, total: 0 });
+  const [faviconSummary, setFaviconSummary] = useState<BatchSummary | null>(null);
+  const [faviconConfig, setFaviconConfig] = useState<FaviconConfig>({
+    sizes: [16, 32, 48, 64, 128, 256],
+    fit: 'cover',
+    nameMode: 'favicon',
+    destinationMode: 'subfolder',
+    subfolderName: 'favicons',
+    customFolderPath: '',
+  });
 
   // User configurable options
   const [config, setConfig] = useState<ResizeConfig>({
@@ -159,6 +179,23 @@ export const App: React.FC = () => {
   const handleClearVideos = () => {
     setVideoItems([]);
     setVideoSummary(null);
+  };
+
+  const handleAddFaviconItems = (newItems: ImageItem[]) => {
+    setFaviconItems((prev) => {
+      const existingPaths = new Set(prev.map((i) => i.path));
+      const filtered = newItems.filter((i) => !existingPaths.has(i.path));
+      return [...prev, ...filtered];
+    });
+  };
+
+  const handleRemoveFaviconItem = (id: string) => {
+    setFaviconItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  const handleClearFavicons = () => {
+    setFaviconItems([]);
+    setFaviconSummary(null);
   };
 
   const handleStartProcessing = async () => {
@@ -355,6 +392,84 @@ export const App: React.FC = () => {
     setIsProcessingVideo(false);
   };
 
+  const handleStartFaviconProcessing = async () => {
+    if (!faviconItems.length || isProcessingFavicon || !window.electronAPI) return;
+
+    setIsProcessingFavicon(true);
+    const startTime = Date.now();
+    let processedCount = 0;
+    let failedCount = 0;
+    let originalTotalBytes = 0;
+    let newTotalBytes = 0;
+    const generatedSizes = new Set<FaviconSize>();
+
+    setFaviconProgress({ current: 0, total: faviconItems.length });
+
+    // Sequential like the other flows: sharp is already multi-threaded and
+    // this keeps memory predictable on large batches.
+    for (let i = 0; i < faviconItems.length; i++) {
+      const currentItem = faviconItems[i];
+      originalTotalBytes += currentItem.size || 0;
+
+      setFaviconItems((prev) =>
+        prev.map((item, idx) =>
+          idx === i ? { ...item, status: 'processing' } : item
+        )
+      );
+      setFaviconProgress({ current: i + 1, total: faviconItems.length });
+
+      const result = await window.electronAPI.generateFavicon(currentItem, faviconConfig);
+
+      if (result.success) {
+        processedCount++;
+        newTotalBytes += result.newSize || 0;
+        result.generatedSizes?.forEach((size) => generatedSizes.add(size));
+        setFaviconItems((prev) =>
+          prev.map((item, idx) =>
+            idx === i
+              ? {
+                  ...item,
+                  status: 'done',
+                  outputPath: result.outputPath,
+                  newSize: result.newSize,
+                  generatedSizes: result.generatedSizes,
+                  skippedSizes: result.skippedSizes,
+                }
+              : item
+          )
+        );
+      } else {
+        failedCount++;
+        setFaviconItems((prev) =>
+          prev.map((item, idx) =>
+            idx === i
+              ? { ...item, status: 'error', error: result.error }
+              : item
+          )
+        );
+      }
+    }
+
+    const durationMs = Date.now() - startTime;
+
+    setFaviconSummary({
+      totalImages: faviconItems.length,
+      processedCount,
+      failedCount,
+      skippedCount: 0,
+      originalTotalBytes,
+      newTotalBytes,
+      totalSavedBytes: 0,
+      percentageSaved: 0,
+      durationMs,
+      mediaLabel: 'Favicons',
+      mode: 'favicon',
+      generatedSizes: Array.from(generatedSizes).sort((a, b) => a - b),
+    });
+
+    setIsProcessingFavicon(false);
+  };
+
   const handleOpenOutputFolder = () => {
     if (!window.electronAPI) return;
     if (config.destinationMode === 'custom_folder' && config.customFolderPath) {
@@ -379,19 +494,55 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleOpenFaviconOutputFolder = () => {
+    if (!window.electronAPI) return;
+    if (
+      faviconConfig.destinationMode === 'custom_folder' &&
+      faviconConfig.customFolderPath
+    ) {
+      window.electronAPI.openInFolder(faviconConfig.customFolderPath);
+      return;
+    }
+    const firstDone = faviconItems.find((i) => i.status === 'done' && i.outputPath);
+    if (firstDone?.outputPath) {
+      window.electronAPI.openInFolder(firstDone.outputPath);
+    }
+  };
+
   const doneCount = items.filter((i) => i.status === 'done').length;
   const videoDoneCount = videoItems.filter((i) => i.status === 'done').length;
+  const faviconDoneCount = faviconItems.filter((i) => i.status === 'done').length;
   const isVideoTab = mediaTab === 'videos';
-  const activeSummary = isVideoTab ? videoSummary : summary;
-  const closeSummary = () =>
-    isVideoTab ? setVideoSummary(null) : setSummary(null);
+  const isFaviconTab = mediaTab === 'favicon';
+  const activeCount = isVideoTab
+    ? videoItems.length
+    : isFaviconTab
+    ? faviconItems.length
+    : items.length;
+  const activeProcessing = isProcessing || isProcessingVideo || isProcessingFavicon;
+  const activeSummary = isVideoTab
+    ? videoSummary
+    : isFaviconTab
+    ? faviconSummary
+    : summary;
+  const closeSummary = () => {
+    if (isVideoTab) setVideoSummary(null);
+    else if (isFaviconTab) setFaviconSummary(null);
+    else setSummary(null);
+  };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Header
-        itemCount={isVideoTab ? videoItems.length : items.length}
-        onClear={isVideoTab ? handleClearVideos : handleClearAll}
-        isProcessing={isVideoTab ? isProcessingVideo : isProcessing}
+        itemCount={activeCount}
+        onClear={
+          isVideoTab
+            ? handleClearVideos
+            : isFaviconTab
+            ? handleClearFavicons
+            : handleClearAll
+        }
+        isProcessing={activeProcessing}
       />
 
       <main className="flex-1 min-h-0 overflow-y-auto px-8 pb-10 flex flex-col items-center">
@@ -402,10 +553,11 @@ export const App: React.FC = () => {
               [
                 { id: 'images', label: 'Images', Icon: FileImage },
                 { id: 'videos', label: 'Videos', Icon: FileVideo },
+                { id: 'favicon', label: 'Favicon', Icon: Globe },
               ] as const
             ).map(({ id, label, Icon }) => {
               const active = mediaTab === id;
-              const busy = isProcessing || isProcessingVideo;
+              const busy = activeProcessing;
               return (
                 <button
                   key={id}
@@ -427,14 +579,14 @@ export const App: React.FC = () => {
 
           {/* Drop & Upload Area */}
           <DropZone
-            onAddItems={handleAddItems}
+            onAddItems={isFaviconTab ? handleAddFaviconItems : handleAddItems}
             onAddVideoItems={handleAddVideoItems}
             mediaType={mediaTab}
-            isCompact={(isVideoTab ? videoItems.length : items.length) > 0}
+            isCompact={activeCount > 0}
           />
 
           {/* Queue of selected media if any */}
-          {!isVideoTab && items.length > 0 && (
+          {!isVideoTab && !isFaviconTab && items.length > 0 && (
             <ImageQueue
               items={items}
               config={config}
@@ -450,9 +602,17 @@ export const App: React.FC = () => {
               isProcessing={isProcessingVideo}
             />
           )}
+          {isFaviconTab && faviconItems.length > 0 && (
+            <FaviconQueue
+              items={faviconItems}
+              config={faviconConfig}
+              onRemoveItem={handleRemoveFaviconItem}
+              isProcessing={isProcessingFavicon}
+            />
+          )}
 
           {/* Settings Panel */}
-          {!isVideoTab ? (
+          {!isVideoTab && !isFaviconTab && (
             <SettingsPanel
               config={config}
               onChangeConfig={setConfig}
@@ -461,16 +621,24 @@ export const App: React.FC = () => {
               onDeletePreset={handleDeletePreset}
               disabled={isProcessing}
             />
-          ) : (
+          )}
+          {isVideoTab && (
             <VideoSettingsPanel
               config={videoConfig}
               onChangeConfig={setVideoConfig}
               disabled={isProcessingVideo}
             />
           )}
+          {isFaviconTab && (
+            <FaviconSettingsPanel
+              config={faviconConfig}
+              onChangeConfig={setFaviconConfig}
+              disabled={isProcessingFavicon}
+            />
+          )}
 
           {/* Processing and Status / Open Folder */}
-          {!isVideoTab && doneCount > 0 && !isProcessing && (
+          {!isVideoTab && !isFaviconTab && doneCount > 0 && !isProcessing && (
             <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
               <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="w-4 h-4" />
@@ -502,6 +670,25 @@ export const App: React.FC = () => {
               </button>
             </div>
           )}
+          {isFaviconTab && faviconDoneCount > 0 && !isProcessingFavicon && (
+            <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+              <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>
+                  {faviconDoneCount}{' '}
+                  {faviconDoneCount === 1 ? 'favicon' : 'favicons'} generated!
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenFaviconOutputFolder}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-lg shadow-sm transition-all cursor-pointer"
+              >
+                <FolderOpen className="w-3.5 h-3.5" />
+                <span>Open Folder</span>
+              </button>
+            </div>
+          )}
 
         </div>
       </main>
@@ -509,7 +696,7 @@ export const App: React.FC = () => {
       {/* Sticky action footer — always visible regardless of queue length or window height */}
       <footer className="flex-shrink-0 border-t border-slate-200 dark:border-[#283254] bg-white/90 dark:bg-[#10162b]/95 backdrop-blur px-8 py-4">
         <div className="w-full max-w-2xl mx-auto">
-          {!isVideoTab ? (
+          {!isVideoTab && !isFaviconTab ? (
               <button
                 type="button"
                 onClick={handleStartProcessing}
@@ -540,7 +727,7 @@ export const App: React.FC = () => {
                   <span>Resize {items.length} {items.length === 1 ? 'Image' : 'Images'}</span>
                 )}
               </button>
-            ) : (
+            ) : isVideoTab ? (
               <button
                 type="button"
                 onClick={handleStartVideoProcessing}
@@ -571,6 +758,37 @@ export const App: React.FC = () => {
                   <span>Compress {videoItems.length} {videoItems.length === 1 ? 'Video' : 'Videos'}</span>
                 )}
               </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleStartFaviconProcessing}
+                disabled={isProcessingFavicon || faviconItems.length === 0}
+                className={`w-full py-3.5 px-6 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+                  faviconItems.length === 0
+                    ? 'bg-slate-200 dark:bg-[#1e263f] text-slate-400 dark:text-[#4f5f8b] cursor-not-allowed border border-transparent'
+                    : isProcessingFavicon
+                    ? 'bg-blue-600 text-white cursor-wait opacity-90'
+                    : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white shadow-blue-600/25 border border-blue-500'
+                }`}
+              >
+                {isProcessingFavicon ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <span>
+                      Generating {faviconProgress.current} of {faviconProgress.total} favicons...
+                    </span>
+                  </>
+                ) : faviconItems.length === 0 ? (
+                  <span>Generate Favicon</span>
+                ) : faviconDoneCount > 0 ? (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    <span>Re-run Generation ({faviconItems.length} {faviconItems.length === 1 ? 'Image' : 'Images'})</span>
+                  </>
+                ) : (
+                  <span>Generate {faviconItems.length} {faviconItems.length === 1 ? 'Favicon' : 'Favicons'}</span>
+                )}
+              </button>
             )}
         </div>
       </footer>
@@ -579,7 +797,13 @@ export const App: React.FC = () => {
       <SummaryModal
         summary={activeSummary}
         onClose={closeSummary}
-        onOpenFolder={isVideoTab ? handleOpenVideoOutputFolder : handleOpenOutputFolder}
+        onOpenFolder={
+          isVideoTab
+            ? handleOpenVideoOutputFolder
+            : isFaviconTab
+            ? handleOpenFaviconOutputFolder
+            : handleOpenOutputFolder
+        }
       />
     </div>
   );

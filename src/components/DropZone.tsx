@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Upload, FolderPlus, Plus, AlertTriangle } from 'lucide-react';
 import type { ImageItem, VideoItem } from '../types';
 
-export type DropMediaType = 'images' | 'videos';
+export type DropMediaType = 'images' | 'videos' | 'favicon';
 
 interface DropZoneProps {
   onAddItems: (items: ImageItem[]) => void;
@@ -119,7 +119,15 @@ export const DropZone: React.FC<DropZoneProps> = ({
     }
   };
 
-  const noun = mediaType === 'videos' ? 'videos' : 'images';
+  const noun = mediaType === 'videos' ? 'videos' : mediaType === 'favicon' ? 'image or logo' : 'images';
+  const dropLabel =
+    mediaType === 'favicon'
+      ? 'Drag & drop an image or logo here'
+      : `Drag & drop ${noun} or folders here`;
+  const compactLabel =
+    mediaType === 'favicon'
+      ? 'Drop another image or logo here'
+      : `Drop more ${noun} or folders here`;
 
   return (
     <div className="w-full">
@@ -143,7 +151,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
         >
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-darkTextMuted">
             <Upload className="w-4 h-4 text-brand-500" />
-            <span>Drop more {noun} or folders here</span>
+            <span>{compactLabel}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -184,7 +192,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
           </div>
 
           <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
-            Drag & drop {noun} or folders here
+            {dropLabel}
           </h3>
 
           {/* Action Buttons */}

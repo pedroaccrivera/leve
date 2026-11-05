@@ -1,7 +1,7 @@
 # Branch `chore/release-1.3.0` — Release 1.3.0 (Favicon Generator)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress
+- **Status:** Merged into `main`
 - **Base:** `main` @ `14f99ae`
 
 ## 1. Goal and Scope
@@ -48,5 +48,5 @@ manual version/sha256 bump to `1.3.0`.
 
 | Commit | Message |
 | :--- | :--- |
-| (bump) | chore(release): bump version to 1.3.0 |
-| — | docs: update branch registry with chore/release-1.3.0 (merged) |
+| `6099fc9` | chore(release): bump version to 1.3.0 |
+| `8be1a76` | chore: merge chore/release-1.3.0 into main |

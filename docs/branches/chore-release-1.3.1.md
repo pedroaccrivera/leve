@@ -44,8 +44,13 @@ Release.
 - Local packaging (macOS arm64) was validated on the base branch:
   hook freed 158.7 MB; DMG/ZIP measured above; bundled `ffprobe -version`
   works; packaged app boots and loads `app.asar/dist/index.html`.
-- CI validates the same hook on `macos-latest` (arm64) and
-  `windows-latest` (x64) on the `v1.3.1` tag push.
+- CI run [42117728329](https://github.com/pedroaccrivera/leve/actions/runs/42117728329)
+  → success on both jobs:
+  - macOS arm64: hook freed 158.7 MB.
+  - Windows x64: hook freed **275.1 MB** (kept `win32\x64`; removed
+    `darwin\arm64`, `darwin\x64`, `linux\ia32`, `linux\x64`, `win32\ia32`).
+- Published assets (v1.3.1): `dmg` 155,753,763 B, `zip` 149,297,404 B,
+  `win-x64.exe` 128,487,177 B, `win-x64-portable.exe` 128,262,402 B.
 
 ## 4. Decision Log and Commit History
 

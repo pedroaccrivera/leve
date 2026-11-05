@@ -19,8 +19,8 @@ Included since `v1.2.7`:
 
 Publish: push `main`, tag + push `v1.3.0`
 (Release: macOS dmg+zip arm64, Windows installer + portable x64 via
-`.github/workflows/release.yml`). Afterwards the Homebrew cask needs its
-manual version/sha256 bump to `1.3.0`.
+`.github/workflows/release.yml`). The Homebrew cask was bumped to `1.3.0`
+with the verified sha256 of the arm64 zip (tap commit `60f8a4a`).
 
 ## 2. Files Created / Modified
 
@@ -37,7 +37,10 @@ manual version/sha256 bump to `1.3.0`.
 - `node test/testIcoProcessor.js` → pass.
 - `node test/testProcessor.js` → pass.
 - `node test/testVideoProcessor.js` → pass.
-- CI validates build + packaging on tag push (`v1.3.0`).
+- CI validates build + packaging on tag push (`v1.3.0`) → success
+  ([run 42110095807](https://github.com/pedroaccrivera/leve/actions/runs/42110095807)).
+- Homebrew cask: zip sha256 verified locally, `brew audit --cask
+  pedroaccrivera/tap/leve` → pass (`audit_exit=0`).
 
 ## 4. Decision Log and Commit History
 
@@ -50,3 +53,4 @@ manual version/sha256 bump to `1.3.0`.
 | :--- | :--- |
 | `6099fc9` | chore(release): bump version to 1.3.0 |
 | `8be1a76` | chore: merge chore/release-1.3.0 into main |
+| `60f8a4a` | (tap) Bump leve cask to v1.3.0 |

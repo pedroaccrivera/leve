@@ -1,7 +1,7 @@
 # Branch `chore/prune-ffprobe-static` — Prune Dead `ffprobe` Binaries
 
 - **Type:** Chore — packaging / distributable size
-- **Status:** In Progress (awaiting merge approval)
+- **Status:** Merged into `main`
 - **Base:** `main` @ `8be1a76`
 - **Branch commits:** afterPack hook + registry docs
 
@@ -141,6 +141,7 @@ launch checks were run with `env -u ELECTRON_RUN_AS_NODE`.
 Commit history:
 - `chore(packaging): prune unused ffprobe-static binaries`
 - `docs(packaging): document ffprobe pruning branch`
+- `chore: merge chore/prune-ffprobe-static into main` (`5e7e86a`)
 
 ## 6. Alternatives Considered (not implemented)
 

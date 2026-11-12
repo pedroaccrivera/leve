@@ -29,6 +29,8 @@ const api = {
   },
   // Favicon generation
   generateFavicon: (item, config) => ipcRenderer.invoke('favicon:process', item, config),
+  renderFaviconPreview: (filePath, config) =>
+    ipcRenderer.invoke('favicon:preview', filePath, config),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

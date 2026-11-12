@@ -135,6 +135,8 @@ export type FaviconSize = (typeof FAVICON_SIZES)[number];
 
 export type FaviconFit = 'cover' | 'contain';
 
+export type FaviconBackgroundMode = 'auto' | 'white' | 'black' | 'color' | 'transparent';
+
 export type FaviconNameMode = 'favicon' | 'source';
 
 export type FaviconDestinationMode = 'same_folder' | 'subfolder' | 'custom_folder';
@@ -142,7 +144,12 @@ export type FaviconDestinationMode = 'same_folder' | 'subfolder' | 'custom_folde
 export interface FaviconConfig {
   sizes: FaviconSize[];
   fit: FaviconFit;
-  /** Hex color (e.g. `#ffffff`) used to pad `contain` renders. Undefined = transparent. */
+  /** Fraction of the canvas inset on each side (0–0.3). Only used with `contain`. */
+  padding: number;
+  /** Corner radius as a fraction of the icon side (0–0.5); 0.5 renders a circle. */
+  radius: number;
+  backgroundMode: FaviconBackgroundMode;
+  /** Hex color used when `backgroundMode` is `color`. */
   backgroundColor?: string;
   nameMode: FaviconNameMode;
   destinationMode: FaviconDestinationMode;
@@ -167,6 +174,17 @@ export interface FaviconResult {
   error?: string;
 }
 
+export interface FaviconPreviewResult {
+  success: boolean;
+  /** PNG data URL used by the mini editor. */
+  dataUrl?: string;
+  width?: number;
+  height?: number;
+  /** Resolved background, e.g. `#ffffff`, `#000000` or `transparent`. */
+  resolvedBackground?: string;
+  error?: string;
+}
+
 export interface ElectronAPI {
   selectFiles: () => Promise<ImageItem[]>;
   selectFolder: () => Promise<ImageItem[]>;
@@ -186,6 +204,10 @@ export interface ElectronAPI {
   onVideoProgress: (callback: (id: string, progress: number) => void) => () => void;
   // Favicon generation
   generateFavicon: (item: FaviconItem, config: FaviconConfig) => Promise<FaviconResult>;
+  renderFaviconPreview: (
+    filePath: string,
+    config: FaviconConfig
+  ) => Promise<FaviconPreviewResult>;
 }
 
 declare global {

@@ -48,3 +48,62 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Transparency checkerboard used by the favicon editor */
+.favicon-checkerboard {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+    linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+    linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+.dark .favicon-checkerboard {
+  background-color: #0f1420;
+  background-image:
+    linear-gradient(45deg, #1e2740 25%, transparent 25%),
+    linear-gradient(-45deg, #1e2740 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1e2740 75%),
+    linear-gradient(-45deg, transparent 75%, #1e2740 75%);
+}
+
+/* Favicon editor reveal + preview transitions */
+@keyframes favicon-studio-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.favicon-studio-reveal {
+  animation: favicon-studio-reveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes favicon-preview-fade {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.favicon-preview-fade {
+  animation: favicon-preview-fade 260ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favicon-studio-reveal,
+  .favicon-preview-fade {
+    animation: none;
+  }
+}

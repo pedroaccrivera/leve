@@ -75,8 +75,11 @@ Release with generated release notes.
   Release workflow.
 - **Tag after the post-merge docs update:** the tag points at the commit that
   records the release as merged, matching the `v1.3.0`/`v1.3.1` flow.
-- **Homebrew cask:** bumping the tap to `1.4.0` needs the published zip
-  `sha256` and happens after CI artifacts exist (separate repository).
+- **Homebrew cask:** updated in `pedroaccrivera/homebrew-tap`
+  ([`1978ee4`](https://github.com/pedroaccrivera/homebrew-tap/commit/1978ee4))
+  from `1.3.0` to `1.4.0`, with the published zip `sha256`
+  (`e910e899…c7f28d6`, 149,305,499 B — size and hash both verified against the
+  release asset before committing).
 
 | Commit | Message |
 | :--- | :--- |

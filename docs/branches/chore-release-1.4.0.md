@@ -51,7 +51,20 @@ Release with generated release notes.
 - `node test/testIcoProcessor.js` → pass (including auto background, padding,
   corner radius, preview and SVG upscaling).
 - `node test/testVideoProcessor.js` → pass.
-- CI run for the pushed tag → pending.
+- CI run for the pushed tag → **success** on both jobs:
+  [43316426768](https://github.com/pedroaccrivera/leve/actions/runs/43316426768)
+  (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.4.0>
+  (public, not a draft, release notes generated).
+  - `leve-1.4.0-mac-arm64.dmg` — 155,722,918 B
+  - `leve-1.4.0-mac-arm64.zip` — 149,305,499 B
+  - `leve-1.4.0-win-x64.exe` — 128,494,145 B
+  - `leve-1.4.0-win-x64-portable.exe` — 128,269,374 B
+- Sizes are essentially unchanged from `v1.3.1` (±0.1 MB), so the packaging work
+  from `chore/prune-ffprobe-static` still holds with the new favicon code.
+- CI annotation (informational): Node.js 20 deprecation warnings for
+  `actions/checkout@v4`, `actions/setup-node@v4` and
+  `softprops/action-gh-release@v2`; no action required yet.
 
 ## 4. Decision Log and Commit History
 

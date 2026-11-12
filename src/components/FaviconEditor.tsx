@@ -20,12 +20,9 @@ import type {
 } from '../types';
 import { formatBytes, formatDimensions } from '../utils/formatters';
 import { getCachedThumbnail } from '../utils/thumbnailCache';
+import { isVectorFile } from '../utils/favicon';
 
 const HEX_PATTERN = /^#?([0-9a-f]{6})$/i;
-
-export function isVectorFile(nameOrPath?: string): boolean {
-  return Boolean(nameOrPath && nameOrPath.toLowerCase().endsWith('.svg'));
-}
 
 interface FaviconEditorProps {
   items: FaviconItem[];

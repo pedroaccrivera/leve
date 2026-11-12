@@ -68,6 +68,7 @@ This document tracks the current architecture, implemented modules, execution fl
 - [x] **Multi-Resolution Output**: 16, 32, 48, 64, 128 and 256 px in one file, with a *Lean (16–64)* preset.
 - [x] **Square Rendering**: Crop-to-square (cover) or fit-with-padding (contain), with transparent, auto-contrast or solid-color padding.
 - [x] **Auto Background & Padding**: Per-image background picked from the logo's visible pixels (dark → white, light → black), plus a 0–30% padding inset with a live safe-area guide.
+- [x] **Corner Radius**: 0–50% rounding (50% = circle) applied in both fits, with Square / 12% / 22% / Circle presets; transparent backgrounds stay transparent in the corners.
 - [x] **Live Mini Editor**: A 256 px studio preview with fit/padding/background controls, editable hex color, in-context 16/32/48 px previews, and a batch filmstrip (numbered thumbnails + steppers) when several logos are queued.
 - [x] **No Upscaling (raster)**: Sizes above a raster source are skipped and reported; when every selected size is too large, the item fails with an actionable message.
 - [x] **Vector Upscaling (SVG)**: `.svg` logos have no native resolution, so they are rendered at every selected size (16–256) instead of being skipped.

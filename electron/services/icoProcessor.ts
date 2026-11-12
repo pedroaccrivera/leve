@@ -123,6 +123,25 @@ function clampPadding(padding: number): number {
   return Math.min(0.45, Math.max(0, padding));
 }
 
+function clampRadius(radius: number): number {
+  if (!Number.isFinite(radius)) return 0;
+  return Math.min(0.5, Math.max(0, radius));
+}
+
+/**
+ * Rounded-rectangle mask used to round the icon corners. `dest-in` keeps the
+ * icon only where the mask is opaque, so transparent backgrounds stay
+ * transparent in the corners.
+ */
+function roundedMask(size: number, radius: number): Buffer {
+  const corner = Math.round(size * radius * 100) / 100;
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">` +
+      `<rect x="0" y="0" width="${size}" height="${size}" rx="${corner}" ry="${corner}" fill="#ffffff"/>` +
+      `</svg>`
+  );
+}
+
 function srgbToLinear(channel: number): number {
   const value = channel / 255;
   return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
@@ -213,9 +232,9 @@ export async function resolveFaviconBackground(
  *
  * `contain` fits the logo inside the padded area and centers it on the
  * resolved background. `cover` keeps the original crop behavior and ignores
- * padding/background. `allowUpscale` is only used by the preview so the
- * editor can show the 256px composition even for small sources; generation
- * always preserves the no-upscaling rule.
+ * padding/background. Corner rounding applies to both fits. `allowUpscale` is
+ * only used by the preview so the editor can show the 256px composition even
+ * for small sources; generation always preserves the no-upscaling rule.
  */
 async function renderSquareMaster(
   filePath: string,
@@ -224,15 +243,26 @@ async function renderSquareMaster(
   allowUpscale = false
 ): Promise<{ buffer: Buffer; background: ResolvedBackground }> {
   const background = await resolveFaviconBackground(config, filePath);
+  const radius = clampRadius(config.radius ?? 0);
+
+  // Corner rounding is applied once, on the square master, so every derived
+  // entry keeps the same radius fraction.
+  const round = async (buffer: Buffer) => {
+    if (radius <= 0) return buffer;
+    return sharp(buffer)
+      .composite([{ input: roundedMask(size, radius), blend: 'dest-in' }])
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+  };
 
   if (config.fit === 'cover') {
-    const buffer = await sharp(filePath, { failOnError: false })
+    const square = await sharp(filePath, { failOnError: false })
       .rotate()
       .toColourspace('srgb')
       .resize(size, size, { fit: 'cover', position: 'centre' })
       .png({ compressionLevel: 9 })
       .toBuffer();
-    return { buffer, background };
+    return { buffer: await round(square), background };
   }
 
   const padding = clampPadding(config.padding);
@@ -248,7 +278,7 @@ async function renderSquareMaster(
     .png({ compressionLevel: 9 })
     .toBuffer();
 
-  const buffer = await sharp({
+  const square = await sharp({
     create: {
       width: size,
       height: size,
@@ -265,7 +295,7 @@ async function renderSquareMaster(
     .png({ compressionLevel: 9 })
     .toBuffer();
 
-  return { buffer, background };
+  return { buffer: await round(square), background };
 }
 
 async function pathExists(filePath: string): Promise<boolean> {

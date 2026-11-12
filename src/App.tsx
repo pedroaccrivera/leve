@@ -85,6 +85,7 @@ export const App: React.FC = () => {
     sizes: [16, 32, 48, 64, 128, 256],
     fit: 'contain',
     padding: 0,
+    radius: 0,
     backgroundMode: 'auto',
     backgroundColor: '#ffffff',
     nameMode: 'favicon',

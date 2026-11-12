@@ -105,6 +105,8 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
   const isContain = config.fit === 'contain';
   const paddingPercent = Math.round(config.padding * 100);
   const paddingPx = Math.round(256 * config.padding);
+  const radiusPercent = Math.round((config.radius ?? 0) * 100);
+  const radiusPx = Math.round(256 * (config.radius ?? 0));
   const selectedIndex = items.findIndex((item) => item.id === selectedItem?.id);
   const displayIndex = selectedIndex >= 0 ? selectedIndex : 0;
   const canStepBack = selectedIndex > 0;
@@ -116,8 +118,7 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
   };
 
   useEffect(() => {
-    if (!selectedItem || !window.electronAPI) {
-      setPreview(null);
+    if (!selectedItem || !window.electronAPI) {      setPreview(null);
       setPreviewError(selectedItem ? 'Electron engine connecting...' : null);
       setIsRendering(false);
       return;
@@ -164,6 +165,7 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
     selectedItem?.path,
     config.fit,
     config.padding,
+    config.radius,
     config.backgroundMode,
     config.backgroundColor,
     config.sizes,
@@ -229,6 +231,7 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
     update({
       fit: 'contain',
       padding: 0,
+      radius: 0,
       backgroundMode: 'auto',
       backgroundColor: '#ffffff',
     });
@@ -381,8 +384,8 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
           </div>
 
           <p className="px-1 pt-1.5 text-[9px] text-slate-500 dark:text-darkTextMuted">
-            One preview at a time. Padding, fit and background apply to all{' '}
-            {items.length} logos; Auto background is resolved per logo.
+            One preview at a time. Fit, padding, radius and background apply to
+            all {items.length} logos; Auto background is resolved per logo.
           </p>
         </div>
       )}
@@ -637,6 +640,60 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
               {isContain
                 ? 'Space between the logo and the icon edges. The dashed guide shows the safe area.'
                 : 'Padding applies to Fit inside only.'}
+            </p>
+          </div>
+
+          {/* Corner radius */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-[11px] font-semibold text-slate-800 dark:text-slate-200">
+                Corner radius
+              </label>
+              <span className="font-mono text-[10px] text-slate-500 dark:text-darkTextMuted">
+                {radiusPercent}% · {radiusPx}px @256
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={50}
+              step={1}
+              value={radiusPercent}
+              onChange={(event) =>
+                update({ radius: Number(event.target.value) / 100 })
+              }
+              disabled={disabled}
+              className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-[#283254]"
+            />
+            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 dark:text-slate-500">
+              <span>0</span>
+              <span>25</span>
+              <span>50</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {[0, 12, 22, 50].map((preset) => {
+                const active = radiusPercent === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => update({ radius: preset / 100 })}
+                    aria-pressed={active}
+                    className={`px-2 py-0.5 rounded-md border text-[9px] font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                      active
+                        ? 'border-blue-500 bg-blue-500/10 text-blue-700 dark:text-blue-300'
+                        : 'border-slate-200 bg-slate-100/70 text-slate-500 hover:bg-slate-200/60 dark:border-[#283254] dark:bg-[#1b2238] dark:text-slate-400 dark:hover:bg-[#222b46]'
+                    }`}
+                  >
+                    {preset === 0 ? 'Square' : preset === 50 ? 'Circle' : `${preset}%`}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[10px] text-slate-500 dark:text-darkTextMuted">
+              Rounds the icon corners in both fits. 50% makes a circle;
+              transparent backgrounds stay transparent.
             </p>
           </div>
 

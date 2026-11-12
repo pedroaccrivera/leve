@@ -146,6 +146,8 @@ export interface FaviconConfig {
   fit: FaviconFit;
   /** Fraction of the canvas inset on each side (0–0.3). Only used with `contain`. */
   padding: number;
+  /** Corner radius as a fraction of the icon side (0–0.5); 0.5 renders a circle. */
+  radius: number;
   backgroundMode: FaviconBackgroundMode;
   /** Hex color used when `backgroundMode` is `color`. */
   backgroundColor?: string;

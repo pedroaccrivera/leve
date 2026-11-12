@@ -107,6 +107,7 @@ function baseConfig(overrides = {}) {
     sizes: [16, 32, 48, 64, 128, 256],
     fit: 'cover',
     padding: 0,
+    radius: 0,
     backgroundMode: 'auto',
     backgroundColor: '#ffffff',
     nameMode: 'favicon',
@@ -469,6 +470,103 @@ async function runTest() {
   assert(smallPreview.success, `Small preview failed: ${smallPreview.error}`);
   assert(smallPreview.width === 256, 'Small source preview must still render at 256px');
   console.log('✓ Preview renders 256×256 PNG with resolved background and preview-only upscale');
+
+  // -------------------------------------------------------------------------
+  // Test 3e: Corner radius rounds the icon in both fits
+  // -------------------------------------------------------------------------
+  console.log('\n[Test 3e] Corner radius...');
+
+  const squareIcon = await processSingleFavicon(
+    { ...landscape, id: 'radius-0' },
+    baseConfig({ fit: 'contain', nameMode: 'source', radius: 0, backgroundMode: 'white' })
+  );
+  assert(squareIcon.success, `Radius 0 failed: ${squareIcon.error}`);
+  const squareIco = parseIco(await fs.readFile(squareIcon.outputPath));
+  const squareCorner = pixelAt(
+    await readPngPixels(squareIco.entries.find((entry) => entry.width === 256).payload),
+    0,
+    0
+  );
+  assert(
+    squareCorner.a === 255,
+    `Radius 0 must keep square corners, got alpha=${squareCorner.a}`
+  );
+
+  const circleIcon = await processSingleFavicon(
+    { ...landscape, id: 'radius-50' },
+    baseConfig({ fit: 'contain', nameMode: 'source', radius: 0.5, backgroundMode: 'white' })
+  );
+  assert(circleIcon.success, `Radius 50% failed: ${circleIcon.error}`);
+  const circleIco = parseIco(await fs.readFile(circleIcon.outputPath));
+  const circlePixels = await readPngPixels(
+    circleIco.entries.find((entry) => entry.width === 256).payload
+  );
+  const circleCorner = pixelAt(circlePixels, 0, 0);
+  const circleCenter = pixelAt(circlePixels, 128, 128);
+  assert(
+    circleCorner.a === 0,
+    `50% radius must clear the corner, got alpha=${circleCorner.a}`
+  );
+  assert(
+    circleCenter.a === 255,
+    `50% radius must keep the center opaque, got alpha=${circleCenter.a}`
+  );
+
+  // A small radius only clips the very corner, not the middle of the edge.
+  const softIcon = await processSingleFavicon(
+    { ...landscape, id: 'radius-12' },
+    baseConfig({ fit: 'contain', nameMode: 'source', radius: 0.12, backgroundMode: 'white' })
+  );
+  assert(softIcon.success, `Radius 12% failed: ${softIcon.error}`);
+  const softIco = parseIco(await fs.readFile(softIcon.outputPath));
+  const softPixels = await readPngPixels(
+    softIco.entries.find((entry) => entry.width === 256).payload
+  );
+  assert(
+    pixelAt(softPixels, 0, 0).a === 0,
+    '12% radius must clear the corner pixel'
+  );
+  assert(
+    pixelAt(softPixels, 0, 128).a === 255,
+    '12% radius must keep the edge midpoint opaque'
+  );
+
+  // Cover mode rounds too, and the radius survives the per-size downscale.
+  const coverRounded = await processSingleFavicon(
+    { ...landscape, id: 'radius-cover' },
+    baseConfig({ fit: 'cover', nameMode: 'source', radius: 0.5 })
+  );
+  assert(coverRounded.success, `Rounded cover failed: ${coverRounded.error}`);
+  const coverRoundedIco = parseIco(await fs.readFile(coverRounded.outputPath));
+  for (const entry of coverRoundedIco.entries) {
+    const pixels = await readPngPixels(entry.payload);
+    assert(
+      pixelAt(pixels, 0, 0).a === 0,
+      `Rounded cover ${entry.width}px must clear its corner`
+    );
+  }
+  console.log('✓ Radius 0 keeps corners, 50% makes a circle, 12% clips only the corner, cover rounds every size');
+
+  // The editor preview must show the same rounding as the generated icon.
+  const roundedPreview = await renderFaviconPreview(landscape.path, {
+    ...baseConfig(),
+    fit: 'contain',
+    radius: 0.5,
+    backgroundMode: 'white',
+  });
+  assert(roundedPreview.success, `Rounded preview failed: ${roundedPreview.error}`);
+  const roundedPreviewPixels = await readPngPixels(
+    Buffer.from(roundedPreview.dataUrl.split(',')[1], 'base64')
+  );
+  assert(
+    pixelAt(roundedPreviewPixels, 0, 0).a === 0,
+    'Rounded preview must clear its corner'
+  );
+  assert(
+    pixelAt(roundedPreviewPixels, 128, 128).a === 255,
+    'Rounded preview must keep its center opaque'
+  );
+  console.log('✓ Preview applies the same corner radius');
 
   // -------------------------------------------------------------------------
   // Test 4: No upscaling (skip sizes above the source)

@@ -45,6 +45,7 @@ As soon as one or more logos are added, a **mini editor** appears below the file
 
 - **Fit**: *Fit inside* (default, keeps the whole logo) or *Crop to fill*.
 - **Padding**: 0–30% inset with a live dashed safe-area guide (Fit inside only).
+- **Corner radius**: 0–50% rounding (50% = circle) with Square / 12% / 22% / Circle presets; applies to both fits and keeps transparent corners transparent.
 - **Background**: *Auto* (picked per logo from its visible pixels — dark logos get white, light logos get black), White, Black, *Custom* with a picker **and an editable `#rrggbb` hex field**, or Transparent.
 - **Batch**: with several logos, a numbered filmstrip (and the queue) lets you switch the preview between logos. Fit/padding/background apply to the whole batch; Auto is resolved per logo, so each icon gets the right contrast.
 

@@ -21,6 +21,9 @@ Scope:
   (cover) mode.
 - Per-side **padding** from 0% to 30%, applied only in contain mode, with a
   live dashed safe-area guide over the preview.
+- **Corner radius** from 0% to 50% (50% = circle), applied in both fits, with
+  Square / 12% / 22% / Circle presets. Transparent backgrounds stay
+  transparent in the rounded corners.
 - **Background** modes: **Auto**, White, Black, Custom color, Transparent.
   Custom exposes both a picker and an editable **hex field** (`#rrggbb`,
   uppercase display, validated live with Enter/Escape handling).
@@ -67,6 +70,11 @@ Out of scope:
   `processSingleFavicon`, vectors set `usefulDimension = Infinity`, so
   `masterSize` becomes the largest selected size and nothing is skipped.
   Raster sources keep the derived dimension limit and the no-upscale rule.
+- `clampRadius(radius)` clamps to `0–0.5`. `roundedMask(size, radius)` builds
+  an SVG rounded rectangle that is composited with `blend: 'dest-in'` on the
+  square master, so the corners are cut from the alpha channel (transparent
+  backgrounds stay transparent). Rounding happens once on the master, which
+  keeps the radius fraction identical in every derived entry.
 - `processSingleFavicon` renders one square master at the largest useful
   size, then downsamples every selected entry from it.
 - `renderFaviconPreview(filePath, config)` returns a PNG data URL at
@@ -98,7 +106,9 @@ Out of scope:
 - The editor shows source dimensions, resolved auto background, a
   `Vector · upscales` badge for SVG, and warns when raster sizes exceed the
   source.
-- Reset restores contain + 0% padding + Auto.
+- Corner radius slider (0–50%) with Square / 12% / 22% / Circle presets; the
+  preview reflects the rounding immediately.
+- Reset restores contain + 0% padding + 0% radius + Auto.
 - Settings apply to the whole batch; `FaviconQueue` highlights the selected
   row and calls `onSelectItem`. Removing the selected row selects its
   neighbour.
@@ -107,7 +117,7 @@ Out of scope:
 
 | File | Change |
 | :--- | :--- |
-| `src/components/FaviconEditor.tsx` | **Created** — studio preview, batch filmstrip, fit/padding/background controls |
+| `src/components/FaviconEditor.tsx` | **Created** — studio preview, batch filmstrip, fit/padding/radius/background controls |
 | `src/utils/thumbnailCache.ts` | **Created** — shared thumbnail promise cache |
 | `src/components/FaviconQueue.tsx` | Modified — selectable rows, selected ring, cached thumbnails |
 | `src/components/FaviconSettingsPanel.tsx` | Modified — removed duplicated Fit/background section; vector note |
@@ -133,6 +143,9 @@ Out of scope:
   - Auto background: dark logo → white, light logo → black.
   - 10% padding insets a landscape logo to ~205px at 256px while corners
     stay transparent.
+  - Corner radius: 0% keeps square corners, 50% clears the corner and keeps
+    the center opaque, 12% clips only the corner pixel, cover mode rounds
+    every entry, and the preview applies the same radius.
   - 256×256 preview data URL, resolved background, and preview-only
     upscale for a 48px source.
   - An 80px SVG rendered at every size (16–256) with no skips, while a 64px
@@ -176,6 +189,13 @@ Out of scope:
   path; cover remains available as an explicit crop choice.
 - **Padding applies only to contain:** cover fills the square with the
   image, so inset/background have no meaning there.
+- **Radius applies to both fits:** rounding is a property of the icon shape,
+  not of the padding, so crop-to-fill icons can be rounded too.
+- **Round the master, not each entry:** one mask on the square master keeps
+  the radius proportional across 16–256 and avoids extra work per size.
+- **Mask via SVG + `dest-in`:** sharp has no drawing primitives, and cutting
+  the alpha channel keeps transparent backgrounds transparent instead of
+  painting the corners with a color.
 - **Shared square renderer:** generation and preview use the same
   composition code, so the preview cannot drift from the output.
 - **Debounced preview IPC:** avoids spawning a Sharp render on every slider

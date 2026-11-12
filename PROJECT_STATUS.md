@@ -123,3 +123,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/pinned-tabs` | Feature — Pinned Media Tabs in Header | Merged | [docs/branches/feat-pinned-tabs.md](docs/branches/feat-pinned-tabs.md) |
 | `feat/favicon-editor` | Feature — Favicon Mini Editor (Preview, Auto Background, Padding, Radius, Vector Upscaling) | Merged | [docs/branches/feat-favicon-editor.md](docs/branches/feat-favicon-editor.md) |
 | `feat/header-cleanup` | Feature — Clean Header, Content-Aligned Tabs & Progressive Blur | Merged | [docs/branches/feat-header-cleanup.md](docs/branches/feat-header-cleanup.md) |
+| `chore/release-1.4.0` | Chore — Release 1.4.0 (Favicon Editor & Header) | In Progress | [docs/branches/chore-release-1.4.0.md](docs/branches/chore-release-1.4.0.md) |

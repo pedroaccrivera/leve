@@ -11,10 +11,13 @@ import {
 } from 'lucide-react';
 import type { FaviconConfig, FaviconItem } from '../types';
 import { formatBytes, formatDimensions } from '../utils/formatters';
+import { getCachedThumbnail } from '../utils/thumbnailCache';
 
 interface FaviconQueueProps {
   items: FaviconItem[];
   config: FaviconConfig;
+  selectedItemId: string | null;
+  onSelectItem: (id: string) => void;
   onRemoveItem: (id: string) => void;
   isProcessing: boolean;
 }
@@ -22,15 +25,17 @@ interface FaviconQueueProps {
 const FaviconRow: React.FC<{
   item: FaviconItem;
   config: FaviconConfig;
+  selected: boolean;
+  onSelect: () => void;
   onRemove: () => void;
   disabled: boolean;
-}> = ({ item, config, onRemove, disabled }) => {
+}> = ({ item, config, selected, onSelect, onRemove, disabled }) => {
   const [thumb, setThumb] = useState<string | null>(item.previewUrl || null);
 
   useEffect(() => {
     let isMounted = true;
-    if (!thumb && window.electronAPI) {
-      window.electronAPI.getImageThumbnail(item.path).then((data) => {
+    if (!thumb) {
+      getCachedThumbnail(item.path).then((data) => {
         if (isMounted && data) setThumb(data);
       });
     }
@@ -51,7 +56,23 @@ const FaviconRow: React.FC<{
   };
 
   return (
-    <div className="flex items-center gap-3 p-2.5 bg-white dark:bg-[#182035] hover:bg-slate-50 dark:hover:bg-[#1e2740] border border-slate-200 dark:border-[#283254] rounded-xl transition-all group shadow-sm">
+    <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      onClick={onSelect}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect();
+        }
+      }}
+      className={`flex items-center gap-3 p-2.5 bg-white dark:bg-[#182035] hover:bg-slate-50 dark:hover:bg-[#1e2740] border rounded-xl transition-all group shadow-sm cursor-pointer ${
+        selected
+          ? 'border-blue-500 dark:border-blue-500 ring-1 ring-blue-500/40'
+          : 'border-slate-200 dark:border-[#283254]'
+      }`}
+    >
       {/* Thumbnail */}
       <div className="w-11 h-11 rounded-lg bg-slate-100 dark:bg-[#121625] border border-slate-200 dark:border-[#263150] overflow-hidden flex-shrink-0 flex items-center justify-center">
         {thumb ? (
@@ -131,7 +152,10 @@ const FaviconRow: React.FC<{
         {item.status === 'done' && (
           <button
             type="button"
-            onClick={handleOpenDestination}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleOpenDestination();
+            }}
             className="flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 hover:underline px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all cursor-pointer"
             title="Show file in folder"
           >
@@ -154,7 +178,10 @@ const FaviconRow: React.FC<{
         {item.status !== 'processing' && (
           <button
             type="button"
-            onClick={onRemove}
+            onClick={(event) => {
+              event.stopPropagation();
+              onRemove();
+            }}
             disabled={disabled}
             className="p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
             title="Remove from queue"
@@ -170,6 +197,8 @@ const FaviconRow: React.FC<{
 export const FaviconQueue: React.FC<FaviconQueueProps> = ({
   items,
   config,
+  selectedItemId,
+  onSelectItem,
   onRemoveItem,
   isProcessing,
 }) => {
@@ -195,6 +224,8 @@ export const FaviconQueue: React.FC<FaviconQueueProps> = ({
             key={item.id}
             item={item}
             config={config}
+            selected={selectedItemId === item.id}
+            onSelect={() => onSelectItem(item.id)}
             onRemove={() => onRemoveItem(item.id)}
             disabled={isProcessing}
           />

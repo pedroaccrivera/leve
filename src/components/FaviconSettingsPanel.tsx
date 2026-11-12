@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import {
   ChevronDown,
-  Crop,
   FolderDown,
   FolderTree,
   Globe,
-  Square,
 } from 'lucide-react';
 import { FAVICON_SIZES } from '../types';
 import type {
@@ -56,7 +54,6 @@ export const FaviconSettingsPanel: React.FC<FaviconSettingsPanelProps> = ({
     }
   };
 
-  const isContain = config.fit === 'contain';
   const destinationLabel =
     config.destinationMode === 'same_folder'
       ? 'Same folder as source'
@@ -115,92 +112,13 @@ export const FaviconSettingsPanel: React.FC<FaviconSettingsPanelProps> = ({
         </div>
 
         <p className="text-[11px] text-slate-500 dark:text-darkTextMuted">
-          {config.sizes.length} sizes selected. Sizes larger than the source are
-          skipped automatically — no upscaling.
+          {config.sizes.length} sizes selected. Raster images are never
+          upscaled — larger sizes are skipped. SVG logos are vector and render
+          at every selected size.
         </p>
       </div>
 
-      {/* 2. Fit */}
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-          Fit
-        </label>
-
-        <div className="grid grid-cols-2 gap-2.5">
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => onChangeConfig({ ...config, fit: 'cover' })}
-            className={`p-3 rounded-xl text-left border transition-all flex flex-col gap-1 cursor-pointer disabled:opacity-50 ${
-              !isContain
-                ? 'bg-blue-500/10 dark:bg-blue-600/20 border-blue-500 dark:border-blue-500 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-500/30'
-                : 'bg-slate-100/70 dark:bg-[#1b2238] border-slate-200 dark:border-[#283254] text-slate-700 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#222b46]'
-            }`}
-          >
-            <span className="flex items-center gap-1.5 text-xs font-semibold">
-              <Crop className="w-3.5 h-3.5" />
-              Crop to square
-            </span>
-            <span className="text-[10px] text-slate-500 dark:text-darkTextMuted leading-tight">
-              Fills the icon; may trim edges
-            </span>
-          </button>
-
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => onChangeConfig({ ...config, fit: 'contain' })}
-            className={`p-3 rounded-xl text-left border transition-all flex flex-col gap-1 cursor-pointer disabled:opacity-50 ${
-              isContain
-                ? 'bg-blue-500/10 dark:bg-blue-600/20 border-blue-500 dark:border-blue-500 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-500/30'
-                : 'bg-slate-100/70 dark:bg-[#1b2238] border-slate-200 dark:border-[#283254] text-slate-700 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-[#222b46]'
-            }`}
-          >
-            <span className="flex items-center gap-1.5 text-xs font-semibold">
-              <Square className="w-3.5 h-3.5" />
-              Fit with padding
-            </span>
-            <span className="text-[10px] text-slate-500 dark:text-darkTextMuted leading-tight">
-              Keeps the whole image
-            </span>
-          </button>
-        </div>
-
-        {isContain && (
-          <div className="flex items-center justify-between gap-3 p-3 bg-slate-100/70 dark:bg-[#1b2238] border border-slate-200 dark:border-[#283254] rounded-xl">
-            <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={!config.backgroundColor}
-                onChange={(event) =>
-                  onChangeConfig({
-                    ...config,
-                    backgroundColor: event.target.checked ? undefined : '#ffffff',
-                  })
-                }
-                disabled={disabled}
-                className="w-4 h-4 rounded text-blue-600 bg-slate-100 dark:bg-[#1b2238] border-slate-300 dark:border-[#283254] focus:ring-blue-500 cursor-pointer"
-              />
-              <span>Transparent padding</span>
-            </label>
-
-            {config.backgroundColor && (
-              <input
-                type="color"
-                value={config.backgroundColor}
-                onChange={(event) =>
-                  onChangeConfig({ ...config, backgroundColor: event.target.value })
-                }
-                disabled={disabled}
-                title="Padding background color"
-                className="w-8 h-8 rounded-lg border border-slate-300 dark:border-[#2b3658] bg-transparent cursor-pointer disabled:opacity-50"
-              />
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* 3. Output name */}
+      {/* 2. Output name */}
       <div className="space-y-2">
         <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
           Output Name
@@ -231,7 +149,7 @@ export const FaviconSettingsPanel: React.FC<FaviconSettingsPanelProps> = ({
         </div>
       </div>
 
-      {/* 4. Destination (accordion, mirrors SettingsPanel) */}
+      {/* 3. Destination (accordion, mirrors SettingsPanel) */}
       <div className="pt-2 border-t border-slate-200 dark:border-[#283254]/60">
         <button
           type="button"

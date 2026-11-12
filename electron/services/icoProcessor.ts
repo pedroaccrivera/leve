@@ -5,15 +5,25 @@ import {
   FAVICON_SIZES,
   type FaviconConfig,
   type FaviconItem,
+  type FaviconPreviewResult,
   type FaviconResult,
   type FaviconSize,
 } from '../../src/types';
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const PREVIEW_SIZE = 256;
 
 interface IcoEntry {
   size: FaviconSize;
   png: Buffer;
+}
+
+interface ResolvedBackground {
+  r: number;
+  g: number;
+  b: number;
+  alpha: number;
+  hex: string;
 }
 
 /**
@@ -95,18 +105,167 @@ function getOrientedDimensions(meta: {
   return { width, height };
 }
 
-function parseBackground(color?: string): { r: number; g: number; b: number; alpha: number } {
-  const transparent = { r: 0, g: 0, b: 0, alpha: 0 };
+function getUsefulDimension(width: number, height: number, fit: FaviconConfig['fit']): number {
+  return fit === 'contain' ? Math.max(width, height) : Math.min(width, height);
+}
+
+/**
+ * SVG sources are vector art: they can be rendered at any resolution, so the
+ * no-upscaling rule does not apply. Every raster format is still protected
+ * from being enlarged.
+ */
+export function isVectorSource(filePath: string): boolean {
+  return path.extname(filePath).toLowerCase() === '.svg';
+}
+
+function clampPadding(padding: number): number {
+  if (!Number.isFinite(padding)) return 0;
+  return Math.min(0.45, Math.max(0, padding));
+}
+
+function srgbToLinear(channel: number): number {
+  const value = channel / 255;
+  return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+}
+
+function parseBackground(color?: string): ResolvedBackground {
+  const transparent: ResolvedBackground = {
+    r: 0,
+    g: 0,
+    b: 0,
+    alpha: 0,
+    hex: 'transparent',
+  };
   if (!color || color === 'transparent') return transparent;
   const match = color.trim().match(/^#?([0-9a-f]{6})$/i);
   if (!match) return transparent;
-  const hex = match[1];
+  const hex = `#${match[1].toLowerCase()}`;
   return {
-    r: parseInt(hex.slice(0, 2), 16),
-    g: parseInt(hex.slice(2, 4), 16),
-    b: parseInt(hex.slice(4, 6), 16),
+    r: parseInt(match[1].slice(0, 2), 16),
+    g: parseInt(match[1].slice(2, 4), 16),
+    b: parseInt(match[1].slice(4, 6), 16),
     alpha: 1,
+    hex,
   };
+}
+
+/**
+ * Pick a background that contrasts with the visible pixels of the logo.
+ * Transparent pixels are ignored (weighted by alpha), so a dark mark on a
+ * transparent canvas still gets a white background.
+ */
+export async function detectAutoBackground(filePath: string): Promise<'#ffffff' | '#000000'> {
+  try {
+    const { data } = await sharp(filePath, { failOnError: false })
+      .rotate()
+      .resize(64, 64, { fit: 'inside', withoutEnlargement: true })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    let weightedLuminance = 0;
+    let totalAlpha = 0;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const alpha = data[i + 3];
+      if (alpha < 8) continue;
+      const luminance =
+        0.2126 * srgbToLinear(data[i]) +
+        0.7152 * srgbToLinear(data[i + 1]) +
+        0.0722 * srgbToLinear(data[i + 2]);
+      weightedLuminance += luminance * alpha;
+      totalAlpha += alpha;
+    }
+
+    if (totalAlpha === 0) return '#ffffff';
+    return weightedLuminance / totalAlpha >= 0.5 ? '#000000' : '#ffffff';
+  } catch {
+    return '#ffffff';
+  }
+}
+
+export async function resolveFaviconBackground(
+  config: FaviconConfig,
+  filePath: string
+): Promise<ResolvedBackground> {
+  // Cover fills the square with the image itself; padding/background are unused.
+  if (config.fit === 'cover') return parseBackground(undefined);
+
+  switch (config.backgroundMode) {
+    case 'white':
+      return parseBackground('#ffffff');
+    case 'black':
+      return parseBackground('#000000');
+    case 'color': {
+      const parsed = parseBackground(config.backgroundColor);
+      return parsed.hex === 'transparent' ? parseBackground('#ffffff') : parsed;
+    }
+    case 'transparent':
+      return parseBackground(undefined);
+    case 'auto':
+    default:
+      return parseBackground(await detectAutoBackground(filePath));
+  }
+}
+
+/**
+ * Render one square master at `size`.
+ *
+ * `contain` fits the logo inside the padded area and centers it on the
+ * resolved background. `cover` keeps the original crop behavior and ignores
+ * padding/background. `allowUpscale` is only used by the preview so the
+ * editor can show the 256px composition even for small sources; generation
+ * always preserves the no-upscaling rule.
+ */
+async function renderSquareMaster(
+  filePath: string,
+  config: FaviconConfig,
+  size: number,
+  allowUpscale = false
+): Promise<{ buffer: Buffer; background: ResolvedBackground }> {
+  const background = await resolveFaviconBackground(config, filePath);
+
+  if (config.fit === 'cover') {
+    const buffer = await sharp(filePath, { failOnError: false })
+      .rotate()
+      .toColourspace('srgb')
+      .resize(size, size, { fit: 'cover', position: 'centre' })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+    return { buffer, background };
+  }
+
+  const padding = clampPadding(config.padding);
+  const inner = Math.max(1, Math.round(size * (1 - padding * 2)));
+
+  const logo = await sharp(filePath, { failOnError: false })
+    .rotate()
+    .toColourspace('srgb')
+    .resize(inner, inner, {
+      fit: 'inside',
+      withoutEnlargement: !allowUpscale,
+    })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+
+  const buffer = await sharp({
+    create: {
+      width: size,
+      height: size,
+      channels: 4,
+      background: {
+        r: background.r,
+        g: background.g,
+        b: background.b,
+        alpha: background.alpha,
+      },
+    },
+  })
+    .composite([{ input: logo, gravity: 'centre' }])
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+
+  return { buffer, background };
 }
 
 async function pathExists(filePath: string): Promise<boolean> {
@@ -162,13 +321,19 @@ export async function processSingleFavicon(
 ): Promise<FaviconResult> {
   try {
     const sizes = normalizeSizes(config.sizes);
-    const meta = await sharp(item.path, { failOnError: false }).metadata();
-    const { width, height } = getOrientedDimensions(meta);
+    const isVector = isVectorSource(item.path);
 
     // A square icon can use at most the shorter side when cropping, and the
-    // longer side when padding. Never upscale: sizes above this are skipped.
-    const usefulDimension =
-      config.fit === 'contain' ? Math.max(width, height) : Math.min(width, height);
+    // longer side when padding. Raster sources are never upscaled: sizes
+    // above that limit are skipped. Vectors render at any size, so they are
+    // scaled up to the largest selected resolution.
+    let usefulDimension = Infinity;
+    if (!isVector) {
+      const meta = await sharp(item.path, { failOnError: false }).metadata();
+      const { width, height } = getOrientedDimensions(meta);
+      usefulDimension = getUsefulDimension(width, height, config.fit);
+    }
+
     const maxSelected = Math.max(...sizes);
     const masterSize = Math.min(maxSelected, usefulDimension);
     const smallestSelected = Math.min(...sizes);
@@ -181,18 +346,12 @@ export async function processSingleFavicon(
 
     // Render the square master once, then derive every entry from it. This
     // decodes the original image only once, which matters for large sources.
-    const background = config.fit === 'contain' ? parseBackground(config.backgroundColor) : undefined;
-    const resizeOptions = {
-      fit: config.fit,
-      position: 'centre' as const,
-      ...(background ? { background } : {}),
-    };
-    const master = await sharp(item.path, { failOnError: false })
-      .rotate()
-      .toColourspace('srgb')
-      .resize(masterSize, masterSize, resizeOptions)
-      .png({ compressionLevel: 9 })
-      .toBuffer();
+    const { buffer: master } = await renderSquareMaster(
+      item.path,
+      config,
+      masterSize,
+      isVector
+    );
 
     const entries: IcoEntry[] = [];
     const skippedSizes: FaviconSize[] = [];
@@ -238,6 +397,40 @@ export async function processSingleFavicon(
       id: item.id,
       success: false,
       error: err?.message || 'Error generating favicon',
+    };
+  }
+}
+
+/**
+ * Render a 256×256 composition for the mini editor. Unlike generation, the
+ * preview may upscale a small source so the user can judge padding and
+ * background at the target preview size; the no-upscaling rule still applies
+ * to the generated ICO.
+ */
+export async function renderFaviconPreview(
+  filePath: string,
+  config: FaviconConfig
+): Promise<FaviconPreviewResult> {
+  try {
+    normalizeSizes(config.sizes);
+    const { buffer, background } = await renderSquareMaster(
+      filePath,
+      config,
+      PREVIEW_SIZE,
+      true
+    );
+
+    return {
+      success: true,
+      dataUrl: `data:image/png;base64,${buffer.toString('base64')}`,
+      width: PREVIEW_SIZE,
+      height: PREVIEW_SIZE,
+      resolvedBackground: background.hex,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Error rendering favicon preview',
     };
   }
 }

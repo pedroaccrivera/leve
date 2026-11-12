@@ -26,6 +26,7 @@ import { VideoSettingsPanel } from './components/VideoSettingsPanel';
 import { VideoQueue } from './components/VideoQueue';
 import { FaviconSettingsPanel } from './components/FaviconSettingsPanel';
 import { FaviconQueue } from './components/FaviconQueue';
+import { FaviconEditor } from './components/FaviconEditor';
 import { MediaTabs } from './components/MediaTabs';
 
 const DEFAULT_PRESETS: ResizePreset[] = [
@@ -76,12 +77,16 @@ export const App: React.FC = () => {
 
   // Favicon generation state (feat/favicon-ico)
   const [faviconItems, setFaviconItems] = useState<FaviconItem[]>([]);
+  const [selectedFaviconId, setSelectedFaviconId] = useState<string | null>(null);
   const [isProcessingFavicon, setIsProcessingFavicon] = useState(false);
   const [faviconProgress, setFaviconProgress] = useState({ current: 0, total: 0 });
   const [faviconSummary, setFaviconSummary] = useState<BatchSummary | null>(null);
   const [faviconConfig, setFaviconConfig] = useState<FaviconConfig>({
     sizes: [16, 32, 48, 64, 128, 256],
-    fit: 'cover',
+    fit: 'contain',
+    padding: 0,
+    backgroundMode: 'auto',
+    backgroundColor: '#ffffff',
     nameMode: 'favicon',
     destinationMode: 'subfolder',
     subfolderName: 'favicons',
@@ -179,20 +184,34 @@ export const App: React.FC = () => {
   };
 
   const handleAddFaviconItems = (newItems: ImageItem[]) => {
+    const existingPaths = new Set(faviconItems.map((i) => i.path));
+    const firstNew = newItems.find((item) => !existingPaths.has(item.path));
+    if (firstNew) setSelectedFaviconId(firstNew.id);
+
     setFaviconItems((prev) => {
-      const existingPaths = new Set(prev.map((i) => i.path));
-      const filtered = newItems.filter((i) => !existingPaths.has(i.path));
+      const prevPaths = new Set(prev.map((i) => i.path));
+      const filtered = newItems.filter((i) => !prevPaths.has(i.path));
       return [...prev, ...filtered];
     });
   };
 
   const handleRemoveFaviconItem = (id: string) => {
+    const index = faviconItems.findIndex((item) => item.id === id);
+    const neighbor =
+      index >= 0
+        ? faviconItems[index + 1] ?? faviconItems[index - 1] ?? null
+        : null;
+
     setFaviconItems((prev) => prev.filter((i) => i.id !== id));
+    setSelectedFaviconId((current) =>
+      current === id ? neighbor?.id ?? null : current
+    );
   };
 
   const handleClearFavicons = () => {
     setFaviconItems([]);
     setFaviconSummary(null);
+    setSelectedFaviconId(null);
   };
 
   const handleStartProcessing = async () => {
@@ -509,6 +528,10 @@ export const App: React.FC = () => {
   const doneCount = items.filter((i) => i.status === 'done').length;
   const videoDoneCount = videoItems.filter((i) => i.status === 'done').length;
   const faviconDoneCount = faviconItems.filter((i) => i.status === 'done').length;
+  const selectedFaviconItem =
+    faviconItems.find((item) => item.id === selectedFaviconId) ??
+    faviconItems[0] ??
+    null;
   const isVideoTab = mediaTab === 'videos';
   const isFaviconTab = mediaTab === 'favicon';
   const activeCount = isVideoTab
@@ -577,9 +600,21 @@ export const App: React.FC = () => {
             />
           )}
           {isFaviconTab && faviconItems.length > 0 && (
+            <FaviconEditor
+              items={faviconItems}
+              selectedItem={selectedFaviconItem}
+              config={faviconConfig}
+              onChangeConfig={setFaviconConfig}
+              onSelectItem={setSelectedFaviconId}
+              disabled={isProcessingFavicon}
+            />
+          )}
+          {isFaviconTab && faviconItems.length > 0 && (
             <FaviconQueue
               items={faviconItems}
               config={faviconConfig}
+              selectedItemId={selectedFaviconItem?.id ?? null}
+              onSelectItem={setSelectedFaviconId}
               onRemoveItem={handleRemoveFaviconItem}
               isProcessing={isProcessingFavicon}
             />

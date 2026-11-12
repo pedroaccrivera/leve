@@ -106,6 +106,9 @@ function baseConfig(overrides = {}) {
   return {
     sizes: [16, 32, 48, 64, 128, 256],
     fit: 'cover',
+    padding: 0,
+    backgroundMode: 'auto',
+    backgroundColor: '#ffffff',
     nameMode: 'favicon',
     destinationMode: 'subfolder',
     subfolderName: 'favicons',
@@ -119,7 +122,7 @@ async function runTest() {
 
   await fs.rm(testDir, { recursive: true, force: true });
   await fs.mkdir(testDir, { recursive: true });
-  const { buildIco, processSingleFavicon, determineFaviconOutputPath } =
+  const { buildIco, processSingleFavicon, determineFaviconOutputPath, detectAutoBackground, renderFaviconPreview } =
     await loadProcessor();
 
   // -------------------------------------------------------------------------
@@ -263,7 +266,11 @@ async function runTest() {
 
   const containTransparent = await processSingleFavicon(
     { ...landscape, id: 'contain', path: landscape.path },
-    baseConfig({ fit: 'contain', nameMode: 'source' })
+    baseConfig({
+      fit: 'contain',
+      nameMode: 'source',
+      backgroundMode: 'transparent',
+    })
   );
   assert(containTransparent.success, `Contain failed: ${containTransparent.error}`);
   assert(
@@ -284,6 +291,7 @@ async function runTest() {
     baseConfig({
       fit: 'contain',
       nameMode: 'source',
+      backgroundMode: 'color',
       backgroundColor: '#ff0000',
     })
   );
@@ -296,6 +304,171 @@ async function runTest() {
     `Expected solid red padding, got ${JSON.stringify(redCorner)}`
   );
   console.log('✓ Solid padding color applied');
+
+  // -------------------------------------------------------------------------
+  // Test 3b: Auto background picks a contrasting color per image
+  // -------------------------------------------------------------------------
+  console.log('\n[Test 3b] Auto background detection...');
+  const darkLogoPath = path.join(testDir, 'dark-logo.png');
+  await sharp({
+    create: {
+      width: 256,
+      height: 256,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([
+      {
+        input: Buffer.from(
+          '<svg width="120" height="120"><circle cx="60" cy="60" r="60" fill="#111827"/></svg>'
+        ),
+        top: 68,
+        left: 68,
+      },
+    ])
+    .png()
+    .toFile(darkLogoPath);
+
+  const lightLogoPath = path.join(testDir, 'light-logo.png');
+  await sharp({
+    create: {
+      width: 256,
+      height: 256,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([
+      {
+        input: Buffer.from(
+          '<svg width="120" height="120"><circle cx="60" cy="60" r="60" fill="#f8fafc"/></svg>'
+        ),
+        top: 68,
+        left: 68,
+      },
+    ])
+    .png()
+    .toFile(lightLogoPath);
+
+  assert(
+    (await detectAutoBackground(darkLogoPath)) === '#ffffff',
+    'Dark logo should resolve to a white background'
+  );
+  assert(
+    (await detectAutoBackground(lightLogoPath)) === '#000000',
+    'Light logo should resolve to a black background'
+  );
+
+  const darkStat = await fs.stat(darkLogoPath);
+  const darkAuto = await processSingleFavicon(
+    { id: 'dark-auto', path: darkLogoPath, name: 'dark-logo.png', size: darkStat.size, status: 'pending' },
+    baseConfig({ fit: 'contain', nameMode: 'source', backgroundMode: 'auto' })
+  );
+  assert(darkAuto.success, `Auto background generation failed: ${darkAuto.error}`);
+  const darkIco = parseIco(await fs.readFile(darkAuto.outputPath));
+  const darkCorner = pixelAt(
+    await readPngPixels(darkIco.entries.find((entry) => entry.width === 256).payload),
+    0,
+    0
+  );
+  assert(
+    darkCorner.r > 240 && darkCorner.g > 240 && darkCorner.b > 240 && darkCorner.a === 255,
+    `Expected white auto background, got ${JSON.stringify(darkCorner)}`
+  );
+
+  const lightStat = await fs.stat(lightLogoPath);
+  const lightAuto = await processSingleFavicon(
+    { id: 'light-auto', path: lightLogoPath, name: 'light-logo.png', size: lightStat.size, status: 'pending' },
+    baseConfig({ fit: 'contain', nameMode: 'source', backgroundMode: 'auto' })
+  );
+  assert(lightAuto.success, `Auto background generation failed: ${lightAuto.error}`);
+  const lightIco = parseIco(await fs.readFile(lightAuto.outputPath));
+  const lightCorner = pixelAt(
+    await readPngPixels(lightIco.entries.find((entry) => entry.width === 256).payload),
+    0,
+    0
+  );
+  assert(
+    lightCorner.r < 15 && lightCorner.g < 15 && lightCorner.b < 15 && lightCorner.a === 255,
+    `Expected black auto background, got ${JSON.stringify(lightCorner)}`
+  );
+  console.log('✓ Dark logo → white background, light logo → black background');
+
+  // -------------------------------------------------------------------------
+  // Test 3c: Padding shrinks the logo inside the canvas
+  // -------------------------------------------------------------------------
+  console.log('\n[Test 3c] Padding inset...');
+  const padded = await processSingleFavicon(
+    { ...landscape, id: 'padded' },
+    baseConfig({
+      fit: 'contain',
+      nameMode: 'source',
+      padding: 0.1,
+      backgroundMode: 'transparent',
+    })
+  );
+  assert(padded.success, `Padded generation failed: ${padded.error}`);
+  const paddedIco = parseIco(await fs.readFile(padded.outputPath));
+  const paddedPixels = await readPngPixels(
+    paddedIco.entries.find((entry) => entry.width === 256).payload
+  );
+  let minX = 256;
+  let maxX = -1;
+  for (let y = 0; y < 256; y++) {
+    for (let x = 0; x < 256; x++) {
+      if (pixelAt(paddedPixels, x, y).a > 8) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+      }
+    }
+  }
+  const logoWidth = maxX - minX + 1;
+  assert(
+    Math.abs(logoWidth - 205) <= 2,
+    `Expected a ~205px logo at 10% padding, got ${logoWidth}px`
+  );
+  const paddedCorner = pixelAt(paddedPixels, 0, 0);
+  assert(
+    paddedCorner.a === 0,
+    `Padded corner must stay transparent, got alpha=${paddedCorner.a}`
+  );
+  console.log(`✓ 10% padding insets the logo to ${logoWidth}px and keeps corners clear`);
+
+  // -------------------------------------------------------------------------
+  // Test 3d: 256px preview render
+  // -------------------------------------------------------------------------
+  console.log('\n[Test 3d] 256px editor preview...');
+  const preview = await renderFaviconPreview(darkLogoPath, {
+    ...baseConfig(),
+    fit: 'contain',
+    padding: 0.05,
+    backgroundMode: 'auto',
+  });
+  assert(preview.success, `Preview failed: ${preview.error}`);
+  assert(preview.width === 256 && preview.height === 256, 'Preview must be 256×256');
+  assert(preview.resolvedBackground === '#ffffff', 'Preview should report the resolved background');
+  assert(
+    typeof preview.dataUrl === 'string' && preview.dataUrl.startsWith('data:image/png;base64,'),
+    'Preview must be a PNG data URL'
+  );
+  const previewBuffer = Buffer.from(preview.dataUrl.split(',')[1], 'base64');
+  const previewMeta = await sharp(previewBuffer).metadata();
+  assert(
+    previewMeta.width === 256 && previewMeta.height === 256,
+    `Preview payload is ${previewMeta.width}x${previewMeta.height}`
+  );
+
+  // Small sources are upscaled only in the preview so the composition is visible.
+  const previewSmall = await makeSource('preview-small.png', 48, 48);
+  const smallPreview = await renderFaviconPreview(previewSmall.path, {
+    ...baseConfig(),
+    fit: 'contain',
+    backgroundMode: 'transparent',
+  });
+  assert(smallPreview.success, `Small preview failed: ${smallPreview.error}`);
+  assert(smallPreview.width === 256, 'Small source preview must still render at 256px');
+  console.log('✓ Preview renders 256×256 PNG with resolved background and preview-only upscale');
 
   // -------------------------------------------------------------------------
   // Test 4: No upscaling (skip sizes above the source)
@@ -315,6 +488,39 @@ async function runTest() {
   const smallIco = parseIco(await fs.readFile(resSmall.outputPath));
   assert(smallIco.count === 4, `Expected 4 entries, got ${smallIco.count}`);
   console.log('✓ 128/256 skipped, ICO contains only 16/32/48/64');
+
+  // An SVG is vector art: it must be rendered at every selected size.
+  const vectorSvg = path.join(testDir, 'vector-mark.svg');
+  await fs.writeFile(
+    vectorSvg,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+       <circle cx="40" cy="40" r="38" fill="#2563eb"/>
+     </svg>`
+  );
+  const vectorStat = await fs.stat(vectorSvg);
+  const resVector = await processSingleFavicon(
+    { id: 'vector', path: vectorSvg, name: 'vector-mark.svg', size: vectorStat.size, status: 'pending' },
+    baseConfig({ nameMode: 'source' })
+  );
+  assert(resVector.success, `Vector generation failed: ${resVector.error}`);
+  assert(
+    JSON.stringify(resVector.generatedSizes) === JSON.stringify(sizes),
+    `SVG must render all sizes, got ${resVector.generatedSizes?.join(',')}`
+  );
+  assert(
+    Array.isArray(resVector.skippedSizes) && resVector.skippedSizes.length === 0,
+    'SVG must not skip any size'
+  );
+  const vectorIco = parseIco(await fs.readFile(resVector.outputPath));
+  assert(vectorIco.count === 6, `Expected 6 entries from SVG, got ${vectorIco.count}`);
+  const vector256 = await sharp(
+    vectorIco.entries.find((entry) => entry.width === 256).payload
+  ).metadata();
+  assert(
+    vector256.width === 256 && vector256.height === 256,
+    `SVG 256 entry is ${vector256.width}x${vector256.height}`
+  );
+  console.log('✓ 80px SVG is upscaled to all 6 sizes (16–256) with no skips');
 
   // -------------------------------------------------------------------------
   // Test 5: Source too small for every selected size

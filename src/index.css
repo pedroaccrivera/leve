@@ -11,6 +11,84 @@
   -webkit-app-region: no-drag;
 }
 
+/*
+ * App header: brand (left) · media tabs (center) · actions (right).
+ * The center column is capped to the content column width (`max-w-2xl` on
+ * `main`) minus the space the brand and the actions need, so the tabs stay
+ * centered over the DropZone and the settings cards at any window size.
+ */
+.app-header-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, min(42rem, 100% - 22rem)) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.75rem;
+}
+
+/*
+ * Progressive blur behind the header: the compounded backdrop blur is very
+ * strong at the top and fades to zero at the bottom edge. Three stacked
+ * layers, each masked so the strongest blur reaches the least far. The
+ * negative z-index keeps the effect behind the header content (brand, tabs,
+ * actions) but above the scrolled page content.
+ */
+.app-header-blur,
+.app-header-tint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.app-header-blur {
+  overflow: hidden;
+}
+
+.app-header-blur > i {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.app-header-blur > i:nth-child(1) {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+}
+
+.app-header-blur > i:nth-child(2) {
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 65%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 65%);
+}
+
+.app-header-blur > i:nth-child(3) {
+  -webkit-backdrop-filter: blur(44px) saturate(170%);
+  backdrop-filter: blur(44px) saturate(170%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 38%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 38%);
+}
+
+/* Soft tint so the header keeps its text readable over blurred content. */
+.app-header-tint {
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 250, 252, 0.82) 0%,
+    rgba(248, 250, 252, 0.45) 55%,
+    rgba(248, 250, 252, 0) 100%
+  );
+}
+
+.dark .app-header-tint {
+  background: linear-gradient(
+    to bottom,
+    rgba(19, 23, 36, 0.88) 0%,
+    rgba(19, 23, 36, 0.48) 55%,
+    rgba(19, 23, 36, 0) 100%
+  );
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 8px;

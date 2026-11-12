@@ -43,8 +43,9 @@ This document tracks the current architecture, implemented modules, execution fl
   - Filename collision resolution to prevent overwriting existing files.
 
 ### 2.3. User Interface (`src/`)
-- [x] **Modern Header**: Visual identity, queue status, and quick actions.
+- [x] **Modern Header**: Wordmark + centered **Images | Videos | Favicon** tabs, with a progressive-blur backdrop that fades from a strong blur at the top to none at the bottom edge; content scrolls underneath. Only the theme toggle lives on the right.
 - [x] **Pinned Navigation**: `Images | Videos | Favicon` tabs live in the fixed header, so they stay visible while scrolling.
+- [x] **Queue Clear Action**: `Clear queue (N)` sits right below each file listing (`QueueClearButton`), not in the header.
 - [x] **Interactive DropZone**: Supports drag-and-drop for multiple files and folders, plus native file/folder selection dialogs.
 - [x] **Image Queue (`ImageQueue`)**:
   - On-demand thumbnails with original dimensions and file size on disk.
@@ -116,3 +117,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/prune-ffprobe-static` | Chore — Prune Dead `ffprobe` Binaries | Merged | [docs/branches/chore-prune-ffprobe-static.md](docs/branches/chore-prune-ffprobe-static.md) |
 | `chore/release-1.3.1` | Chore — Release 1.3.1 (Packaging Size) | Merged | [docs/branches/chore-release-1.3.1.md](docs/branches/chore-release-1.3.1.md) |
 | `feat/pinned-tabs` | Feature — Pinned Media Tabs in Header | Merged | [docs/branches/feat-pinned-tabs.md](docs/branches/feat-pinned-tabs.md) |
+| `feat/header-cleanup` | Feature — Clean Header, Content-Aligned Tabs & Progressive Blur | In Progress | [docs/branches/feat-header-cleanup.md](docs/branches/feat-header-cleanup.md) |

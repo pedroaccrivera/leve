@@ -25,7 +25,7 @@ export const MediaTabs: React.FC<MediaTabsProps> = ({
     <div
       role="tablist"
       aria-label="Media type"
-      className={`no-drag w-full max-w-[640px] flex items-center gap-1 p-1 bg-slate-200/60 dark:bg-[#1a2138] border border-slate-200 dark:border-[#283254] rounded-xl ${className}`}
+      className={`no-drag w-full flex items-center gap-1 p-1 bg-slate-200/60 dark:bg-[#1a2138] border border-slate-200 dark:border-[#283254] rounded-xl ${className}`}
     >
       {TABS.map(({ id, label, Icon }) => {
         const active = activeTab === id;

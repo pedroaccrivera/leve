@@ -6,18 +6,20 @@ interface HeaderProps {
   itemCount: number;
   onClear: () => void;
   isProcessing: boolean;
+  tabs?: React.ReactNode;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   itemCount,
   onClear,
   isProcessing,
+  tabs,
 }) => {
   const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
-    <header className="titlebar-drag-region pt-8 pb-4 px-8 flex items-start justify-between select-none">
-      <div className="flex flex-col">
+    <header className="titlebar-drag-region flex-shrink-0 pt-8 pb-4 px-8 flex items-center gap-6 select-none">
+      <div className="flex flex-col flex-shrink-0">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             leve
@@ -32,7 +34,9 @@ export const Header: React.FC<HeaderProps> = ({
         </p>
       </div>
 
-      <div className="no-drag flex items-center gap-2">
+      <div className="flex-1 min-w-0 flex justify-center">{tabs}</div>
+
+      <div className="no-drag flex items-center gap-2 flex-shrink-0">
         {itemCount > 0 && (
           <button
             type="button"

@@ -2,6 +2,8 @@ export type CompressionLevel = 'light' | 'balanced' | 'aggressive' | 'lossless';
 
 export type OutputFormat = 'original' | 'jpeg' | 'png' | 'webp';
 
+export type MediaTab = 'images' | 'videos' | 'favicon';
+
 export type OutputDestinationMode = 'subfolder' | 'suffix' | 'custom_folder';
 
 export interface ResizePreset {

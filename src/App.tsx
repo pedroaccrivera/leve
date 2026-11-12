@@ -4,9 +4,6 @@ import {
   FolderOpen,
   CheckCircle2,
   Sparkles,
-  FileImage,
-  FileVideo,
-  Globe,
 } from 'lucide-react';
 import type {
   ImageItem,
@@ -18,6 +15,7 @@ import type {
   FaviconItem,
   FaviconConfig,
   FaviconSize,
+  MediaTab,
 } from './types';
 import { Header } from './components/Header';
 import { DropZone } from './components/DropZone';
@@ -28,6 +26,7 @@ import { VideoSettingsPanel } from './components/VideoSettingsPanel';
 import { VideoQueue } from './components/VideoQueue';
 import { FaviconSettingsPanel } from './components/FaviconSettingsPanel';
 import { FaviconQueue } from './components/FaviconQueue';
+import { MediaTabs } from './components/MediaTabs';
 
 const DEFAULT_PRESETS: ResizePreset[] = [
   { id: 'web-800', name: 'Web Small', width: 800 },
@@ -38,8 +37,6 @@ const DEFAULT_PRESETS: ResizePreset[] = [
 ];
 
 const PRESETS_STORAGE_KEY = 'user_custom_resize_presets';
-
-type MediaTab = 'images' | 'videos' | 'favicon';
 
 export const App: React.FC = () => {
   const [mediaTab, setMediaTab] = useState<MediaTab>('images');
@@ -543,40 +540,17 @@ export const App: React.FC = () => {
             : handleClearAll
         }
         isProcessing={activeProcessing}
+        tabs={
+          <MediaTabs
+            activeTab={mediaTab}
+            onChange={setMediaTab}
+            disabled={activeProcessing}
+          />
+        }
       />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-8 pb-10 flex flex-col items-center">
+      <main className="flex-1 min-h-0 overflow-y-auto px-8 pt-2 pb-10 flex flex-col items-center">
         <div className="w-full max-w-2xl flex flex-col gap-6">
-          {/* Media type tabs */}
-          <div className="flex items-center gap-1 p-1 bg-slate-200/60 dark:bg-[#1a2138] border border-slate-200 dark:border-[#283254] rounded-xl">
-            {(
-              [
-                { id: 'images', label: 'Images', Icon: FileImage },
-                { id: 'videos', label: 'Videos', Icon: FileVideo },
-                { id: 'favicon', label: 'Favicon', Icon: Globe },
-              ] as const
-            ).map(({ id, label, Icon }) => {
-              const active = mediaTab === id;
-              const busy = activeProcessing;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => setMediaTab(id)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer disabled:cursor-not-allowed ${
-                    active
-                      ? 'bg-white dark:bg-[#283556] text-slate-900 dark:text-white shadow-sm'
-                      : 'text-slate-500 dark:text-darkTextMuted hover:text-slate-800 dark:hover:text-slate-200'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{label}</span>
-                </button>
-              );
-            })}
-          </div>
-
           {/* Drop & Upload Area */}
           <DropZone
             onAddItems={isFaviconTab ? handleAddFaviconItems : handleAddItems}

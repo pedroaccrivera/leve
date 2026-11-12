@@ -114,3 +114,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.3.0` | Chore — Release 1.3.0 | Merged | [docs/branches/chore-release-1.3.0.md](docs/branches/chore-release-1.3.0.md) |
 | `chore/prune-ffprobe-static` | Chore — Prune Dead `ffprobe` Binaries | Merged | [docs/branches/chore-prune-ffprobe-static.md](docs/branches/chore-prune-ffprobe-static.md) |
 | `chore/release-1.3.1` | Chore — Release 1.3.1 (Packaging Size) | Merged | [docs/branches/chore-release-1.3.1.md](docs/branches/chore-release-1.3.1.md) |
+| `feat/pinned-tabs` | Feature — Pinned Media Tabs in Header | Done | [docs/branches/feat-pinned-tabs.md](docs/branches/feat-pinned-tabs.md) |

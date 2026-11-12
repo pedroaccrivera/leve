@@ -1,7 +1,7 @@
 # Branch `chore/release-1.4.0` — Release 1.4.0 (Favicon Editor & Header)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress — pending merge and tag
+- **Status:** Merged into `main` (tagged `v1.4.0`)
 - **Base:** `main` @ `e747698`
 
 ## 1. Goal and Scope
@@ -67,6 +67,6 @@ Release with generated release notes.
 
 | Commit | Message |
 | :--- | :--- |
-| _this commit_ | `chore(release): bump version to 1.4.0` |
-| _pending_ | `chore: merge chore/release-1.4.0 into main` |
-| _pending_ | `docs: mark chore/release-1.4.0 as merged` |
+| `260fd0e` | `chore(release): bump version to 1.4.0` |
+| `8ccf6c0` | `chore: merge chore/release-1.4.0 into main` (PR [#1](https://github.com/pedroaccrivera/leve/pull/1)) |
+| _(this docs commit)_ | `docs: mark chore/release-1.4.0 as merged` |

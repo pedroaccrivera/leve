@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Loader2,
   FolderOpen,
@@ -27,6 +27,7 @@ import { VideoQueue } from './components/VideoQueue';
 import { FaviconSettingsPanel } from './components/FaviconSettingsPanel';
 import { FaviconQueue } from './components/FaviconQueue';
 import { FaviconEditor } from './components/FaviconEditor';
+import { QueueClearButton } from './components/QueueClearButton';
 import { MediaTabs } from './components/MediaTabs';
 
 const DEFAULT_PRESETS: ResizePreset[] = [
@@ -546,6 +547,7 @@ export const App: React.FC = () => {
     : isFaviconTab
     ? faviconSummary
     : summary;
+  const mainRef = useRef<HTMLElement | null>(null);
   const closeSummary = () => {
     if (isVideoTab) setVideoSummary(null);
     else if (isFaviconTab) setFaviconSummary(null);
@@ -553,17 +555,9 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="relative flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Header
-        itemCount={activeCount}
-        onClear={
-          isVideoTab
-            ? handleClearVideos
-            : isFaviconTab
-            ? handleClearFavicons
-            : handleClearAll
-        }
-        isProcessing={activeProcessing}
+        scrollContainerRef={mainRef}
         tabs={
           <MediaTabs
             activeTab={mediaTab}
@@ -573,7 +567,10 @@ export const App: React.FC = () => {
         }
       />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-8 pt-2 pb-10 flex flex-col items-center">
+      <main
+        ref={mainRef}
+        className="flex-1 min-h-0 overflow-y-auto px-8 pt-[5.75rem] pb-10 flex flex-col items-center"
+      >
         <div className="w-full max-w-2xl flex flex-col gap-6">
           {/* Drop & Upload Area */}
           <DropZone
@@ -585,20 +582,36 @@ export const App: React.FC = () => {
 
           {/* Queue of selected media if any */}
           {!isVideoTab && !isFaviconTab && items.length > 0 && (
-            <ImageQueue
-              items={items}
-              config={config}
-              onRemoveItem={handleRemoveItem}
-              isProcessing={isProcessing}
-            />
+            <div className="flex flex-col gap-2">
+              <ImageQueue
+                items={items}
+                config={config}
+                onRemoveItem={handleRemoveItem}
+                isProcessing={isProcessing}
+              />
+              <QueueClearButton
+                count={items.length}
+                noun="images"
+                onClick={handleClearAll}
+                disabled={isProcessing}
+              />
+            </div>
           )}
           {isVideoTab && videoItems.length > 0 && (
-            <VideoQueue
-              items={videoItems}
-              config={videoConfig}
-              onRemoveItem={handleRemoveVideoItem}
-              isProcessing={isProcessingVideo}
-            />
+            <div className="flex flex-col gap-2">
+              <VideoQueue
+                items={videoItems}
+                config={videoConfig}
+                onRemoveItem={handleRemoveVideoItem}
+                isProcessing={isProcessingVideo}
+              />
+              <QueueClearButton
+                count={videoItems.length}
+                noun="videos"
+                onClick={handleClearVideos}
+                disabled={isProcessingVideo}
+              />
+            </div>
           )}
           {isFaviconTab && faviconItems.length > 0 && (
             <FaviconEditor
@@ -611,14 +624,22 @@ export const App: React.FC = () => {
             />
           )}
           {isFaviconTab && faviconItems.length > 0 && (
-            <FaviconQueue
-              items={faviconItems}
-              config={faviconConfig}
-              selectedItemId={selectedFaviconItem?.id ?? null}
-              onSelectItem={setSelectedFaviconId}
-              onRemoveItem={handleRemoveFaviconItem}
-              isProcessing={isProcessingFavicon}
-            />
+            <div className="flex flex-col gap-2">
+              <FaviconQueue
+                items={faviconItems}
+                config={faviconConfig}
+                selectedItemId={selectedFaviconItem?.id ?? null}
+                onSelectItem={setSelectedFaviconId}
+                onRemoveItem={handleRemoveFaviconItem}
+                isProcessing={isProcessingFavicon}
+              />
+              <QueueClearButton
+                count={faviconItems.length}
+                noun="logos"
+                onClick={handleClearFavicons}
+                disabled={isProcessingFavicon}
+              />
+            </div>
           )}
 
           {/* Settings Panel */}

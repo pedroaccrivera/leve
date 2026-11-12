@@ -1,68 +1,58 @@
 import React from 'react';
-import { Sun, Moon, Trash2, ShieldCheck } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
-  itemCount: number;
-  onClear: () => void;
-  isProcessing: boolean;
   tabs?: React.ReactNode;
+  /**
+   * Scroll container the header overlays. Wheel events over the header are
+   * forwarded to it so scrolling keeps working under the blur band.
+   */
+  scrollContainerRef?: React.RefObject<HTMLElement | null>;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  itemCount,
-  onClear,
-  isProcessing,
-  tabs,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ tabs, scrollContainerRef }) => {
   const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
-    <header className="titlebar-drag-region flex-shrink-0 pt-8 pb-4 px-8 flex items-center gap-6 select-none">
-      <div className="flex flex-col flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
-            leve
-          </h1>
-          <span className="no-drag inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-            <ShieldCheck className="w-3 h-3" />
-            100% Local & Offline
-          </span>
-        </div>
-        <p className="text-xs text-slate-500 dark:text-darkTextMuted mt-0.5">
-          Resize and compress images locally
-        </p>
+    <header
+      className="titlebar-drag-region absolute inset-x-0 top-0 z-30 select-none"
+      onWheel={(event) => {
+        const container = scrollContainerRef?.current;
+        if (container) container.scrollTop += event.deltaY;
+      }}
+    >
+      {/* Progressive blur backdrop: very strong at the top, gone at the bottom edge. */}
+      <div className="app-header-blur" aria-hidden="true">
+        <i />
+        <i />
+        <i />
       </div>
+      <div className="app-header-tint" aria-hidden="true" />
 
-      <div className="flex-1 min-w-0 flex justify-center">{tabs}</div>
+      <div className="app-header-grid pt-8 pb-4 px-8">
+        <h1 className="justify-self-start text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
+          leve
+        </h1>
 
-      <div className="no-drag flex items-center gap-2 flex-shrink-0">
-        {itemCount > 0 && (
+        {/* Center column is sized to the content column, so the tabs stay
+            centered over the DropZone and the settings cards. */}
+        <div className="min-w-0">{tabs}</div>
+
+        <div className="no-drag flex items-center justify-end gap-2">
           <button
             type="button"
-            onClick={onClear}
-            disabled={isProcessing}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-slate-200 dark:border-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            title="Clear all images in queue"
+            onClick={toggleTheme}
+            className="p-2 rounded-lg bg-slate-200/70 hover:bg-slate-300 dark:bg-darkCard hover:dark:bg-darkCardHover border border-slate-300 dark:border-darkBorder text-slate-700 dark:text-slate-300 transition-all cursor-pointer shadow-sm"
+            title={`Switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
           >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>Clear ({itemCount})</span>
+            {resolvedTheme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-700 hover:-rotate-12 transition-transform" />
+            )}
           </button>
-        )}
-
-        {/* Theme Switcher */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="p-2 rounded-lg bg-slate-200/70 hover:bg-slate-300 dark:bg-darkCard hover:dark:bg-darkCardHover border border-slate-300 dark:border-darkBorder text-slate-700 dark:text-slate-300 transition-all cursor-pointer shadow-sm"
-          title={`Switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
-        >
-          {resolvedTheme === 'dark' ? (
-            <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform" />
-          ) : (
-            <Moon className="w-4 h-4 text-slate-700 hover:-rotate-12 transition-transform" />
-          )}
-        </button>
+        </div>
       </div>
     </header>
   );

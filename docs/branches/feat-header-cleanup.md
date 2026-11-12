@@ -145,5 +145,5 @@ Inside, the header is a CSS Grid with three columns:
 
 | Commit | Message |
 | :--- | :--- |
-| _this commit_ | `feat(ui): simplify header, center tabs with content, move Clear below queue, add progressive blur` |
+| `bcd2f7f` | `feat(ui): simplify header, center tabs with content, move Clear below queue, add progressive blur` |
 | _(this docs commit)_ | `docs(ui): document header cleanup branch and update status` |

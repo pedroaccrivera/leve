@@ -66,12 +66,15 @@ This document tracks the current architecture, implemented modules, execution fl
 ### 2.5. Favicon Generation Engine (`electron/services/icoProcessor.ts`)
 - [x] **Custom ICO Encoder**: Builds a PNG-in-ICO container (ICONDIR + 16-byte entries + PNG payloads) without adding dependencies; 256 px is written as `0` per the ICO spec.
 - [x] **Multi-Resolution Output**: 16, 32, 48, 64, 128 and 256 px in one file, with a *Lean (16–64)* preset.
-- [x] **Square Rendering**: Crop-to-square (cover) or fit-with-padding (contain), with transparent or solid-color padding.
-- [x] **No Upscaling**: Sizes above the source are skipped and reported; when every selected size is too large, the item fails with an actionable message.
+- [x] **Square Rendering**: Crop-to-square (cover) or fit-with-padding (contain), with transparent, auto-contrast or solid-color padding.
+- [x] **Auto Background & Padding**: Per-image background picked from the logo's visible pixels (dark → white, light → black), plus a 0–30% padding inset with a live safe-area guide.
+- [x] **Live Mini Editor**: A 256 px studio preview with fit/padding/background controls, editable hex color, in-context 16/32/48 px previews, and a batch filmstrip (numbered thumbnails + steppers) when several logos are queued.
+- [x] **No Upscaling (raster)**: Sizes above a raster source are skipped and reported; when every selected size is too large, the item fails with an actionable message.
+- [x] **Vector Upscaling (SVG)**: `.svg` logos have no native resolution, so they are rendered at every selected size (16–256) instead of being skipped.
 - [x] **Efficient Pipeline**: A single square master is rendered at the largest useful size, then downscaled per entry; palette quantization for ≤64 px, truecolor for 128/256.
 - [x] **Output Handling**: `favicon.ico` or source-matched name, `favicons/` subfolder by default, same/custom folder options, and `favicon-N.ico` collision resolution.
-- [x] **Dedicated UI**: Third **Favicon** tab with its own queue, settings panel and summary modal (file size + generated sizes, no savings claim).
-- [x] **IPC Bridge**: `favicon:process` handler and `generateFavicon` preload method.
+- [x] **Dedicated UI**: Third **Favicon** tab with its own queue, mini editor, settings panel and summary modal (file size + generated sizes, no savings claim). The editor replaces the empty area as soon as logos are added.
+- [x] **IPC Bridge**: `favicon:process` / `favicon:preview` handlers and `generateFavicon` / `renderFaviconPreview` preload methods.
 
 ---
 
@@ -116,3 +119,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/prune-ffprobe-static` | Chore — Prune Dead `ffprobe` Binaries | Merged | [docs/branches/chore-prune-ffprobe-static.md](docs/branches/chore-prune-ffprobe-static.md) |
 | `chore/release-1.3.1` | Chore — Release 1.3.1 (Packaging Size) | Merged | [docs/branches/chore-release-1.3.1.md](docs/branches/chore-release-1.3.1.md) |
 | `feat/pinned-tabs` | Feature — Pinned Media Tabs in Header | Merged | [docs/branches/feat-pinned-tabs.md](docs/branches/feat-pinned-tabs.md) |
+| `feat/favicon-editor` | Feature — Favicon Mini Editor (Preview, Auto Background, Padding, Vector Upscaling) | In Progress | [docs/branches/feat-favicon-editor.md](docs/branches/feat-favicon-editor.md) |

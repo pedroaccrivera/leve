@@ -32,7 +32,7 @@ No images or data ever leave your machine. Built with **Electron**, **React**, *
   - *Subfolder*: Automatically creates a dedicated folder (e.g. `resized/`) inside each source image directory.
   - *Suffix*: Saves right next to the original file (e.g. `photo-resized.jpg`).
   - *Custom Folder*: Chooses a specific output directory via native system dialog.
-- **Favicon Generator**: A dedicated **Favicon** tab packs any logo into one multi-resolution `favicon.ico` (16–256 px) with PNG entries, crop or padded fit, and no upscaling.
+- **Favicon Generator**: A dedicated **Favicon** tab with a live 256 px mini editor — packs any logo into one multi-resolution `favicon.ico` (16–256 px) with PNG entries, crop or padded fit, per-image auto background, and no raster upscaling.
 - **Supported Formats**: JPG/JPEG, PNG, WebP, AVIF, TIFF, GIF, SVG.
 
 ---
@@ -41,9 +41,16 @@ No images or data ever leave your machine. Built with **Electron**, **React**, *
 
 Open the **Favicon** tab, drop an image or logo (PNG, JPG, WebP, AVIF, TIFF, GIF, SVG), choose the resolutions and generate a single `.ico` file — entirely offline.
 
+As soon as one or more logos are added, a **mini editor** appears below the file selector with a 256 px live preview:
+
+- **Fit**: *Fit inside* (default, keeps the whole logo) or *Crop to fill*.
+- **Padding**: 0–30% inset with a live dashed safe-area guide (Fit inside only).
+- **Background**: *Auto* (picked per logo from its visible pixels — dark logos get white, light logos get black), White, Black, *Custom* with a picker **and an editable `#rrggbb` hex field**, or Transparent.
+- **Batch**: with several logos, a numbered filmstrip (and the queue) lets you switch the preview between logos. Fit/padding/background apply to the whole batch; Auto is resolved per logo, so each icon gets the right contrast.
+
 - **Default sizes**: 16, 32, 48, 64, 128 and 256 px. The **Lean (16–64)** preset produces a much smaller file when only tabs/bookmarks are needed.
-- **Fit**: *Crop to square* (default) or *Fit with padding* (transparent or a solid color).
-- **No upscaling**: sizes larger than the source are skipped and reported in the queue; if every selected size is too large, the item fails with a clear message.
+- **No upscaling (raster)**: for PNG/JPG/WebP/AVIF/TIFF/GIF sources, sizes larger than the source are skipped and reported; if every selected size is too large, the item fails with a clear message.
+- **Vector upscaling (SVG)**: an SVG has no native resolution, so it is rendered at every selected size (including 128/256) instead of being skipped.
 - **Output name**: `favicon.ico` by default, or match the source file name (`logo.png` → `logo.ico`). Existing files are never overwritten — collisions become `favicon-2.ico`, `favicon-3.ico`, and so on.
 - **Destination**: `favicons/` subfolder (default), the source folder, or a custom folder.
 - **Format**: every resolution is stored as a PNG entry inside the ICO (the modern format used by Windows Vista+ and current Chrome, Firefox, Safari, and Edge). Legacy IE/Windows XP BMP-in-ICO compatibility is intentionally out of scope.

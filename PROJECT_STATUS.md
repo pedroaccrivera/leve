@@ -44,6 +44,7 @@ This document tracks the current architecture, implemented modules, execution fl
 
 ### 2.3. User Interface (`src/`)
 - [x] **Modern Header**: Visual identity, queue status, and quick actions.
+- [x] **Pinned Navigation**: `Images | Videos | Favicon` tabs live in the fixed header, so they stay visible while scrolling.
 - [x] **Interactive DropZone**: Supports drag-and-drop for multiple files and folders, plus native file/folder selection dialogs.
 - [x] **Image Queue (`ImageQueue`)**:
   - On-demand thumbnails with original dimensions and file size on disk.
@@ -114,4 +115,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.3.0` | Chore — Release 1.3.0 | Merged | [docs/branches/chore-release-1.3.0.md](docs/branches/chore-release-1.3.0.md) |
 | `chore/prune-ffprobe-static` | Chore — Prune Dead `ffprobe` Binaries | Merged | [docs/branches/chore-prune-ffprobe-static.md](docs/branches/chore-prune-ffprobe-static.md) |
 | `chore/release-1.3.1` | Chore — Release 1.3.1 (Packaging Size) | Merged | [docs/branches/chore-release-1.3.1.md](docs/branches/chore-release-1.3.1.md) |
-| `feat/pinned-tabs` | Feature — Pinned Media Tabs in Header | Done | [docs/branches/feat-pinned-tabs.md](docs/branches/feat-pinned-tabs.md) |
+| `feat/pinned-tabs` | Feature — Pinned Media Tabs in Header | Merged | [docs/branches/feat-pinned-tabs.md](docs/branches/feat-pinned-tabs.md) |

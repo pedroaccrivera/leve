@@ -1,7 +1,7 @@
 # Branch `feat/pinned-tabs` — Pinned Media Tabs in the Header
 
 - **Type:** Feature — UI layout adjustment
-- **Status:** Done — pending merge approval
+- **Status:** Merged into `main`
 - **Base:** `main` @ `8fc83ca`
 
 ## 1. Goal and Scope
@@ -84,4 +84,5 @@ Responsive behavior:
 | Commit | Message |
 | :--- | :--- |
 | `afec304` | `feat(ui): pin media tabs in the app header` |
-| _this commit_ | `docs(ui): document pinned tabs branch and register status` |
+| `d11e72e` | `docs(ui): document pinned tabs branch and register status` |
+| `f280ca6` | `feat: merge feat/pinned-tabs into main` |

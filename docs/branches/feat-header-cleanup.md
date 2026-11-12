@@ -1,7 +1,7 @@
 # Branch `feat/header-cleanup` — Clean Header, Content-Aligned Tabs & Progressive Blur
 
 - **Type:** Feature — UI layout adjustment
-- **Status:** In Progress — pending merge approval
+- **Status:** Merged into `main`
 - **Base:** `main` @ `a50c46b`
 
 ## 1. Goal and Scope
@@ -146,4 +146,18 @@ Inside, the header is a CSS Grid with three columns:
 | Commit | Message |
 | :--- | :--- |
 | `bcd2f7f` | `feat(ui): simplify header, center tabs with content, move Clear below queue, add progressive blur` |
-| _(this docs commit)_ | `docs(ui): document header cleanup branch and update status` |
+| `47072bf` | `docs(ui): document header cleanup branch and update status` |
+| `4bc7737` | `feat: merge feat/header-cleanup into main` |
+
+### Merge notes
+
+Merged after `feat/favicon-editor` (`fd679e6`). The merge conflicted in
+`src/App.tsx` (favicon queue props vs. the Clear wrapper) and in
+`PROJECT_STATUS.md` (both branches inserted a registry row). Resolution:
+
+- `App.tsx` keeps both: the `FaviconEditor` block plus the favicon queue
+  wrapped in the Clear-button column, with `selectedItemId` / `onSelectItem`
+  preserved from the favicon editor.
+- `PROJECT_STATUS.md` lists both branches as `Merged`.
+- The queue clear button now applies to images, videos **and** logos, and the
+  favicon tab keeps the mini editor above its listing.

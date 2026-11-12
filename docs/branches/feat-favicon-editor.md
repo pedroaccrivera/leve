@@ -1,7 +1,7 @@
 # Branch `feat/favicon-editor` — Favicon Mini Editor
 
 - **Type:** Feature — Favicon editing UX
-- **Status:** In Progress — pending merge approval
+- **Status:** Merged into `main`
 - **Base:** `main` @ `a50c46b`
 
 ## 1. Goal and Scope
@@ -207,3 +207,4 @@ Out of scope:
 | `c0b6164` | `docs(favicon): document favicon editor branch and update status` |
 | `5cc0ed4` | `feat(favicon): add corner radius control to the editor and ICO renderer` |
 | `8b2abf7` | `refactor(favicon): move isVectorFile to a util so the editor fast-refreshes` |
+| `fd679e6` | `feat: merge feat/favicon-editor into main` |

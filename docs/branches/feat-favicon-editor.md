@@ -204,4 +204,6 @@ Out of scope:
 | Commit | Message |
 | :--- | :--- |
 | `04edea9` | `feat(favicon): add live preview studio with auto background, padding and vector upscaling` |
-| _(this docs commit)_ | `docs(favicon): document favicon editor branch and update status` |
+| `c0b6164` | `docs(favicon): document favicon editor branch and update status` |
+| `5cc0ed4` | `feat(favicon): add corner radius control to the editor and ICO renderer` |
+| `8b2abf7` | `refactor(favicon): move isVectorFile to a util so the editor fast-refreshes` |

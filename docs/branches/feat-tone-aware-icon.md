@@ -1,7 +1,7 @@
 # `feat/tone-aware-icon` — Ícone do app acompanha o tom
 
 - **Type:** Feature — aparência / identidade
-- **Status:** In Progress — implementado, aguardando aprovação de merge
+- **Status:** Merged into `main` (included in release `1.6.1`)
 - **Base:** `main` @ `8522b80` (release `1.6.0`)
 
 ## 1. Objetivo
@@ -81,6 +81,12 @@ src/context/HueContext.tsx  reporta o deslocamento (debounce) a cada mudança e 
 | 4 | Debounce de 160 ms | arrastar o espectro não pode custar uma rasterização por passo |
 | 5 | `setToneShift` **opcional** no `ElectronAPI` | o harness de captura e o navegador não têm o canal; a chamada é opcional |
 | 6 | Windows/Linux via `win.setIcon` | mesmo efeito na barra de tarefas; no macOS o `BrowserWindow.icon` é ignorado |
+
+## 5.1 Merge record
+
+- Aprovado pelo usuário após a verificação do round-trip no app real.
+- Merge em `main` com `--no-ff`; release `1.6.1` — ver
+  [chore-release-1.6.1.md](chore-release-1.6.1.md).
 
 ## 6. Commit history
 

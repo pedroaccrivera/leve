@@ -128,4 +128,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/hue-selector` | Feature — Hue (tone) selector | Merged | [docs/branches/feat-hue-selector.md](docs/branches/feat-hue-selector.md) |
 | `chore/release-1.5.1` | Chore — Release 1.5.1 (UI fit & fixes) | Merged | [docs/branches/chore-release-1.5.1.md](docs/branches/chore-release-1.5.1.md) |
 | `chore/release-1.6.0` | Chore — Release 1.6.0 (Tone selector) | Merged | [docs/branches/chore-release-1.6.0.md](docs/branches/chore-release-1.6.0.md) |
-| `feat/tone-aware-icon` | Feature — Application icon follows the chosen tone | In Progress | [docs/branches/feat-tone-aware-icon.md](docs/branches/feat-tone-aware-icon.md) |
+| `feat/tone-aware-icon` | Feature — Application icon follows the chosen tone | Merged | [docs/branches/feat-tone-aware-icon.md](docs/branches/feat-tone-aware-icon.md) |

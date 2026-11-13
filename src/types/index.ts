@@ -70,6 +70,8 @@ export interface BatchSummary {
   mode?: 'media' | 'favicon';
   /** Sizes packed into the generated favicon (favicon mode only). */
   generatedSizes?: number[];
+  /** Selected sizes skipped because the source was smaller (favicon mode only). */
+  skippedSizes?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -78,7 +80,7 @@ export interface BatchSummary {
 
 export type VideoQuality = 'light' | 'balanced' | 'aggressive';
 
-export type VideoOutputFormat = 'mp4' | 'webm';
+export type VideoOutputFormat = 'mp4' | 'webm' | 'original';
 
 export interface VideoItem {
   id: string;

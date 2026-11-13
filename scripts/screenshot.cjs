@@ -14,6 +14,7 @@ const url = process.env.LEVE_URL || 'http://localhost:5199/';
 const fixture = process.env.LEVE_FIXTURE || '';
 const theme = process.env.LEVE_THEME || 'ink';
 const out = process.env.LEVE_OUT || path.join(process.cwd(), 'shot.png');
+const height = Number(process.env.LEVE_HEIGHT || 800);
 const tab = process.env.LEVE_TAB || '';
 
 app.disableHardwareAcceleration();
@@ -21,7 +22,7 @@ app.disableHardwareAcceleration();
 app.whenReady().then(async () => {
   const win = new BrowserWindow({
     width: 1280,
-    height: 800,
+    height,
     show: true,
     frame: false,
     backgroundColor: '#171b18',
@@ -65,6 +66,27 @@ app.whenReady().then(async () => {
 
   const image = await win.webContents.capturePage();
   fs.writeFileSync(out, image.toPNG());
+
+  // Optional layout report: how much the two scrolling columns overflow.
+  if (process.env.LEVE_MEASURE === '1') {
+    const metrics = await win.webContents.executeJavaScript(`(() => {
+      const aside = document.querySelector('aside');
+      const workspace = aside && aside.previousElementSibling;
+      const box = (el) => el ? {
+        client: el.clientHeight,
+        scroll: el.scrollHeight,
+        overflow: el.scrollHeight - el.clientHeight,
+        blocks: [...el.children].map((c) => Math.round(c.getBoundingClientRect().height)),
+      } : null;
+      return {
+        viewport: { w: window.innerWidth, h: window.innerHeight },
+        workspace: box(workspace),
+        inspector: box(aside),
+      };
+    })()`);
+    console.log('MEASURE ' + JSON.stringify(metrics));
+  }
+
   console.log('saved', out);
   app.quit();
 });

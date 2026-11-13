@@ -125,4 +125,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/ui-fit-and-hue` | Feature — Vertical fit (density tiers) + choice gutters | Merged | [docs/branches/feat-ui-fit-and-hue.md](docs/branches/feat-ui-fit-and-hue.md) |
 | `feat/hue-selector` | Feature — Hue (tone) selector | Merged | [docs/branches/feat-hue-selector.md](docs/branches/feat-hue-selector.md) |
 | `chore/release-1.5.1` | Chore — Release 1.5.1 (UI fit & fixes) | Merged | [docs/branches/chore-release-1.5.1.md](docs/branches/chore-release-1.5.1.md) |
-| `chore/release-1.6.0` | Chore — Release 1.6.0 (Tone selector) | In Progress | [docs/branches/chore-release-1.6.0.md](docs/branches/chore-release-1.6.0.md) |
+| `chore/release-1.6.0` | Chore — Release 1.6.0 (Tone selector) | Merged | [docs/branches/chore-release-1.6.0.md](docs/branches/chore-release-1.6.0.md) |

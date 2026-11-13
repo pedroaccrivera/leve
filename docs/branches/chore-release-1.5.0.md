@@ -84,6 +84,11 @@ Windows x64 (installer/portable) to a public GitHub Release with generated relea
   documentation reviewable before the tag triggers the public Release workflow.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release
   as merged, matching the `v1.3.x`/`v1.4.0` flow.
+- **Homebrew cask:** updated in `pedroaccrivera/homebrew-tap`
+  ([`b8901ba2`](https://github.com/pedroaccrivera/homebrew-tap/commit/b8901ba2de8462e2e4e8e599f2e6e8ec828a7d93))
+  from `1.4.0` to `1.5.0`, with the published zip `sha256`
+  (`dd7ae104…88f531`, 147,571,050 B — size and hash both verified against the release asset
+  before committing).
 
 | Commit | Message |
 | :--- | :--- |

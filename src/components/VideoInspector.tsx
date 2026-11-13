@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Check } from 'lucide-react';
 import type { VideoConfig, VideoQuality } from '../types';
-import { ReadOnlyChoice, ReadOnlyChoiceRow } from './ui/Choice';
+import { Choice, ChoiceRow } from './ui/Choice';
 import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
-import { RecipeUsed } from './BatchReport';
+import { TextInput } from './ui/TextInput';
 import { FolderPickerField } from './ui/FolderPickerField';
+import { RecipeUsed } from './BatchReport';
 
 const QUALITY: { id: VideoQuality; label: string }[] = [
   { id: 'light', label: 'Good quality' },
@@ -22,32 +22,6 @@ const QUALITY_NOTES: Record<VideoQuality, string> = {
 /** Maximum-width presets are widths (720/1080/2160 are the heights of these). */
 const WIDTHS = [1280, 1920, 3840];
 
-/** Borderless value that still reads as plain text, but is editable. */
-const InlineValue = React.forwardRef<
-  HTMLInputElement,
-  {
-    value: string;
-    onChange: (value: string) => void;
-    disabled?: boolean;
-    'aria-label': string;
-    numeric?: boolean;
-    onFocus?: () => void;
-    onBlur?: () => void;
-  }
->(({ value, onChange, disabled, numeric = false, ...rest }, ref) => (
-  <input
-    {...rest}
-    ref={ref}
-    value={value}
-    disabled={disabled}
-    inputMode={numeric ? 'numeric' : undefined}
-    onChange={(event) => onChange(numeric ? event.target.value.replace(/[^\d]/g, '') : event.target.value)}
-    className="w-full min-w-0 bg-transparent t-control text-ink placeholder:text-muted focus:outline-none disabled:cursor-not-allowed"
-  />
-));
-
-InlineValue.displayName = 'InlineValue';
-
 export interface VideoInspectorProps {
   config: VideoConfig;
   onPatch: (patch: Partial<VideoConfig>) => void;
@@ -60,9 +34,11 @@ export interface VideoInspectorProps {
 }
 
 /**
- * Video recipe. At rest the recipe reads as a sequence of underline choices
- * with resolved values; while a batch runs it is replaced by the locked
- * read-only record.
+ * Video recipe.
+ *
+ * Uses the same control vocabulary as the image and favicon recipes: boxed
+ * choices, boxed values and boxed checkboxes. While a batch runs it is
+ * replaced by the locked read-only record (shared with the other tabs).
  */
 export const VideoInspector: React.FC<VideoInspectorProps> = ({
   config,
@@ -87,7 +63,12 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
           { label: 'Compression', value: QUALITY.find((q) => q.id === config.quality)?.label ?? 'Balanced' },
           {
             label: 'Output format',
-            value: config.outputFormat === 'webm' ? 'WebM / VP9' : config.outputFormat === 'original' ? 'Original' : 'MP4 / H.264 + AAC',
+            value:
+              config.outputFormat === 'webm'
+                ? 'WebM / VP9'
+                : config.outputFormat === 'original'
+                  ? 'Original'
+                  : 'MP4 / H.264 + AAC',
           },
           { label: 'Metadata', value: config.stripMetadata ? 'Stripped' : 'Kept' },
           {
@@ -111,6 +92,11 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
   const destinationValue =
     config.destinationMode === 'subfolder' ? config.subfolderName : config.suffix;
 
+  const handleDestinationChange = (value: string) => {
+    if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
+    else onPatch({ suffix: value });
+  };
+
   /** One folder for the whole batch, chosen from an explicit action. */
   const chooseFolder = async () => {
     const folder = await window.electronAPI?.selectDestinationFolder?.();
@@ -125,89 +111,80 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
       </div>
 
       <FieldSection index="01" title="Maximum width">
-        <div className="flex h-11 items-center">
-          <InlineValue
-            ref={widthRef}
-            aria-label="Maximum width"
-            numeric
-            value={widthValue}
-            onFocus={() => setDraft(String(config.maxWidth))}
-            onBlur={() => setDraft(null)}
-            onChange={(raw) => {
-              setDraft(raw);
-              const parsed = Number(raw);
-              if (raw && Number.isFinite(parsed) && parsed > 0) onCustomWidthChange(parsed);
-            }}
-          />
-        </div>
-        <ReadOnlyChoiceRow>
+        <TextInput
+          ref={widthRef}
+          value={widthValue}
+          inputMode="numeric"
+          aria-label="Maximum width"
+          onFocus={() => setDraft(String(config.maxWidth))}
+          onBlur={() => setDraft(null)}
+          onChange={(event) => {
+            const raw = event.target.value.replace(/[^\d]/g, '');
+            setDraft(raw);
+            const parsed = Number(raw);
+            if (raw && Number.isFinite(parsed) && parsed > 0) onCustomWidthChange(parsed);
+          }}
+        />
+        <ChoiceRow>
           {WIDTHS.map((width) => (
-            <ReadOnlyChoice
+            <Choice
               key={width}
+              mono
               selected={!widthIsCustom && config.maxWidth === width}
               onClick={() => onSelectWidth(width)}
-              role="button"
             >
               {width}
-            </ReadOnlyChoice>
+            </Choice>
           ))}
-          <ReadOnlyChoice
+          <Choice
+            mono
             selected={widthIsCustom}
-            role="button"
             onClick={() => {
               onSelectCustomWidth();
               widthRef.current?.focus();
+              widthRef.current?.select();
             }}
           >
             Custom
-          </ReadOnlyChoice>
-        </ReadOnlyChoiceRow>
+          </Choice>
+        </ChoiceRow>
       </FieldSection>
 
-      <div className="flex items-center gap-2">
-        <Check className="h-4 w-4 shrink-0 text-ink" strokeWidth={2.5} />
-        <span className="t-control text-ink">Smaller videos are never enlarged</span>
-      </div>
+      <Checkbox
+        checked={config.withoutEnlargement}
+        onChange={(checked) => onPatch({ withoutEnlargement: checked })}
+        label="Never enlarge smaller videos"
+      />
 
       <FieldSection index="02" title="Compression" note={QUALITY_NOTES[config.quality]}>
-        <ReadOnlyChoiceRow>
+        <ChoiceRow>
           {QUALITY.map((option) => (
-            <ReadOnlyChoice
+            <Choice
               key={option.id}
               selected={config.quality === option.id}
-              role="button"
               onClick={() => onPatch({ quality: option.id })}
             >
               {option.label}
-            </ReadOnlyChoice>
+            </Choice>
           ))}
-        </ReadOnlyChoiceRow>
+        </ChoiceRow>
       </FieldSection>
 
       <FieldSection index="03" title="Output format">
-        <ReadOnlyChoiceRow>
-          <ReadOnlyChoice
-            selected={config.outputFormat === 'mp4'}
-            role="button"
-            onClick={() => onPatch({ outputFormat: 'mp4' })}
-          >
+        <ChoiceRow>
+          <Choice selected={config.outputFormat === 'mp4'} onClick={() => onPatch({ outputFormat: 'mp4' })}>
             MP4 / H.264
-          </ReadOnlyChoice>
-          <ReadOnlyChoice
-            selected={config.outputFormat === 'webm'}
-            role="button"
-            onClick={() => onPatch({ outputFormat: 'webm' })}
-          >
+          </Choice>
+          <Choice selected={config.outputFormat === 'webm'} onClick={() => onPatch({ outputFormat: 'webm' })}>
             WebM / VP9
-          </ReadOnlyChoice>
-          <ReadOnlyChoice
+          </Choice>
+          <Choice
             selected={config.outputFormat === 'original'}
-            role="button"
             onClick={() => onPatch({ outputFormat: 'original' })}
           >
             Original
-          </ReadOnlyChoice>
-        </ReadOnlyChoiceRow>
+          </Choice>
+        </ChoiceRow>
       </FieldSection>
 
       <Checkbox
@@ -233,45 +210,34 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
             : 'Next to each source. Originals stay untouched.\nMP4 uses H.264 + AAC. WebM uses VP9 + Opus.'
         }
       >
-        <ReadOnlyChoiceRow>
-          <ReadOnlyChoice
+        <ChoiceRow>
+          <Choice
             selected={config.destinationMode === 'subfolder'}
-            role="button"
             onClick={() => onPatch({ destinationMode: 'subfolder' })}
           >
             Subfolder
-          </ReadOnlyChoice>
-          <ReadOnlyChoice
+          </Choice>
+          <Choice
             selected={config.destinationMode === 'suffix'}
-            role="button"
             onClick={() => onPatch({ destinationMode: 'suffix' })}
           >
             Suffix
-          </ReadOnlyChoice>
-          <ReadOnlyChoice
-            selected={config.destinationMode === 'custom_folder'}
-            role="button"
-            onClick={() => void chooseFolder()}
-          >
+          </Choice>
+          <Choice selected={config.destinationMode === 'custom_folder'} onClick={() => void chooseFolder()}>
             Custom
-          </ReadOnlyChoice>
-        </ReadOnlyChoiceRow>
+          </Choice>
+        </ChoiceRow>
         {config.destinationMode === 'custom_folder' ? (
           <FolderPickerField
             path={config.customFolderPath}
             onPick={() => void chooseFolder()}
           />
         ) : (
-          <div className="flex h-[var(--d-control)] items-center">
-            <InlineValue
-              aria-label="Destination"
-              value={destinationValue}
-              onChange={(value) => {
-                if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
-                else onPatch({ suffix: value });
-              }}
-            />
-          </div>
+          <TextInput
+            value={destinationValue}
+            aria-label="Destination"
+            onChange={(event) => handleDestinationChange(event.target.value)}
+          />
         )}
       </FieldSection>
     </div>

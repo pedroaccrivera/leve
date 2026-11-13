@@ -56,7 +56,7 @@ export const HueControl: React.FC<{ className?: string }> = ({ className }) => {
           onClick={() => setOpen(true)}
           aria-label="Choose app tone"
           title="Choose app tone"
-          className="flex h-11 w-11 items-center justify-center rounded-md border border-control bg-surface text-ink transition-colors duration-150 hover:bg-panel"
+          className="flex h-11 w-11 items-center justify-center rounded-md border border-signal bg-[color-mix(in_oklab,var(--c-signal)_50%,transparent)] text-signal-text transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--c-signal)_62%,transparent)]"
         >
           <Palette className="h-4 w-4" strokeWidth={2} />
         </button>

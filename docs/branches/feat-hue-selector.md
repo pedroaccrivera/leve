@@ -71,6 +71,34 @@ Contraste medido em toda a roda, nos dois temas:
 | Sinal como texto sobre o cartão | ~1.3 (Paper) | ≥ 4.6 |
 | Fila/estados (`success`, `danger`, `warning`) | 4.7 – 8 | 4.7 – 8 |
 
+## 2.2 O acento não desbota (correção)
+
+**Bug relatado:** com o tom em **65°** o app ficava visivelmente dessaturado — o CTA e o tab ativo
+viravam um creme pálido, sendo que 65° e 66° (o padrão) deveriam ser indistinguíveis.
+
+**Causa:** o loop de contraste pareava o acento com o `ink` **do tema ativo**. No tema Ink o `ink` é
+claro (#F5F3EC), então o contraste com o sinal claro nunca fechava: o loop clareava o sinal até 90%
+de luminosidade e só então caía para texto escuro — daí o creme pálido em qualquer tom ≠ 66°, que
+usa o valor do CSS direto.
+
+O `on-signal` do design é sempre um tom **escuro** (#1B241D nos dois temas), então a escolha passou a
+ser: parear o acento com o neutro escuro **primeiro** e só depois ajustar a luminosidade, o mínimo
+necessário para fechar AA. O fallback para texto claro existe, mas só é alcançado por hues
+extremamente claros (na prática, nunca).
+
+| Tom | Sinal antes | Sinal depois |
+|---|---|---|
+| 66° (padrão, via CSS) | `rgb(230, 244, 92)` | `rgb(230, 244, 92)` (idêntico) |
+| 65° | creme pálido (~L 90%) | `rgb(233, 244, 92)` — praticamente o padrão ✅ |
+| 240° | lavado | `rgb(121, 122, 246)` (periwinkle vivo, 4.72:1) ✅ |
+
+## 2.3 Botão da paleta brilhante (mockup `79:1323`)
+
+O trigger do tom segue a especificação do Figma: preenchimento `rgba(230,244,92,0.5)` — o sinal a 50%
+sobre a superfície — e borda `var(--signal)` sólida, ambos derivados do token (então acompanham o
+tom). O ícone usa `--c-signal-text` para continuar legível: lima claro no Ink (como o mockup) e um
+olive escuro no Paper.
+
 ## 3. Arquivos
 
 **Criados**

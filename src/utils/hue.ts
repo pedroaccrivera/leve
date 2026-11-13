@@ -122,29 +122,38 @@ export const applyHue = (hue: number, dark: boolean): void => {
   };
 
   /*
-   * The signal keeps the design's character — a bright accent carrying dark
-   * text — so its lightness is nudged until that pairing clears WCAG AA for
-   * the label sizes we use. Rotating alone leaves mid-luminance hues (blue,
-   * violet) at ~4.2:1, just under the bar.
+   * The accent always carries dark text — that is the design's pairing
+   * (`on-signal` is #1B241D in both themes, not the theme's own ink, which is
+   * light on Ink). Rotating alone can leave a mid-luminance hue (blue,
+   * violet) too close to that text, so the accent's lightness is nudged just
+   * enough to clear the target — it never washes out otherwise.
    */
-  const ink = rotatedHsl(palette.ink);
-  const paper = rotatedHsl(palette.paper);
-  const inkLum = luminance(hslToRgb(ink.h, ink.s, ink.l));
-  const paperLum = luminance(hslToRgb(paper.h, paper.s, paper.l));
+  const darkText = rotatedHsl(PAPER.ink);
+  const lightText = rotatedHsl(INK.ink);
+  const darkLum = luminance(hslToRgb(darkText.h, darkText.s, darkText.l));
 
   const signal = rotatedHsl(palette.signal);
   let signalLightness = signal.l;
   let signalLum = luminance(hslToRgb(signal.h, signal.s, signalLightness));
+  let onSignal = darkText;
   let steps = 0;
-  while (contrast(signalLum, inkLum) < CONTRAST_TARGET && signalLightness < 90 && steps < 40) {
+
+  while (contrast(signalLum, darkLum) < CONTRAST_TARGET && signalLightness < 92 && steps < 40) {
     signalLightness += 1;
     signalLum = luminance(hslToRgb(signal.h, signal.s, signalLightness));
     steps += 1;
   }
 
-  // Fall back to the light neutral if the dark one still cannot be read.
-  const usePaper = contrast(signalLum, inkLum) < contrast(signalLum, paperLum);
-  const onSignal = usePaper ? paper : ink;
+  if (contrast(signalLum, darkLum) < CONTRAST_TARGET) {
+    // Extremely light hue: pair it with the light neutral and darken instead.
+    onSignal = lightText;
+    const lightLum = luminance(hslToRgb(lightText.h, lightText.s, lightText.l));
+    while (contrast(signalLum, lightLum) < CONTRAST_TARGET && signalLightness > 22 && steps < 80) {
+      signalLightness -= 1;
+      signalLum = luminance(hslToRgb(signal.h, signal.s, signalLightness));
+      steps += 1;
+    }
+  }
 
   for (const name of TOKEN_NAMES) {
     // `on-signal` is decided above: it follows the surface, not the rotation.

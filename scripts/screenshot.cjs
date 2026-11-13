@@ -106,26 +106,21 @@ app.whenReady().then(async () => {
     }
   }
 
-  // Hover the theme switch so the palette trigger is revealed.
+  // Reveal the tone trigger. CSS :hover cannot be forced from a script, so a
+  // capture-only rule gives the collapsed slot the width the hover rule gives
+  // it (the element animates that width, hence the !important + settle time).
   if (process.env.LEVE_HOVER_THEME === '1') {
-    const nav = await win.webContents.executeJavaScript(`(() => {
-      const aside = document.querySelector('aside');
-      const header = document.querySelector('header');
-      const rect = header ? header.getBoundingClientRect() : null;
-      return rect ? { x: Math.round(window.innerWidth - 32 - 22), y: Math.round(rect.top + rect.height / 2) } : null;
-    })()`);
-    if (nav) {
-      win.webContents.sendInputEvent({ type: 'mouseMove', x: nav.x, y: nav.y });
-      await new Promise((resolve) => setTimeout(resolve, 400));
-    }
-  }
-
-  // Reveal the inspector tooltips for a visual check of their placement.
-  if (process.env.LEVE_REVEAL_TOOLTIPS === '1') {
     await win.webContents.executeJavaScript(`
-      document.querySelectorAll('[role=tooltip]').forEach((el) => { el.style.opacity = '1'; });
+      (() => {
+        const button = [...document.querySelectorAll('button')].find((b) => (b.getAttribute('aria-label') || '') === 'Choose app tone');
+        if (!button || !button.parentElement) return;
+        const style = document.createElement('style');
+        const attr = button.parentElement.setAttribute('data-tone-trigger', '');
+        style.textContent = '[data-tone-trigger] { width: 44px !important; transition: none !important; }';
+        document.head.appendChild(style);
+      })();
     `);
-    await new Promise((resolve) => setTimeout(resolve, 120));
+    await new Promise((resolve) => setTimeout(resolve, 350));
   }
 
   const image = await win.webContents.capturePage();
@@ -209,6 +204,7 @@ app.whenReady().then(async () => {
           return {
             debug: dbg,
             cta: ratio(byClass('bg-signal')),
+            ctaBg: byClass('bg-signal') ? getComputedStyle(byClass('bg-signal')).backgroundColor : null,
             activeTab: ratio(document.querySelector('button[role=tab][aria-selected=true]')),
             heading: ratio(document.querySelector('h2')),
             mutedLine: ratio(document.querySelector('main p, aside ~ div p')),

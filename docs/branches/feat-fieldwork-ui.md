@@ -221,7 +221,11 @@ Bugs found and fixed during the visual pass:
   `resolveFaviconBackground` (`parseCssColor` in `electron/services/icoProcessor.ts`); an
   unparseable value falls back to white instead of producing a transparent icon.
   The field no longer force-uppercases non-hex values (`hsl(...)` keeps its case).
-- **Window bar** carries only `LOCAL MEDIA TOOLKIT` (the `leve /` prefix was dropped).
+- **Window bar** carries only `LOCAL MEDIA TOOLKIT` (the `leve /` prefix was dropped) and its label
+  starts at 84 px: the real macOS buttons span 20 → 72, so the design's absolute 74 px would have
+  left a 2 px gap (the reference draws narrower 10 px dots). 84 px keeps a 12 px gap that reads like
+  the reference. Re-check with `LEVE_MOCK_TRAFFIC=1 scripts/screenshot.cjs`, which draws the OS
+  dots at their true coordinates.
 - **Theme switch** is icon-only: the `100% local` note is gone and the control is a 44 × 44 square
   so it matches the other icon controls. The design draws the same sun in both themes, so the
   mark stays constant; the theme name survives as the accessible label and tooltip.

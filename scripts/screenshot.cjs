@@ -41,6 +41,28 @@ app.whenReady().then(async () => {
   await win.loadURL(`${url}?${params.toString()}`);
   await new Promise((resolve) => setTimeout(resolve, 2200));
 
+  // The OS draws the traffic lights outside the web contents, so capturePage
+  // never sees them. Draw them at the exact coordinates the window uses
+  // (trafficLightPosition x=20, y=8; 12 px buttons with a 20 px pitch) to check
+  // the window-bar spacing.
+  if (process.env.LEVE_MOCK_TRAFFIC === '1') {
+    await win.webContents.executeJavaScript(`
+      (() => {
+        const layer = document.createElement('div');
+        layer.style.cssText = 'position:fixed;top:0;left:0;width:1280px;height:28px;z-index:9999;pointer-events:none';
+        [0, 20, 40].forEach((offset, index) => {
+          const dot = document.createElement('i');
+          dot.style.cssText =
+            'position:absolute;top:8px;width:12px;height:12px;border-radius:9999px;left:' + (20 + offset) + 'px;background:' +
+            ['#ff5f57', '#febc2e', '#28c840'][index];
+          layer.appendChild(dot);
+        });
+        document.body.appendChild(layer);
+      })();
+    `);
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+
   const image = await win.webContents.capturePage();
   fs.writeFileSync(out, image.toPNG());
   console.log('saved', out);

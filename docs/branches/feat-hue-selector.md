@@ -1,7 +1,7 @@
 # `feat/hue-selector` — Seletor de tom (hue)
 
 - **Type:** Feature — aparência / identidade
-- **Status:** In Progress — implementado, aguardando aprovação de merge
+- **Status:** Merged into `main` (included in release `1.6.0`)
 - **Base:** `main` @ `ba7ad9d` (release `1.5.1`)
 - **Plano aprovado:** [docs/plans/ui-pass-2.md](../plans/ui-pass-2.md) §5
 
@@ -149,6 +149,13 @@ scripts/screenshot.cjs        LEVE_HUE, LEVE_HUE_OPEN, LEVE_HOVER_THEME, LEVE_HO
   nasce com a transição de expansão; o resto da interface segue com microinterações ≈ 0.
 - Persistência do tom por tema? Hoje é um valor único para os dois temas (Paper e Ink compartilham o
   hue), como no mockup.
+
+## 6.1 Merge record
+
+- Aprovado pelo usuário após as correções de dessaturação e do botão da paleta.
+- Merge em `main` com `--no-ff`; release `1.6.0` — ver
+  [chore-release-1.6.0.md](chore-release-1.6.0.md).
+- **F4 (microinterações) fica para a `1.7.0`**, por decisão do usuário.
 
 ## 7. Commit history
 

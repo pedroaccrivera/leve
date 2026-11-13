@@ -1,9 +1,10 @@
-import { app, BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, nativeImage, screen, shell } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { tintIcon } from './services/appIcon';
 import {
   processSingleImage,
   getImageMetadata,
@@ -62,6 +63,33 @@ function resolveAppIcon(): string | undefined {
   return candidates.find((p) => fsSync.existsSync(p));
 }
 
+// App icon: the artwork is re-tinted whenever the tone changes, so the dock /
+// taskbar icon matches the window. `toneShift` is the same rotation the
+// renderer applies to its colour tokens (hue - 66), sent over IPC.
+let baseIconBuffer: Buffer | undefined;
+
+async function applyToneShift(shift: number): Promise<void> {
+  if (!baseIconBuffer) {
+    const iconPath = resolveAppIcon();
+    if (!iconPath) return;
+    baseIconBuffer = fsSync.readFileSync(iconPath);
+  }
+
+  try {
+    const png = await tintIcon(baseIconBuffer, shift);
+    const image = nativeImage.createFromBuffer(png);
+    if (process.platform === 'darwin') app.dock?.setIcon(image);
+    else win?.setIcon(image);
+    console.log(`[Tone] app icon shifted by ${shift} degrees`);
+  } catch (error) {
+    console.error('[Tone] Could not tint the app icon:', error);
+  }
+}
+
+ipcMain.on('tone:setShift', (_event, shift: number) => {
+  void applyToneShift(Number(shift) || 0);
+});
+
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = path.join(process.env.DIST, 'index.html');
 
@@ -72,6 +100,9 @@ async function createWindow() {
   if (appIcon && process.platform === 'darwin' && !app.isPackaged) {
     app.dock?.setIcon(appIcon);
   }
+  // The renderer reports the stored tone right after boot; this paints the
+  // designed artwork first so there is no flash of the previous colour.
+  void applyToneShift(0);
 
   // Open at the design window (1280 × 800) but never larger than the screen's
   // work area, so the app never has to be resized just to be usable.

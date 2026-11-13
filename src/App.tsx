@@ -51,7 +51,7 @@ const DEFAULT_IMAGE_CONFIG: ResizeConfig = {
 };
 
 const DEFAULT_VIDEO_CONFIG: VideoConfig = {
-  maxWidth: 1080,
+  maxWidth: 1920,
   withoutEnlargement: true,
   quality: 'balanced',
   outputFormat: 'mp4',
@@ -69,7 +69,7 @@ const DEFAULT_FAVICON_CONFIG: FaviconConfig = {
   padding: 0.08,
   radius: 0.22,
   backgroundMode: 'auto',
-  backgroundColor: '#ffffff',
+  backgroundColor: '#FFFFFF',
   nameMode: 'favicon',
   destinationMode: 'subfolder',
   subfolderName: 'favicons',
@@ -117,7 +117,7 @@ export const App: React.FC = () => {
   const [videoProgress, setVideoProgress] = useState({ current: 0, total: 0 });
   const [videoSummary, setVideoSummary] = useState<BatchSummary | null>(null);
   const [videoWidthIsCustom, setVideoWidthIsCustom] = useState(false);
-  const [videoCustomWidth, setVideoCustomWidth] = useState(1080);
+  const [videoCustomWidth, setVideoCustomWidth] = useState(1920);
 
   /* --------------------------------------------------------------- favicon */
   const [faviconItems, setFaviconItems] = useState<FaviconItem[]>([]);

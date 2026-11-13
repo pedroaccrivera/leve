@@ -18,7 +18,8 @@ const QUALITY_NOTES: Record<VideoQuality, string> = {
   aggressive: 'Smallest: the lightest file that still reads well.',
 };
 
-const WIDTHS = [720, 1080, 2160];
+/** Maximum-width presets are widths (720/1080/2160 are the heights of these). */
+const WIDTHS = [1280, 1920, 3840];
 
 /** Borderless value that still reads as plain text, but is editable. */
 const InlineValue = React.forwardRef<

@@ -43,6 +43,26 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Native colour input, used as the swatch of the favicon background field.
+ * Flat 44 × 44 block so it matches the other controls.
+ * ------------------------------------------------------------------------ */
+.fieldwork-color-input {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.fieldwork-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.fieldwork-color-input::-webkit-color-swatch {
+  border: none;
+}
+
+/* ---------------------------------------------------------------------------
  * Range slider (padding / corner radius)
  * Track: 2 px, ink up to the knob then `subtle`. Knob: 16 px ink.
  * ------------------------------------------------------------------------ */

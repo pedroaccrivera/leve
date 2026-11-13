@@ -196,6 +196,14 @@ export function fixtureState(name: string): FixtureState | null {
         faviconItems: LOGO_FILES.map(([file, w, h, size], index) => favicon(index + 1, file, w, h, size)),
         selectedFaviconId: 'fixture-logo-1',
       };
+    case 'favicon-color':
+      // Custom background path: an hsl() value exercises the tolerant field
+      // and the swatch normalisation.
+      return {
+        faviconItems: LOGO_FILES.map(([file, w, h, size], index) => favicon(index + 1, file, w, h, size)),
+        selectedFaviconId: 'fixture-logo-1',
+        faviconConfig: { backgroundMode: 'color', backgroundColor: 'hsl(210, 80%, 45%)' },
+      };
     case 'favicon-processing':
       return {
         faviconItems: [

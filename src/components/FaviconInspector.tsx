@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { FaviconConfig, FaviconSize } from '../types';
 import { FAVICON_SIZES } from '../types';
 import { Choice, ChoiceRow } from './ui/Choice';
 import { FieldNote, FieldSection } from './ui/FieldSection';
 import { Slider, SliderRow } from './ui/Slider';
 import { ResolvedValue } from './ui/TextInput';
+import { displayColor, isCssColor, toHexColor } from '../utils/colors';
 
 const BACKGROUNDS: { id: FaviconConfig['backgroundMode']; label: string }[] = [
   { id: 'auto', label: 'Auto' },
@@ -29,6 +30,11 @@ const RESOLVED_BACKGROUNDS: Record<FaviconConfig['backgroundMode'], string> = {
   transparent: 'Transparent',
 };
 
+const PRESET_COLORS: Record<'white' | 'black', string> = {
+  white: '#FFFFFF',
+  black: '#000000',
+};
+
 export interface FaviconInspectorProps {
   config: FaviconConfig;
   onPatch: (patch: Partial<FaviconConfig>) => void;
@@ -43,9 +49,28 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
   resolvedBackground,
   disabled = false,
 }) => {
+  /** Local text while the hex/colour field is being typed into. */
+  const [colorDraft, setColorDraft] = useState<string | null>(null);
+
   const allSizesSelected = FAVICON_SIZES.every((size) => config.sizes.includes(size));
   const leanSelected =
     config.sizes.length === 3 && [16, 32, 64].every((size) => config.sizes.includes(size as FaviconSize));
+
+  /**
+   * Choosing Custom starts from the colour already in use: the resolved
+   * background for Auto, the fixed value for White/Black, the current custom
+   * value when re-selected.
+   */
+  const colorInUse = (): string => {
+    if (config.backgroundMode === 'white') return PRESET_COLORS.white;
+    if (config.backgroundMode === 'black') return PRESET_COLORS.black;
+    if (config.backgroundMode === 'color') return config.backgroundColor ?? PRESET_COLORS.white;
+    return toHexColor(resolvedBackground ?? '', PRESET_COLORS.white);
+  };
+
+  const storedColor = config.backgroundColor ?? PRESET_COLORS.white;
+  const colorText = colorDraft ?? displayColor(storedColor);
+  const swatch = toHexColor(colorDraft && isCssColor(colorDraft) ? colorDraft : storedColor, PRESET_COLORS.white);
 
   const toggleSize = (size: FaviconSize) => {
     const selected = config.sizes.includes(size);
@@ -136,7 +161,13 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
               key={option.id}
               disabled={disabled}
               selected={config.backgroundMode === option.id}
-              onClick={() => onPatch({ backgroundMode: option.id })}
+              onClick={() =>
+                onPatch(
+                  option.id === 'color'
+                    ? { backgroundMode: 'color', backgroundColor: colorInUse() }
+                    : { backgroundMode: option.id }
+                )
+              }
             >
               {option.label}
             </Choice>
@@ -145,18 +176,35 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
 
         {config.backgroundMode === 'color' ? (
           <div className="flex items-center gap-3">
-            <span
-              className="h-11 w-11 shrink-0 border border-control"
-              style={{ backgroundColor: config.backgroundColor }}
-              aria-hidden="true"
+            <input
+              type="color"
+              aria-label="Pick custom background colour"
+              value={swatch}
+              disabled={disabled}
+              onChange={(event) => {
+                setColorDraft(null);
+                onPatch({ backgroundColor: event.target.value.toUpperCase() });
+              }}
+              className="fieldwork-color-input h-11 w-11 shrink-0 cursor-pointer border border-control bg-surface disabled:cursor-not-allowed"
             />
-            <div className="flex h-11 flex-1 items-center rounded-md border border-control bg-surface px-2.5">
+            <div className="flex h-11 flex-1 items-center rounded-md border border-control bg-surface px-2.5 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink">
               <input
                 aria-label="Custom background colour"
-                value={config.backgroundColor}
+                value={colorText}
                 disabled={disabled}
-                onChange={(event) => onPatch({ backgroundColor: event.target.value })}
-                className="w-full min-w-0 bg-transparent t-mono text-ink uppercase focus:outline-none"
+                spellCheck={false}
+                placeholder="#FFFFFF"
+                onFocus={() => setColorDraft(String(storedColor))}
+                onBlur={() => {
+                  // Keep a valid value, otherwise fall back to what is applied.
+                  setColorDraft(null);
+                }}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  setColorDraft(next);
+                  if (isCssColor(next)) onPatch({ backgroundColor: next });
+                }}
+                className="w-full min-w-0 bg-transparent t-mono text-ink placeholder:text-muted focus:outline-none disabled:cursor-not-allowed"
               />
             </div>
           </div>

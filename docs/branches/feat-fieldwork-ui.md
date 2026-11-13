@@ -163,16 +163,23 @@ vocabulary and is listed here for review:
    selected treatment (ink fill, `paper` text) as the designed ones.
 4. **Videos inspector values** read as plain text in the design; they remain editable in place
    (borderless input that reveals the designed focus ring on keyboard focus).
-5. **Video rows keep a remove button** on hover-free layout parity with the images rows
+5. **Video maximum-width presets are widths** — the design labels them `720 / 1080 / 2160`,
+   which are the *heights* paired with 1280 / 1920 / 3840. Per the user's review the presets and
+   the default are `1280 / 1920 / 3840` (default 1920), while the control itself is unchanged.
+6. **Favicon custom background** — choosing `Custom` starts from the colour already in use
+   (`White` → `#FFFFFF`, `Black` → `#000000`, `Auto`/`Transparent` → the background the renderer
+   resolved), the swatch is a native `<input type="color">` picker, and the field stays free-form:
+   any CSS colour (`#rgb`, `#rrggbb`, `rgb()`, `hsl()`, names) is accepted and the engine resolves it.
+7. **Video rows keep a remove button** on hover-free layout parity with the images rows
    (the design omits it for videos only).
-6. **Video `Original` output format** keeps the source container for mp4/mov/m4v/webm and falls
+8. **Video `Original` output format** keeps the source container for mp4/mov/m4v/webm and falls
    back to MP4 otherwise (`resolveVideoTarget`), inferred from the engine's capabilities.
-7. **Windows** does not render the 28 px window bar (the OS frame supplies the chrome); macOS
+9. **Windows** does not render the 28 px window bar (the OS frame supplies the chrome); macOS
    renders it with the real traffic lights positioned at the design's coordinates.
-8. **Favicon preview block** shows the resolved source name (read-only) in the slot the design
-   labels with the selected logo's base name.
-9. Report receipts: Images uses the designed `panel` fill; Videos/Favicon use the designed plain
-   three-column layout, exactly as the two references differ.
+10. **Favicon preview block** shows the resolved source name (read-only) in the slot the design
+    labels with the selected logo's base name.
+11. Report receipts: Images uses the designed `panel` fill; Videos/Favicon use the designed plain
+    three-column layout, exactly as the two references differ.
 
 ---
 
@@ -192,6 +199,17 @@ Bugs found and fixed during the visual pass:
 - Report headings showed a literal `\n` (JSX attribute strings do not interpret escapes).
 - Video queue rows were missing the `NN / NN` index.
 - Processing rows now show the saved path instead of the source dimensions, as designed.
+
+### Review fixes (user feedback)
+
+- **Video presets**: `720 / 1080 / 2160` → `1280 / 1920 / 3840` (the design listed heights; the
+  engine takes widths). Default maximum width is now 1920.
+- **Favicon custom background**: prefill from the colour in use, native colour picker on the swatch
+  and a free-form field. Validated with `testIcoProcessor.js` plus a direct check that
+  `hsl(210, 80%, 45%)` → `#1672ce` and `rgb(18, 52, 86)` → `#123456` through
+  `resolveFaviconBackground` (`parseCssColor` in `electron/services/icoProcessor.ts`); an
+  unparseable value falls back to white instead of producing a transparent icon.
+  The field no longer force-uppercases non-hex values (`hsl(...)` keeps its case).
 
 ---
 

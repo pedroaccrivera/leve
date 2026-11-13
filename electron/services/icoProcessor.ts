@@ -203,6 +203,33 @@ export async function detectAutoBackground(filePath: string): Promise<'#ffffff' 
   }
 }
 
+/**
+ * Resolve any CSS colour the user can type (hex, `rgb()`, `hsl()`, a named
+ * colour) into concrete channels. Six-digit hex is parsed directly; every
+ * other form is handed to sharp, which understands the full CSS colour
+ * syntax, and the result is read back as RGB.
+ */
+async function parseCssColor(color?: string): Promise<ResolvedBackground> {
+  const direct = parseBackground(color);
+  if (direct.hex !== 'transparent') return direct;
+  if (!color || color.trim() === '' || color.trim().toLowerCase() === 'transparent') return direct;
+
+  try {
+    const { data } = await sharp({
+      create: { width: 1, height: 1, channels: 3, background: color },
+    })
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const [r, g, b] = data;
+    const hex = `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+    return { r, g, b, alpha: 1, hex };
+  } catch {
+    // Unparseable value: keep the logo on a white background rather than
+    // silently producing a transparent icon.
+    return parseBackground('#ffffff');
+  }
+}
+
 export async function resolveFaviconBackground(
   config: FaviconConfig,
   filePath: string
@@ -215,10 +242,8 @@ export async function resolveFaviconBackground(
       return parseBackground('#ffffff');
     case 'black':
       return parseBackground('#000000');
-    case 'color': {
-      const parsed = parseBackground(config.backgroundColor);
-      return parsed.hex === 'transparent' ? parseBackground('#ffffff') : parsed;
-    }
+    case 'color':
+      return parseCssColor(config.backgroundColor);
     case 'transparent':
       return parseBackground(undefined);
     case 'auto':

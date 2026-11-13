@@ -78,10 +78,23 @@ app.whenReady().then(async () => {
         overflow: el.scrollHeight - el.clientHeight,
         blocks: [...el.children].map((c) => Math.round(c.getBoundingClientRect().height)),
       } : null;
+      // Vertical gap between stacked choice rows vs the horizontal gutter of
+      // the rows themselves — the design keeps both at 4 px.
+      const stacks = [...document.querySelectorAll('aside div')].filter(
+        (el) => typeof el.className === 'string' && el.className.includes('flex-col') && el.className.includes('gap-1')
+      );
+      const gutters = stacks.map((el) => {
+        const rows = [...el.children].map((c) => c.getBoundingClientRect());
+        const vertical = rows.slice(1).map((r, i) => Math.round(r.top - rows[i].bottom));
+        const columns = rows[0] ? [...rows[0] ? el.children[0].children : []].map((c) => c.getBoundingClientRect()) : [];
+        const horizontal = columns.slice(1).map((c, i) => Math.round(c.left - columns[i].right));
+        return { vertical, horizontal };
+      });
       return {
         viewport: { w: window.innerWidth, h: window.innerHeight },
         workspace: box(workspace),
         inspector: box(aside),
+        gutters,
       };
     })()`);
     console.log('MEASURE ' + JSON.stringify(metrics));

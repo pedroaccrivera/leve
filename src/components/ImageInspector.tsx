@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import type { CompressionLevel, OutputFormat, OutputDestinationMode, ResizeConfig } from '../types';
-import { Choice, ChoiceRow } from './ui/Choice';
+import { Choice, ChoiceRow, ChoiceStack } from './ui/Choice';
 import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
 import { TextInput } from './ui/TextInput';
@@ -111,35 +111,37 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
             if (raw && Number.isFinite(parsed) && parsed > 0) onCustomWidthChange(parsed);
           }}
         />
-        <ChoiceRow>
-          {WIDTH_PRESETS.slice(0, 3).map((preset) => (
-            <Choice
-              key={preset.width}
-              mono
-              disabled={disabled}
-              selected={!widthIsCustom && config.targetWidth === preset.width}
-              onClick={() => onSelectPreset(preset.width)}
-            >
-              {preset.width}
+        <ChoiceStack>
+          <ChoiceRow>
+            {WIDTH_PRESETS.slice(0, 3).map((preset) => (
+              <Choice
+                key={preset.width}
+                mono
+                disabled={disabled}
+                selected={!widthIsCustom && config.targetWidth === preset.width}
+                onClick={() => onSelectPreset(preset.width)}
+              >
+                {preset.width}
+              </Choice>
+            ))}
+          </ChoiceRow>
+          <ChoiceRow>
+            {WIDTH_PRESETS.slice(3).map((preset) => (
+              <Choice
+                key={preset.width}
+                mono
+                disabled={disabled}
+                selected={!widthIsCustom && config.targetWidth === preset.width}
+                onClick={() => onSelectPreset(preset.width)}
+              >
+                {preset.width}
+              </Choice>
+            ))}
+            <Choice mono disabled={disabled} selected={widthIsCustom} onClick={handleSelectCustom}>
+              Custom
             </Choice>
-          ))}
-        </ChoiceRow>
-        <ChoiceRow>
-          {WIDTH_PRESETS.slice(3).map((preset) => (
-            <Choice
-              key={preset.width}
-              mono
-              disabled={disabled}
-              selected={!widthIsCustom && config.targetWidth === preset.width}
-              onClick={() => onSelectPreset(preset.width)}
-            >
-              {preset.width}
-            </Choice>
-          ))}
-          <Choice mono disabled={disabled} selected={widthIsCustom} onClick={handleSelectCustom}>
-            Custom
-          </Choice>
-        </ChoiceRow>
+          </ChoiceRow>
+        </ChoiceStack>
       </FieldSection>
 
       <Checkbox

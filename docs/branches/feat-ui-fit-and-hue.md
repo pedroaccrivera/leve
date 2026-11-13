@@ -27,6 +27,9 @@ dois eixos**. Novo primitivo `ChoiceStack` (`flex flex-col gap-1`), aplicado em:
 - `ImageInspector` — presets de largura (2 linhas)
 - `FaviconInspector` — background (2 linhas) e tamanhos do `.ico` (2 linhas)
 
+Verificado por medição (`LEVE_MEASURE=1` passou a reportar os gutters das pilhas): vertical `[4]` e
+horizontal `[4, 4]` / `[4, 4, 4, 4, 4]` em 1060, 800 e 720 — antes o vertical era 8 no tier tall.
+
 ## 3. Itens 1 e 2 — densidade
 
 ### 3.1 O problema, medido
@@ -178,7 +181,9 @@ docs: record the second UI pass plan and branch
 feat(ui): density tiers so the whole app fits a short window
 chore(dev): measure layout overflow and window height in the harness
 docs(branch): correct the commit list
+fix(ui): equalise the gutter between stacked choice rows
 ```
 
-O ajuste do item 3 (`ChoiceStack`) entrou no commit de densidade — os dois tocam os mesmos
-primitivos (`ui/Choice.tsx`), então mantê-los juntos evita um commit que não compila isolado.
+O ajuste do item 3 chegou em dois tempos: o primitivo `ChoiceStack` foi criado junto do commit de
+densidade (mesmo arquivo, `ui/Choice.tsx`) e a aplicação nas duas inspectors veio no commit
+seguinte, com a verificação por medição.

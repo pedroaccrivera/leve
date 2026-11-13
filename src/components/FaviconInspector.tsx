@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { FaviconConfig, FaviconSize } from '../types';
 import { FAVICON_SIZES } from '../types';
-import { Choice, ChoiceRow } from './ui/Choice';
+import { Choice, ChoiceRow, ChoiceStack } from './ui/Choice';
 import { FieldSection } from './ui/FieldSection';
 import { Slider, SliderRow } from './ui/Slider';
 import { ResolvedValue } from './ui/TextInput';
@@ -142,36 +142,38 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
       </FieldSection>
 
       <FieldSection index="03" title="Background" note="Choose Custom to edit the hex color.">
-        <ChoiceRow>
-          {BACKGROUNDS.slice(0, 3).map((option) => (
-            <Choice
-              key={option.id}
-              disabled={disabled}
-              selected={config.backgroundMode === option.id}
-              onClick={() => onPatch({ backgroundMode: option.id })}
-            >
-              {option.label}
-            </Choice>
-          ))}
-        </ChoiceRow>
-        <ChoiceRow>
-          {BACKGROUNDS.slice(3).map((option) => (
-            <Choice
-              key={option.id}
-              disabled={disabled}
-              selected={config.backgroundMode === option.id}
-              onClick={() =>
-                onPatch(
-                  option.id === 'color'
-                    ? { backgroundMode: 'color', backgroundColor: colorInUse() }
-                    : { backgroundMode: option.id }
-                )
-              }
-            >
-              {option.label}
-            </Choice>
-          ))}
-        </ChoiceRow>
+        <ChoiceStack>
+          <ChoiceRow>
+            {BACKGROUNDS.slice(0, 3).map((option) => (
+              <Choice
+                key={option.id}
+                disabled={disabled}
+                selected={config.backgroundMode === option.id}
+                onClick={() => onPatch({ backgroundMode: option.id })}
+              >
+                {option.label}
+              </Choice>
+            ))}
+          </ChoiceRow>
+          <ChoiceRow>
+            {BACKGROUNDS.slice(3).map((option) => (
+              <Choice
+                key={option.id}
+                disabled={disabled}
+                selected={config.backgroundMode === option.id}
+                onClick={() =>
+                  onPatch(
+                    option.id === 'color'
+                      ? { backgroundMode: 'color', backgroundColor: colorInUse() }
+                      : { backgroundMode: option.id }
+                  )
+                }
+              >
+                {option.label}
+              </Choice>
+            ))}
+          </ChoiceRow>
+        </ChoiceStack>
 
         {config.backgroundMode === 'color' ? (
           <div className="flex items-center gap-3">
@@ -219,35 +221,37 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
         title="Sizes in each .ico"
         note="Raster sizes above the source are skipped."
       >
-        <ChoiceRow>
-          {FAVICON_SIZES.map((size) => (
+        <ChoiceStack>
+          <ChoiceRow>
+            {FAVICON_SIZES.map((size) => (
+              <Choice
+                key={size}
+                mono
+                disabled={disabled}
+                selected={config.sizes.includes(size)}
+                onClick={() => toggleSize(size)}
+              >
+                {size}
+              </Choice>
+            ))}
+          </ChoiceRow>
+          <ChoiceRow>
             <Choice
-              key={size}
-              mono
               disabled={disabled}
-              selected={config.sizes.includes(size)}
-              onClick={() => toggleSize(size)}
+              selected={allSizesSelected}
+              onClick={() => onPatch({ sizes: [...FAVICON_SIZES] })}
             >
-              {size}
+              {allSizesSelected ? 'All sizes ✓' : 'All sizes'}
             </Choice>
-          ))}
-        </ChoiceRow>
-        <ChoiceRow>
-          <Choice
-            disabled={disabled}
-            selected={allSizesSelected}
-            onClick={() => onPatch({ sizes: [...FAVICON_SIZES] })}
-          >
-            {allSizesSelected ? 'All sizes ✓' : 'All sizes'}
-          </Choice>
-          <Choice
-            disabled={disabled}
-            selected={leanSelected}
-            onClick={() => onPatch({ sizes: [16, 32, 64] })}
-          >
-            Lean · 16–64
-          </Choice>
-        </ChoiceRow>
+            <Choice
+              disabled={disabled}
+              selected={leanSelected}
+              onClick={() => onPatch({ sizes: [16, 32, 64] })}
+            >
+              Lean · 16–64
+            </Choice>
+          </ChoiceRow>
+        </ChoiceStack>
       </FieldSection>
     </div>
   );

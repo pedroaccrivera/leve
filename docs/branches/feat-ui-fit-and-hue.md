@@ -174,7 +174,11 @@ scripts/screenshot.cjs             LEVE_MEASURE=1 e LEVE_HEIGHT=<px>
 ## 8. Commit history
 
 ```
-feat(ui): density tiers so the whole app fits a short window
-fix(ui): equalise the gutter between stacked choice rows
 docs: record the second UI pass plan and branch
+feat(ui): density tiers so the whole app fits a short window
+chore(dev): measure layout overflow and window height in the harness
+docs(branch): correct the commit list
 ```
+
+O ajuste do item 3 (`ChoiceStack`) entrou no commit de densidade — os dois tocam os mesmos
+primitivos (`ui/Choice.tsx`), então mantê-los juntos evita um commit que não compila isolado.

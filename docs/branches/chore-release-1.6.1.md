@@ -56,8 +56,16 @@ Publish flow: merge into `main`, tag `v1.6.1`, push the tag. The
   i.e. the renderer restored a stored tone (284°) and the icon was re-tinted.
 - Channel names verified in the compiled artifacts (`tone:setShift` in `dist-electron/main.js` and
   `dist-electron/preload.cjs`; `setToneShift` in the renderer bundle).
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [43487001612](https://github.com/pedroaccrivera/leve/actions/runs/43487001612)
+  (macOS arm64 + Windows x64; the macOS runner queued for several minutes again).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.1>
+  (public, not a draft, release notes generated).
+  - `leve-1.6.1-mac-arm64.dmg` — 152,771,165 B
+  - `leve-1.6.1-mac-arm64.zip` — 147,575,310 B
+  - `leve-1.6.1-win-x64.exe` — 127,632,836 B
+  - `leve-1.6.1-win-x64-portable.exe` — 127,483,069 B
+- Sizes are within ~10 KB of `v1.6.0` — the release only changes runtime icon painting.
 
 ## 4. Decision Log and Commit History
 
@@ -67,6 +75,11 @@ Publish flow: merge into `main`, tag `v1.6.1`, push the tag. The
   reviewable before the tag triggers the public Release workflow.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged, matching the previous flow.
+- **Homebrew cask:** updated in `pedroaccrivera/homebrew-tap`
+  ([`40300a2a`](https://github.com/pedroaccrivera/homebrew-tap/commit/40300a2a6a4026ecd8f0b511d7771be4a34d7eae))
+  from `1.6.0` to `1.6.1`, with the published zip `sha256`
+  (`a570acea…15baf09`, 147,575,310 B — size and hash verified against the release asset before
+  committing).
 
 | Commit | Message |
 | :--- | :--- |

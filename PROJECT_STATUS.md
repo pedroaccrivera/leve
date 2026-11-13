@@ -43,21 +43,14 @@ This document tracks the current architecture, implemented modules, execution fl
   - Filename collision resolution to prevent overwriting existing files.
 
 ### 2.3. User Interface (`src/`)
-- [x] **Modern Header**: Wordmark + centered **Images | Videos | Favicon** tabs, with a progressive-blur backdrop that fades from a strong blur at the top to none at the bottom edge; content scrolls underneath. Only the theme toggle lives on the right.
-- [x] **Pinned Navigation**: `Images | Videos | Favicon` tabs live in the fixed header, so they stay visible while scrolling.
-- [x] **Queue Clear Action**: `Clear queue (N)` sits right below each file listing (`QueueClearButton`), not in the header.
-- [x] **Interactive DropZone**: Supports drag-and-drop for multiple files and folders, plus native file/folder selection dialogs.
-- [x] **Image Queue (`ImageQueue`)**:
-  - On-demand thumbnails with original dimensions and file size on disk.
-  - Real-time status per item (Pending, Processing, Done, Error).
-  - Individual item removal and full queue clear.
-- [x] **Settings Panel (`SettingsPanel`)**:
-  - Width selection (800px, 1280px, 1920px, 2560px, 3840px, or custom value).
-  - Custom preset management (create, select, delete — persisted in `localStorage`).
-  - Compression, format conversion, metadata removal, and output destination configuration.
-- [x] **Summary Modal (`SummaryModal`)**:
-  - Post-processing statistics: total files processed, space saved in bytes/percentage, and elapsed time.
-  - One-click shortcut to open the output folder in Finder / Explorer.
+- [x] **Fieldwork interface (feat/fieldwork-ui)**: whole UI replaced by the Figma "Fieldwork / Refined" direction — Paper/Ink themes on one semantic token set, Space Grotesk / Inter / IBM Plex Mono bundled locally, 28 px window bar (macOS) + 72 px navigation with numbered tabs, workbench (fluid workspace + 428 px batch inspector) and a 92 px action footer.
+- [x] **Workbench screens**: start / ready / processing / batch report states for Images, Videos and Favicon, all reproduced from the design (including the locked read-only recipe while a batch runs and the in-page batch report that replaces the old summary modal).
+- [x] **Sequential queue rows**: hairline-separated rows with thumbnail, dimensions, resolved output path and state (`○ Pending`, `✓ Saved`, `↷ Skipped`, `! Failed`).
+- [x] **Inspectors**: `Image recipe` (output width with persistent custom value, compression, format, metadata, destination), `Video recipe` (underline choice rows, resolved values, locked variant) and `Favicon recipe` (fit, padding, corner radius, background, ICO sizes).
+- [x] **Favicon studio**: 256 px master preview with a dashed safe area, actual-size previews, logo strip, output-name and destination blocks.
+- [x] **Batch report**: measured receipt (files saved / space saved / elapsed time), per-file outcome rows and a read-only "Recipe used" inspector.
+- [x] **Cancel batch**: the primary action is disabled while a batch runs and a cancel control stops the queue between files.
+- [x] **Keyboard focus reference**: 2 px ink outline with 2 px offset on every control.
 
 ### 2.4. Tests & Packaging
 - [x] Automated processing test script (`test/testProcessor.js`).
@@ -124,3 +117,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/favicon-editor` | Feature — Favicon Mini Editor (Preview, Auto Background, Padding, Radius, Vector Upscaling) | Merged | [docs/branches/feat-favicon-editor.md](docs/branches/feat-favicon-editor.md) |
 | `feat/header-cleanup` | Feature — Clean Header, Content-Aligned Tabs & Progressive Blur | Merged | [docs/branches/feat-header-cleanup.md](docs/branches/feat-header-cleanup.md) |
 | `chore/release-1.4.0` | Chore — Release 1.4.0 (Favicon Editor & Header) | Merged | [docs/branches/chore-release-1.4.0.md](docs/branches/chore-release-1.4.0.md) |
+| `feat/fieldwork-ui` | Feature — Fieldwork / Refined UI Overhaul (Figma 1:1) | In Progress | [docs/branches/feat-fieldwork-ui.md](docs/branches/feat-fieldwork-ui.md) |

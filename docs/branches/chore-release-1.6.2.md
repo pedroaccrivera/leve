@@ -62,6 +62,6 @@ Publish flow: merge into `main`, tag `v1.6.2`, push the tag. The
 
 | Commit | Message |
 | :--- | :--- |
-| `BUMP` | `chore(release): bump version to 1.6.2` |
-| `MERGE` | `chore: merge chore/release-1.6.2 into main` |
+| `c246010` | `chore(release): bump version to 1.6.2` |
+| `7ef9d5e` | `chore: merge chore/release-1.6.2 into main` |
 | _(this docs commit)_ | `docs: mark chore/release-1.6.2 as merged` |

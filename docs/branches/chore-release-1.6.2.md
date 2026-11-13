@@ -1,7 +1,7 @@
 # Branch `chore/release-1.6.2` — Release 1.6.2 (Consistent video recipe)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress — version bumped, awaiting merge + tag
+- **Status:** Merged into `main` (tagged `v1.6.2`)
 - **Base:** `main` @ `1b01f84`
 
 ## 1. Goal and Scope
@@ -62,6 +62,6 @@ Publish flow: merge into `main`, tag `v1.6.2`, push the tag. The
 
 | Commit | Message |
 | :--- | :--- |
-| _(pending)_ | `chore(release): bump version to 1.6.2` |
-| _(pending)_ | `chore: merge chore/release-1.6.2 into main` |
-| _(pending)_ | `docs: mark chore/release-1.6.2 as merged` |
+| `BUMP` | `chore(release): bump version to 1.6.2` |
+| `MERGE` | `chore: merge chore/release-1.6.2 into main` |
+| _(this docs commit)_ | `docs: mark chore/release-1.6.2 as merged` |

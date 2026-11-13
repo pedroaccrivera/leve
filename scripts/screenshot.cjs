@@ -34,6 +34,9 @@ app.whenReady().then(async () => {
     },
   });
 
+  // Captures must not inherit the previous run's stored tone.
+  await win.webContents.session.clearStorageData({ storages: ['localstorage'] });
+
   const params = new URLSearchParams();
   if (fixture) params.set('fixture', fixture);
   if (theme) params.set('theme', theme);
@@ -64,12 +67,60 @@ app.whenReady().then(async () => {
     await new Promise((resolve) => setTimeout(resolve, 120));
   }
 
-  // Reveal the inspector tooltips for a visual check of their placement.
-  if (process.env.LEVE_REVEAL_TOOLTIPS === '1') {
+  // Drive the tone control for captures: open it, and optionally set a hue.
+  if (process.env.LEVE_HUE_OPEN === '1') {
     await win.webContents.executeJavaScript(`
-      document.querySelectorAll('[role=tooltip]').forEach((el) => { el.style.opacity = '1'; });
+      (() => {
+        const buttons = [...document.querySelectorAll('button')];
+        const palette = buttons.find((b) => (b.getAttribute('aria-label') || '') === 'Choose app tone');
+        if (palette) palette.click();
+      })();
     `);
-    await new Promise((resolve) => setTimeout(resolve, 120));
+    await new Promise((resolve) => setTimeout(resolve, 320));
+  }
+  if (process.env.LEVE_HUE) {
+    await win.webContents.executeJavaScript(`
+      (() => {
+        const range = document.querySelector('input[aria-label="App tone"]');
+        if (!range) return;
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+        setter.call(range, '${process.env.LEVE_HUE}');
+        range.dispatchEvent(new Event('input', { bubbles: true }));
+        range.dispatchEvent(new Event('change', { bubbles: true }));
+      })();
+    `);
+    await new Promise((resolve) => setTimeout(resolve, 450));
+  }
+
+  // Hover the hue value so it swaps to the reset glyph.
+  if (process.env.LEVE_HOVER_RESET === '1') {
+    const target = await win.webContents.executeJavaScript(`(() => {
+      const button = [...document.querySelectorAll('button')].find((b) => (b.getAttribute('aria-label') || '').startsWith('App tone') || (b.getAttribute('aria-label') || '').startsWith('Reset app tone'));
+      if (!button) return null;
+      const r = button.getBoundingClientRect();
+      return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+    })()`);
+    if (target) {
+      win.webContents.sendInputEvent({ type: 'mouseMove', x: target.x, y: target.y });
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+  }
+
+  // Reveal the tone trigger. CSS :hover cannot be forced from a script, so a
+  // capture-only rule gives the collapsed slot the width the hover rule gives
+  // it (the element animates that width, hence the !important + settle time).
+  if (process.env.LEVE_HOVER_THEME === '1') {
+    await win.webContents.executeJavaScript(`
+      (() => {
+        const button = [...document.querySelectorAll('button')].find((b) => (b.getAttribute('aria-label') || '') === 'Choose app tone');
+        if (!button || !button.parentElement) return;
+        const style = document.createElement('style');
+        const attr = button.parentElement.setAttribute('data-tone-trigger', '');
+        style.textContent = '[data-tone-trigger] { width: 44px !important; transition: none !important; }';
+        document.head.appendChild(style);
+      })();
+    `);
+    await new Promise((resolve) => setTimeout(resolve, 350));
   }
 
   const image = await win.webContents.capturePage();
@@ -117,6 +168,53 @@ app.whenReady().then(async () => {
         workspace: box(workspace),
         inspector: box(aside),
         gutters,
+        rootStyle: document.documentElement.getAttribute('style'),
+        // Independent WCAG check on real elements: text colour vs its own
+        // background, which is what the user actually reads.
+        contrast: (() => {
+          const lum = (css) => {
+            const [r, g, b] = (css.match(/[\\d.]+/g) || ['0', '0', '0']).map(Number);
+            const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+            return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+          };
+          // Text is usually on an ancestor's fill, so resolve it upwards.
+          const effectiveBg = (el) => {
+            let node = el;
+            while (node) {
+              const bg = getComputedStyle(node).backgroundColor;
+              const alpha = (bg.match(/[\\d.]+/g) || [])[3];
+              if (bg && bg !== 'transparent' && alpha !== '0') return bg;
+              node = node.parentElement;
+            }
+            return 'rgb(255, 255, 255)';
+          };
+          const ratio = (el) => {
+            if (!el) return null;
+            const a = lum(getComputedStyle(el).color); const b = lum(effectiveBg(el));
+            return +((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)).toFixed(2);
+          };
+          const byClass = (needle, tag = 'button') =>
+            [...document.querySelectorAll(tag)].find((el) => typeof el.className === 'string' && el.className.includes(needle));
+          const dbg = (() => {
+            const el = byClass('bg-signal');
+            if (!el) return 'no cta element';
+            const cs = getComputedStyle(el);
+            return { cls: String(el.className).slice(0, 80), color: cs.color, bg: cs.backgroundColor };
+          })();
+          return {
+            debug: dbg,
+            cta: ratio(byClass('bg-signal')),
+            ctaBg: byClass('bg-signal') ? getComputedStyle(byClass('bg-signal')).backgroundColor : null,
+            activeTab: ratio(document.querySelector('button[role=tab][aria-selected=true]')),
+            heading: ratio(document.querySelector('h2')),
+            mutedLine: ratio(document.querySelector('main p, aside ~ div p')),
+            stage: ratio(byClass('text-signal-text', 'span')),
+          };
+        })(),
+        ctaBackground: (() => {
+          const btn = [...document.querySelectorAll('button')].find((b) => (b.textContent || '').trim().startsWith('No images selected'));
+          return btn ? getComputedStyle(btn).backgroundColor : null;
+        })(),
         horizontal: [
           hOverflow(aside, 'inspector'),
           hOverflow(workspace, 'workspace'),

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import { ThemeProvider } from './context/ThemeContext';
+import { HueProvider } from './context/HueContext';
 import './index.css';
 
 // Prevent default browser drag & drop behavior (which opens the image in window)
@@ -11,7 +12,9 @@ window.addEventListener('drop', (e) => e.preventDefault());
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
-      <App />
+      <HueProvider>
+        <App />
+      </HueProvider>
     </ThemeProvider>
   </React.StrictMode>,
 );

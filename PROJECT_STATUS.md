@@ -118,3 +118,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/header-cleanup` | Feature — Clean Header, Content-Aligned Tabs & Progressive Blur | Merged | [docs/branches/feat-header-cleanup.md](docs/branches/feat-header-cleanup.md) |
 | `chore/release-1.4.0` | Chore — Release 1.4.0 (Favicon Editor & Header) | Merged | [docs/branches/chore-release-1.4.0.md](docs/branches/chore-release-1.4.0.md) |
 | `feat/fieldwork-ui` | Feature — Fieldwork / Refined UI Overhaul (Figma 1:1) | Merged | [docs/branches/feat-fieldwork-ui.md](docs/branches/feat-fieldwork-ui.md) |
+| `chore/release-1.5.0` | Chore — Release 1.5.0 (Fieldwork UI) | In Progress | [docs/branches/chore-release-1.5.0.md](docs/branches/chore-release-1.5.0.md) |

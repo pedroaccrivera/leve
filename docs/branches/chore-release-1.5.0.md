@@ -1,7 +1,7 @@
 # Branch `chore/release-1.5.0` — Release 1.5.0 (Fieldwork UI)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress — version bumped, awaiting merge + tag
+- **Status:** Merged into `main` (tagged `v1.5.0`)
 - **Base:** `main` @ `7d95268`
 
 ## 1. Goal and Scope
@@ -75,6 +75,6 @@ Windows x64 (installer/portable) to a public GitHub Release with generated relea
 
 | Commit | Message |
 | :--- | :--- |
-| _(pending)_ | `chore(release): bump version to 1.5.0` |
-| _(pending)_ | `chore: merge chore/release-1.5.0 into main` |
-| _(pending)_ | `docs: mark chore/release-1.5.0 as merged` |
+| `f534a4b` | `chore(release): bump version to 1.5.0` |
+| `c5391f5` | `chore: merge chore/release-1.5.0 into main` |
+| _(this docs commit)_ | `docs: mark chore/release-1.5.0 as merged` |

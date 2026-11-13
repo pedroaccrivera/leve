@@ -210,6 +210,8 @@ export interface ElectronAPI {
     filePath: string,
     config: FaviconConfig
   ) => Promise<FaviconPreviewResult>;
+  /** Appearance: shifts the dock / taskbar icon by the tone rotation. */
+  setToneShift?: (shift: number) => void;
 }
 
 declare global {

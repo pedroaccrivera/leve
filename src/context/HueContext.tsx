@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from './ThemeContext';
 import { applyHue, BASE_HUE, clampHue, loadHue, saveHue } from '../utils/hue';
 
@@ -21,8 +21,22 @@ export const HueProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const { resolvedTheme } = useTheme();
   const [hue, setHueState] = useState<number>(() => loadHue());
 
+  const iconTimer = useRef<number | undefined>(undefined);
+
   useEffect(() => {
     applyHue(hue, resolvedTheme === 'dark');
+
+    /*
+     * The dock / taskbar icon follows the tone too. Reported after a short
+     * settle so dragging the spectrum does not re-render the artwork on every
+     * step, and on boot so the stored tone is what the icon shows.
+     */
+    window.clearTimeout(iconTimer.current);
+    iconTimer.current = window.setTimeout(() => {
+      window.electronAPI?.setToneShift?.(hue - BASE_HUE);
+    }, 160);
+
+    return () => window.clearTimeout(iconTimer.current);
   }, [hue, resolvedTheme]);
 
   const setHue = useCallback((value: number) => {

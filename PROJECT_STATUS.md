@@ -51,6 +51,8 @@ This document tracks the current architecture, implemented modules, execution fl
 - [x] **Batch report**: measured receipt (files saved / space saved / elapsed time), per-file outcome rows and a read-only "Recipe used" inspector.
 - [x] **Cancel batch**: the primary action is disabled while a batch runs and a cancel control stops the queue between files.
 - [x] **Keyboard focus reference**: 2 px ink outline with 2 px offset on every control.
+- [x] **App tone selector**: inline hue spectrum in the header that rotates every semantic colour token, saved across launches, with surface-aware text colours.
+- [x] **Tone-aware app icon**: the dock / taskbar artwork is re-tinted with the stored tone at boot and on every change (`tone:setShift` IPC → `sharp.modulate` → `app.dock.setIcon` / `win.setIcon`).
 
 ### 2.4. Tests & Packaging
 - [x] Automated processing test script (`test/testProcessor.js`).
@@ -126,3 +128,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/hue-selector` | Feature — Hue (tone) selector | Merged | [docs/branches/feat-hue-selector.md](docs/branches/feat-hue-selector.md) |
 | `chore/release-1.5.1` | Chore — Release 1.5.1 (UI fit & fixes) | Merged | [docs/branches/chore-release-1.5.1.md](docs/branches/chore-release-1.5.1.md) |
 | `chore/release-1.6.0` | Chore — Release 1.6.0 (Tone selector) | Merged | [docs/branches/chore-release-1.6.0.md](docs/branches/chore-release-1.6.0.md) |
+| `feat/tone-aware-icon` | Feature — Application icon follows the chosen tone | Merged | [docs/branches/feat-tone-aware-icon.md](docs/branches/feat-tone-aware-icon.md) |

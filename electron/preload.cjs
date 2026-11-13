@@ -31,6 +31,9 @@ const api = {
   generateFavicon: (item, config) => ipcRenderer.invoke('favicon:process', item, config),
   renderFaviconPreview: (filePath, config) =>
     ipcRenderer.invoke('favicon:preview', filePath, config),
+
+  // Appearance: the dock / taskbar icon follows the chosen tone.
+  setToneShift: (shift) => ipcRenderer.send('tone:setShift', shift),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

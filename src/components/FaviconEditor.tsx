@@ -9,6 +9,7 @@ import { FolderPickerField } from './ui/FolderPickerField';
 import { QueueActions } from './QueueActions';
 import { cx } from '../utils/cx';
 import { formatBytes } from '../utils/formatters';
+import { getCachedThumbnail } from '../utils/thumbnailCache';
 
 interface FaviconPreviewState {
   dataUrl: string;
@@ -95,6 +96,27 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
     () => (selectedItem ? selectedItem.name.replace(/\.[^.]+$/, '') : ''),
     [selectedItem]
   );
+
+  // Source thumbnails for the filmstrip (cached across the editor and the queue).
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const loaded = await Promise.all(
+        items.map(async (item) => [item.id, await getCachedThumbnail(item.path)] as const)
+      );
+      if (cancelled) return;
+      setThumbs((prev) => {
+        const next = { ...prev };
+        for (const [id, url] of loaded) if (url) next[id] = url;
+        return next;
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [items]);
 
   const sortedItems = items;
   const previewSizes = useMemo(
@@ -197,11 +219,19 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
                   onDoubleClick={() => onRemoveItem(item.id)}
                   title={`Remove ${item.name}`}
                   className={cx(
-                    'flex h-11 w-11 shrink-0 items-center justify-center border bg-panel transition-colors',
+                    'flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden border bg-panel transition-colors',
                     active ? 'border-signal' : 'border-control hover:border-ink'
                   )}
                 >
-                  <ImageIcon className="h-5 w-5 text-muted" strokeWidth={2} />
+                  {thumbs[item.id] ? (
+                    <img
+                      src={thumbs[item.id]}
+                      alt={item.name}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <ImageIcon className="h-5 w-5 text-muted" strokeWidth={2} />
+                  )}
                 </button>
                 {active && (
                   <div className="flex min-w-0 flex-col gap-1">

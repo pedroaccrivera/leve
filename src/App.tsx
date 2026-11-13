@@ -122,7 +122,12 @@ export const App: React.FC = () => {
   /* --------------------------------------------------------------- favicon */
   const [faviconItems, setFaviconItems] = useState<FaviconItem[]>([]);
   const [selectedFaviconId, setSelectedFaviconId] = useState<string | null>(null);
-  const [faviconConfig, setFaviconConfig] = useState<FaviconConfig>(DEFAULT_FAVICON_CONFIG);
+  const [faviconDefaults, setFaviconDefaults] = useState<FaviconConfig>(DEFAULT_FAVICON_CONFIG);
+  /**
+   * Each logo owns its recipe (a batch can serve different clients); this
+   * opt-in mirrors an edit to every logo instead.
+   */
+  const [applyToAllFavicons, setApplyToAllFavicons] = useState(false);
   const [isProcessingFavicon, setIsProcessingFavicon] = useState(false);
   const [faviconProgress, setFaviconProgress] = useState({ current: 0, total: 0 });
   const [faviconSummary, setFaviconSummary] = useState<BatchSummary | null>(null);
@@ -149,9 +154,15 @@ export const App: React.FC = () => {
     if (state.isProcessingVideo != null) setIsProcessingVideo(state.isProcessingVideo);
     if (state.videoProgress) setVideoProgress(state.videoProgress);
     if (state.videoSummary !== undefined) setVideoSummary(state.videoSummary);
-    if (state.faviconItems) setFaviconItems(state.faviconItems);
+    if (state.faviconItems)
+      setFaviconItems(
+        state.faviconItems.map((item) => ({
+          ...item,
+          config: item.config ?? { ...DEFAULT_FAVICON_CONFIG, ...(state.faviconConfig ?? {}) },
+        }))
+      );
     if (state.selectedFaviconId !== undefined) setSelectedFaviconId(state.selectedFaviconId);
-    if (state.faviconConfig) setFaviconConfig((prev) => ({ ...prev, ...state.faviconConfig }));
+    if (state.faviconConfig) setFaviconDefaults((prev) => ({ ...prev, ...state.faviconConfig }));
     if (state.isProcessingFavicon != null) setIsProcessingFavicon(state.isProcessingFavicon);
     if (state.faviconProgress) setFaviconProgress(state.faviconProgress);
     if (state.faviconSummary !== undefined) setFaviconSummary(state.faviconSummary);
@@ -203,14 +214,19 @@ export const App: React.FC = () => {
     });
   }, []);
 
-  const addFaviconItems = useCallback((incoming: ImageItem[]) => {
-    setFaviconItems((prev) => {
-      const known = new Set(prev.map((item) => item.path));
-      const added = incoming.filter((item) => !known.has(item.path));
-      if (added.length) setSelectedFaviconId((current) => current ?? added[0].id);
-      return [...prev, ...added];
-    });
-  }, []);
+  const addFaviconItems = useCallback(
+    (incoming: ImageItem[]) => {
+      setFaviconItems((prev) => {
+        const known = new Set(prev.map((item) => item.path));
+        const added = incoming
+          .filter((item) => !known.has(item.path))
+          .map((item) => ({ ...item, config: { ...faviconDefaults } }));
+        if (added.length) setSelectedFaviconId((current) => current ?? added[0].id);
+        return [...prev, ...added];
+      });
+    },
+    [faviconDefaults]
+  );
 
   const startImages = async () => {
     if (!items.length || isProcessing || !window.electronAPI) return;
@@ -388,9 +404,37 @@ export const App: React.FC = () => {
   };
 
   /* --------------------------------------------------------- favicon flow */
-  const patchFaviconConfig = useCallback((patch: Partial<FaviconConfig>) => {
-    setFaviconConfig((prev) => ({ ...prev, ...patch }));
-  }, []);
+  const patchFaviconConfig = useCallback(
+    (patch: Partial<FaviconConfig>) => {
+      // No logos yet: the edit shapes the template the next ones inherit.
+      if (!faviconItems.length) {
+        setFaviconDefaults((prev) => ({ ...prev, ...patch }));
+        return;
+      }
+      setFaviconItems((prev) =>
+        prev.map((item) =>
+          item.id === selectedFaviconId || applyToAllFavicons
+            ? { ...item, config: { ...(item.config ?? faviconDefaults), ...patch } }
+            : item
+        )
+      );
+    },
+    [applyToAllFavicons, faviconDefaults, faviconItems.length, selectedFaviconId]
+  );
+
+  const resetFaviconRecipe = useCallback(() => {
+    if (!faviconItems.length) {
+      setFaviconDefaults(DEFAULT_FAVICON_CONFIG);
+      return;
+    }
+    setFaviconItems((prev) =>
+      prev.map((item) =>
+        item.id === selectedFaviconId || applyToAllFavicons
+          ? { ...item, config: { ...DEFAULT_FAVICON_CONFIG } }
+          : item
+      )
+    );
+  }, [applyToAllFavicons, faviconItems.length, selectedFaviconId]);
 
   const startFavicons = async () => {
     if (!faviconItems.length || isProcessingFavicon || !window.electronAPI) return;
@@ -416,7 +460,7 @@ export const App: React.FC = () => {
         prev.map((entry, i) => (i === index ? { ...entry, status: 'processing' } : entry))
       );
 
-      const result = await window.electronAPI.generateFavicon(item, faviconConfig);
+      const result = await window.electronAPI.generateFavicon(item, item.config ?? faviconDefaults);
 
       if (result.success) {
         saved++;
@@ -478,6 +522,15 @@ export const App: React.FC = () => {
   const activeSummary = isVideoTab ? videoSummary : isFaviconTab ? faviconSummary : summary;
   const selectedFaviconItem =
     faviconItems.find((item) => item.id === selectedFaviconId) ?? faviconItems[0] ?? null;
+  /** The recipe the inspector edits: the selected logo's, or the template. */
+  const faviconConfig = selectedFaviconItem?.config ?? faviconDefaults;
+  const faviconRecipesShared =
+    faviconItems.length > 1 &&
+    faviconItems.every(
+      (item) =>
+        JSON.stringify(item.config ?? faviconDefaults) ===
+        JSON.stringify(faviconItems[0].config ?? faviconDefaults)
+    );
 
   const openOutputFolder = () => {
     if (!window.electronAPI) return;
@@ -1074,7 +1127,7 @@ export const App: React.FC = () => {
             }
             onClearQueue={clearQueue}
             onAddItems={addFaviconItems}
-            onResetRecipe={() => setFaviconConfig(DEFAULT_FAVICON_CONFIG)}
+            onResetRecipe={resetFaviconRecipe}
             onResolvedBackground={setResolvedFaviconBackground}
             disabled={isProcessingFavicon}
           />
@@ -1166,7 +1219,9 @@ export const App: React.FC = () => {
         <ActionFooter
           title={
             faviconItems.length
-              ? `${countLabel(faviconItems.length, 'logo', 'logos')}. One shared recipe.`
+              ? `${countLabel(faviconItems.length, 'logo', 'logos')}. ${
+                  faviconRecipesShared ? 'One shared recipe.' : 'A recipe each.'
+                }`
               : 'Ready when you are.'
           }
           subtitle={
@@ -1400,6 +1455,9 @@ export const App: React.FC = () => {
         <FaviconInspector
           config={faviconConfig}
           onPatch={patchFaviconConfig}
+          applyToAll={applyToAllFavicons}
+          onToggleApplyToAll={setApplyToAllFavicons}
+          logoCount={faviconItems.length}
           resolvedBackground={resolvedFaviconBackground}
         />
       );

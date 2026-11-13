@@ -160,6 +160,11 @@ export interface FaviconConfig {
 }
 
 export interface FaviconItem extends ImageItem {
+  /**
+   * This logo's own recipe. A batch can serve different clients, so an edit
+   * applies to the selected logo unless the "apply to all" opt-in is on.
+   */
+  config?: FaviconConfig;
   /** Sizes actually written into the generated ICO. */
   generatedSizes?: FaviconSize[];
   /** Selected sizes skipped because the source is smaller than them. */

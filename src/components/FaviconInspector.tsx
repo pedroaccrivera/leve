@@ -4,6 +4,7 @@ import { FAVICON_SIZES } from '../types';
 import { Choice, ChoiceRow, ChoiceStack } from './ui/Choice';
 import { FieldSection } from './ui/FieldSection';
 import { Slider, SliderRow } from './ui/Slider';
+import { Checkbox } from './ui/Checkbox';
 import { ResolvedValue } from './ui/TextInput';
 import { displayColor, isCssColor, toHexColor } from '../utils/colors';
 
@@ -38,6 +39,10 @@ const PRESET_COLORS: Record<'white' | 'black', string> = {
 export interface FaviconInspectorProps {
   config: FaviconConfig;
   onPatch: (patch: Partial<FaviconConfig>) => void;
+  /** Mirrors every edit to all logos instead of the selected one. */
+  applyToAll?: boolean;
+  onToggleApplyToAll?: (value: boolean) => void;
+  logoCount?: number;
   /** Resolved hex reported by the preview render (`Auto → #FFFFFF`). */
   resolvedBackground?: string;
   disabled?: boolean;
@@ -46,6 +51,9 @@ export interface FaviconInspectorProps {
 export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
   config,
   onPatch,
+  applyToAll = false,
+  onToggleApplyToAll,
+  logoCount = 0,
   resolvedBackground,
   disabled = false,
 }) => {
@@ -86,8 +94,24 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
     <div className="flex flex-col gap-[var(--d-section)]">
       <div className="flex flex-col gap-1">
         <h2 className="t-section text-ink">Favicon recipe</h2>
-        <p className="short:hidden t-small text-muted">Shared settings · applies to every logo</p>
+        <p className="short:hidden t-small text-muted">
+          {logoCount === 0
+            ? 'Settings for the next logos'
+            : applyToAll
+              ? 'Applied to every logo'
+              : 'Applies to the selected logo'}
+        </p>
       </div>
+
+      {logoCount > 1 && onToggleApplyToAll && (
+        <Checkbox
+          checked={applyToAll}
+          onChange={onToggleApplyToAll}
+          label="Apply to all logos"
+          description={`Every one of the ${logoCount} logos uses this recipe.`}
+          disabled={disabled}
+        />
+      )}
 
       <FieldSection index="01" title="Fit" note="Keep the whole logo. Crop may trim the edges.">
         <ChoiceRow>

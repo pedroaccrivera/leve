@@ -52,6 +52,7 @@ This document tracks the current architecture, implemented modules, execution fl
 - [x] **Cancel batch**: the primary action is disabled while a batch runs and a cancel control stops the queue between files.
 - [x] **Keyboard focus reference**: 2 px ink outline with 2 px offset on every control.
 - [x] **App tone selector**: inline hue spectrum in the header that rotates every semantic colour token, saved across launches, with surface-aware text colours.
+- [x] **Per-logo favicon recipes**: each logo owns its recipe (a batch can serve different clients) with an opt-in "Apply to all logos"; the filmstrip shows the real source thumbnail of every logo.
 - [x] **Tone-aware app icon**: the dock / taskbar artwork is re-tinted with the stored tone at boot and on every change (`tone:setShift` IPC → `sharp.modulate` → `app.dock.setIcon` / `win.setIcon`).
 
 ### 2.4. Tests & Packaging
@@ -132,3 +133,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.1` | Chore — Release 1.6.1 (Tone-aware app icon) | Merged | [docs/branches/chore-release-1.6.1.md](docs/branches/chore-release-1.6.1.md) |
 | `refactor/video-inspector-consistency` | Refactor — Video recipe on the shared controls | Merged | [docs/branches/refactor-video-inspector-consistency.md](docs/branches/refactor-video-inspector-consistency.md) |
 | `chore/release-1.6.2` | Chore — Release 1.6.2 (Consistent video recipe) | Merged | [docs/branches/chore-release-1.6.2.md](docs/branches/chore-release-1.6.2.md) |
+| `feat/favicon-per-logo` | Feature — Favicon editor: thumbnails + per-logo recipe | In Progress | [docs/branches/feat-favicon-per-logo.md](docs/branches/feat-favicon-per-logo.md) |

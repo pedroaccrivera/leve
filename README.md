@@ -4,23 +4,14 @@
 
 No images or data ever leave your machine. Built with **Electron**, **React**, **Vite**, **Tailwind CSS**, and **Sharp (libvips)**.
 
-> ### 🍺 macOS: install with Homebrew (recommended)
-> ```bash
-> brew tap pedroaccrivera/tap
-> brew install --cask leve
-> ```
-> This is the smoothest way to install on Mac — no Gatekeeper warnings,
-> no quarantine flags, updates via `brew upgrade --cask leve`.
-
----
-
 ## Key Features
 
 - **100% Offline & Private**: Zero cloud, zero network requests, zero telemetry.
 - **Proportional Resizing**: Set your desired target width in pixels; height scales automatically while preserving the original aspect ratio.
-- **Custom & Built-in Presets**:
-  - Preloaded with common web/HD resolutions (800px, 1280px, 1920px, 2560px, 3840px).
-  - Create and save your own named presets directly from the interface.
+- **Width Presets & Custom Value**:
+  - Built-in web/HD resolutions (800px, 1280px, 1920px, 2560px, 3840px) plus a
+    free-form width; typing a value switches the recipe to `Custom` and the
+    value is remembered between launches.
 - **Human-Friendly Compression Presets**:
   - **Balanced (Recommended)**: Best quality-to-size ratio.
   - **Maximum Quality**: Light compression for high-detail photography.
@@ -131,9 +122,6 @@ The compiled binaries will be output to the `release/` folder.
 ---
 
 ## Installing from GitHub Releases
-
-> **Mac users:** prefer the Homebrew cask above — it skips the Gatekeeper
-> hassle below entirely.
 
 Download the **Latest** release (not older versions) for your platform:
 

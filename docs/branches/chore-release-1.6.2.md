@@ -48,8 +48,15 @@ Publish flow: merge into `main`, tag `v1.6.2`, push the tag. The
   44 px tall, like the underline tabs they replaced).
 - Visual check of the `ready` state against the image and favicon recipes: same primitives, same
   selection states, same section hierarchy.
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [43498510753](https://github.com/pedroaccrivera/leve/actions/runs/43498510753) (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.2>
+  (public, not a draft, release notes generated).
+  - `leve-1.6.2-mac-arm64.dmg` — 152,772,789 B
+  - `leve-1.6.2-mac-arm64.zip` — 147,575,073 B
+  - `leve-1.6.2-win-x64.exe` — 127,632,990 B
+  - `leve-1.6.2-win-x64-portable.exe` — 127,483,222 B
+- Sizes are within ~10 KB of `v1.6.1` — the release only swaps controls.
 
 ## 4. Decision Log and Commit History
 
@@ -59,6 +66,9 @@ Publish flow: merge into `main`, tag `v1.6.2`, push the tag. The
   reviewable before the tag triggers the public Release workflow.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged, matching the previous flow.
+- **Homebrew cask:** updated in `pedroaccrivera/homebrew-tap` from `1.6.1` to `1.6.2`, with the
+  published zip `sha256` (`51bbd281…2dc5aa`, 147,575,073 B — size and hash verified against the
+  release asset before committing).
 
 | Commit | Message |
 | :--- | :--- |

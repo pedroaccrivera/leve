@@ -130,4 +130,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.0` | Chore — Release 1.6.0 (Tone selector) | Merged | [docs/branches/chore-release-1.6.0.md](docs/branches/chore-release-1.6.0.md) |
 | `feat/tone-aware-icon` | Feature — Application icon follows the chosen tone | Merged | [docs/branches/feat-tone-aware-icon.md](docs/branches/feat-tone-aware-icon.md) |
 | `chore/release-1.6.1` | Chore — Release 1.6.1 (Tone-aware app icon) | Merged | [docs/branches/chore-release-1.6.1.md](docs/branches/chore-release-1.6.1.md) |
-| `refactor/video-inspector-consistency` | Refactor — Video recipe on the shared controls | In Progress | [docs/branches/refactor-video-inspector-consistency.md](docs/branches/refactor-video-inspector-consistency.md) |
+| `refactor/video-inspector-consistency` | Refactor — Video recipe on the shared controls | Merged | [docs/branches/refactor-video-inspector-consistency.md](docs/branches/refactor-video-inspector-consistency.md) |

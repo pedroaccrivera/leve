@@ -1,7 +1,7 @@
 # `refactor/video-inspector-consistency` — Controles da receita de vídeo
 
 - **Type:** Refactor — consistência de interface
-- **Status:** In Progress — implementado, aguardando aprovação de merge
+- **Status:** Merged into `main` (included in release `1.6.2`)
 - **Base:** `main` @ `43e2a51` (release `1.6.1`)
 
 ## 1. Problema
@@ -71,6 +71,12 @@ src/components/VideoInspector.tsx   controles padronizados com imagem/favicon
 | 3 | "Never enlarge smaller videos" vira `Checkbox` | o config tem o booleano `withoutEnlargement`; a frase do design era um statement, mas o controle é o mesmo das imagens |
 | 4 | Rótulos numéricos em mono, textos em Inter | mesma regra de tipografia das outras abas |
 | 5 | Estado travado inalterado | já era compartilhado (`RecipeUsed`) entre as três abas |
+
+## 5.1 Merge record
+
+- Aprovado pelo usuário após a revisão da captura do estado `ready`.
+- Merge em `main` com `--no-ff`; release `1.6.2` — ver
+  [chore-release-1.6.2.md](chore-release-1.6.2.md).
 
 ## 6. Commit history
 

@@ -61,8 +61,16 @@ Publish flow: merge into `main`, tag `v1.6.0`, push the tag. The
   default tone (`rgb(230,244,92)`) and indistinguishable at 65°.
 - Visual checks: trigger revealed on hover, expanded at the default tone, value-hover reset,
   0/65/66/120/200/240/280 degrees, Ink and Paper.
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [43456641390](https://github.com/pedroaccrivera/leve/actions/runs/43456641390)
+  (macOS arm64 + Windows x64; the macOS runner sat in the queue for a few minutes before starting).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.0>
+  (public, not a draft, release notes generated).
+  - `leve-1.6.0-mac-arm64.dmg` — 152,781,292 B
+  - `leve-1.6.0-mac-arm64.zip` — 147,574,906 B
+  - `leve-1.6.0-win-x64.exe` — 127,632,674 B
+  - `leve-1.6.0-win-x64-portable.exe` — 127,482,901 B
+- Sizes are within ~5 KB of `v1.5.1` — the release adds presentation code only.
 
 ## 4. Decision Log and Commit History
 
@@ -73,6 +81,11 @@ Publish flow: merge into `main`, tag `v1.6.0`, push the tag. The
   reviewable before the tag triggers the public Release workflow.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged, matching the previous flow.
+- **Homebrew cask:** updated in `pedroaccrivera/homebrew-tap`
+  ([`793a721911359b00b03b2e8a35c23404fd848f9f`](https://github.com/pedroaccrivera/homebrew-tap/commit/793a721911359b00b03b2e8a35c23404fd848f9f))
+  from `1.5.1` to `1.6.0`, with the published zip `sha256`
+  (`2300d228…66e574`, 147,574,906 B — size and hash verified against the release asset before
+  committing).
 
 | Commit | Message |
 | :--- | :--- |

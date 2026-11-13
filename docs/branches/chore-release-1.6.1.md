@@ -1,7 +1,7 @@
 # Branch `chore/release-1.6.1` — Release 1.6.1 (Tone-aware app icon)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress — version bumped, awaiting merge + tag
+- **Status:** Merged into `main` (tagged `v1.6.1`)
 - **Base:** `main` @ `0c542a8`
 
 ## 1. Goal and Scope
@@ -70,6 +70,6 @@ Publish flow: merge into `main`, tag `v1.6.1`, push the tag. The
 
 | Commit | Message |
 | :--- | :--- |
-| _(pending)_ | `chore(release): bump version to 1.6.1` |
-| _(pending)_ | `chore: merge chore/release-1.6.1 into main` |
-| _(pending)_ | `docs: mark chore/release-1.6.1 as merged` |
+| `c620309` | `chore(release): bump version to 1.6.1` |
+| `69bb49d` | `chore: merge chore/release-1.6.1 into main` |
+| _(this docs commit)_ | `docs: mark chore/release-1.6.1 as merged` |

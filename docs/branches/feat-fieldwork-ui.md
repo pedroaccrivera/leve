@@ -1,6 +1,6 @@
 # `feat/fieldwork-ui` — Fieldwork / Refined UI overhaul
 
-**Status:** In Progress — implementation complete, awaiting merge approval
+**Status:** Merged into `main` (included in release `1.5.0`)
 **Type:** Feature — full interface replacement
 **Base:** `main` (`91fc4a3`)
 **Reference:** Figma `LEVE` — fileKey `tpwkncQMXCg5zZRdUnBp3m`, section `69:830` ("Fieldwork [polished]", 19 frames)
@@ -259,15 +259,20 @@ Bugs found and fixed during the visual pass:
 ```
 feat(ui): Fieldwork design tokens, bundled typefaces and ui primitives
 feat(ui): rebuild the shell and all three workbenches for Fieldwork
-feat(ui): in-page batch report, locked recipes and cancel support
 chore(dev): reference fixtures and screenshot harness for 1:1 checks
 docs: record the feat/fieldwork-ui branch
+fix(ui): correct video width presets and complete the favicon colour field
+feat(brand): rebuild the app icon from the Figma artwork and trim the header
+fix(ui): give the window-bar label proper clearance from the traffic lights
 ```
 
----
+## 8. Merge record
 
-## 8. Follow-ups / open items
+- Approved by the user after the review passes above (video widths, favicon colour field,
+  window bar, icon) and merged into `main` as part of the `1.5.0` release.
+- Release branch: `chore/release-1.5.0` — see [chore-release-1.5.0.md](chore-release-1.5.0.md).
 
-- Confirm the composed states listed in §4 with the user after the first visual review.
-- `docs/plans/fieldwork-ui-overhaul.md` can move into `docs/` history once the branch is merged.
+## 9. Follow-ups / open items
+
 - Still on the roadmap: i18n, OS shortcuts, worker-thread batches.
+- `docs/plans/fieldwork-ui-overhaul.md` stays as the approved plan of record.

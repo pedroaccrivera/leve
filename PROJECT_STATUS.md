@@ -117,4 +117,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `feat/favicon-editor` | Feature — Favicon Mini Editor (Preview, Auto Background, Padding, Radius, Vector Upscaling) | Merged | [docs/branches/feat-favicon-editor.md](docs/branches/feat-favicon-editor.md) |
 | `feat/header-cleanup` | Feature — Clean Header, Content-Aligned Tabs & Progressive Blur | Merged | [docs/branches/feat-header-cleanup.md](docs/branches/feat-header-cleanup.md) |
 | `chore/release-1.4.0` | Chore — Release 1.4.0 (Favicon Editor & Header) | Merged | [docs/branches/chore-release-1.4.0.md](docs/branches/chore-release-1.4.0.md) |
-| `feat/fieldwork-ui` | Feature — Fieldwork / Refined UI Overhaul (Figma 1:1) | In Progress | [docs/branches/feat-fieldwork-ui.md](docs/branches/feat-fieldwork-ui.md) |
+| `feat/fieldwork-ui` | Feature — Fieldwork / Refined UI Overhaul (Figma 1:1) | Merged | [docs/branches/feat-fieldwork-ui.md](docs/branches/feat-fieldwork-ui.md) |

@@ -79,6 +79,22 @@ Duas mudanças discretas completam o encaixe:
    caminho, via `title` nativo.
 2. **Subtítulo do inspector** (`Shared settings · applies to…`) é oculto apenas no tier short.
 
+### 3.2.1 Rolagem horizontal: eliminada na origem
+
+O tooltip das notas nascia ancorado à esquerda do `ⓘ`, então rótulos longos
+(`01 / OUTPUT WIDTH`, `04 / SIZES IN EACH .ICO`) empurravam seus 248 px para fora da coluna —
+`scrollWidth` 440 contra `clientWidth` 427, ou seja 9–13 px de estouro. Correções, em três camadas:
+
+1. o tooltip passou a ser ancorado à **borda direita da seção** (`right-0`), então ele nunca sai da
+   coluna, qualquer que seja o comprimento do rótulo;
+2. as duas colunas já usam `overflow-x-hidden` (agora também `overflow-y-auto` explícito);
+3. `html, body { overflow: hidden }` na camada base — a janela é um shell de altura fixa, quem rola
+   são as colunas.
+
+Verificado por medição (`LEVE_MEASURE=1` reporta o estouro horizontal das duas colunas, do
+`documentElement` e do `body`): **0 em 10 combinações** (8 estados × 800, mais 1060 e 720, nos dois
+temas). O harness também ganhou `LEVE_REVEAL_TOOLTIPS=1` para conferir a posição do tooltip.
+
 Também: a **janela** abre em `min(1280, workArea) × min(800, workArea)` (mínimo 1040×640), então
 em tela baixa o app já nasce do tamanho da área útil.
 

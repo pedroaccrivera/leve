@@ -64,6 +64,14 @@ app.whenReady().then(async () => {
     await new Promise((resolve) => setTimeout(resolve, 120));
   }
 
+  // Reveal the inspector tooltips for a visual check of their placement.
+  if (process.env.LEVE_REVEAL_TOOLTIPS === '1') {
+    await win.webContents.executeJavaScript(`
+      document.querySelectorAll('[role=tooltip]').forEach((el) => { el.style.opacity = '1'; });
+    `);
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+
   const image = await win.webContents.capturePage();
   fs.writeFileSync(out, image.toPNG());
 
@@ -90,11 +98,31 @@ app.whenReady().then(async () => {
         const horizontal = columns.slice(1).map((c, i) => Math.round(c.left - columns[i].right));
         return { vertical, horizontal };
       });
+      // Anything that makes a column wider than its own client box.
+      const hOverflow = (el, label) => {
+        if (!el) return null;
+        const box = el.getBoundingClientRect();
+        const offenders = [...el.querySelectorAll('*')]
+          .map((child) => {
+            const r = child.getBoundingClientRect();
+            return { tag: child.tagName.toLowerCase(), cls: String(child.className).slice(0, 60), over: Math.round(r.right - box.right), w: Math.round(r.width) };
+          })
+          .filter((entry) => entry.over > 1)
+          .sort((a, b) => b.over - a.over)
+          .slice(0, 6);
+        return { label, scrollW: el.scrollWidth, clientW: el.clientWidth, over: el.scrollWidth - el.clientWidth, offenders };
+      };
       return {
         viewport: { w: window.innerWidth, h: window.innerHeight },
         workspace: box(workspace),
         inspector: box(aside),
         gutters,
+        horizontal: [
+          hOverflow(aside, 'inspector'),
+          hOverflow(workspace, 'workspace'),
+          hOverflow(document.documentElement, 'document'),
+          hOverflow(document.body, 'body'),
+        ],
       };
     })()`);
     console.log('MEASURE ' + JSON.stringify(metrics));

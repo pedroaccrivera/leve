@@ -28,14 +28,14 @@ export const FieldSection: React.FC<FieldSectionProps> = ({
   className,
 }) => (
   <section className={cx('border-t border-subtle pt-[var(--d-label-gap)]', className)}>
-    <div className="flex min-h-4 items-center justify-between gap-4">
+    <div className="relative flex min-h-4 items-center justify-between gap-4">
       <div className="flex min-w-0 items-center gap-2">
         <h3 className="t-label uppercase text-ink">
           {index ? `${index} / ` : ''}
           {title}
         </h3>
         {note && (
-          <span className="group relative hidden compact:inline-flex">
+          <span className="group hidden compact:inline-flex">
             <button
               type="button"
               aria-label={note}
@@ -43,9 +43,13 @@ export const FieldSection: React.FC<FieldSectionProps> = ({
             >
               <Info className="h-3.5 w-3.5" strokeWidth={2} />
             </button>
+            {/*
+             * Anchored to the section's right edge: the column must never
+             * scroll sideways, whatever the label length.
+             */}
             <span
               role="tooltip"
-              className="pointer-events-none absolute left-0 top-5 z-40 w-[248px] whitespace-pre-line border border-subtle bg-panel p-2 t-small text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+              className="pointer-events-none absolute right-0 top-5 z-40 w-[248px] whitespace-pre-line border border-subtle bg-panel p-2 t-small text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
             >
               {note}
             </span>

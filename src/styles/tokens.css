@@ -177,6 +177,16 @@
     height: 100%;
   }
 
+  /*
+   * The shell owns both axes: columns scroll on their own and the window
+   * itself never does, so a stray wide element can never introduce a
+   * horizontal scrollbar.
+   */
+  html,
+  body {
+    overflow: hidden;
+  }
+
   body {
     margin: 0;
     background-color: var(--c-paper);

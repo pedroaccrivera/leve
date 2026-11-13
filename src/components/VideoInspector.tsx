@@ -5,6 +5,7 @@ import { ReadOnlyChoice, ReadOnlyChoiceRow } from './ui/Choice';
 import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
 import { RecipeUsed } from './BatchReport';
+import { FolderPickerField } from './ui/FolderPickerField';
 
 const QUALITY: { id: VideoQuality; label: string }[] = [
   { id: 'light', label: 'Good quality' },
@@ -108,11 +109,13 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
   const widthValue = draft ?? (widthIsCustom ? String(config.maxWidth) : `${config.maxWidth} px · maximum width`);
 
   const destinationValue =
-    config.destinationMode === 'subfolder'
-      ? config.subfolderName
-      : config.destinationMode === 'suffix'
-        ? config.suffix
-        : (config.customFolderPath ?? '');
+    config.destinationMode === 'subfolder' ? config.subfolderName : config.suffix;
+
+  /** One folder for the whole batch, chosen from an explicit action. */
+  const chooseFolder = async () => {
+    const folder = await window.electronAPI?.selectDestinationFolder?.();
+    if (folder) onPatch({ destinationMode: 'custom_folder', customFolderPath: folder });
+  };
 
   return (
     <div className="flex flex-col gap-[var(--d-section)]">
@@ -224,7 +227,11 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
       <FieldSection
         index="04"
         title="Save new files to"
-        note={"Next to each source. Originals stay untouched.\nMP4 uses H.264 + AAC. WebM uses VP9 + Opus."}
+        note={
+          config.destinationMode === 'custom_folder'
+            ? 'Every file in the batch is saved to this folder. Originals stay untouched.\nMP4 uses H.264 + AAC. WebM uses VP9 + Opus.'
+            : 'Next to each source. Originals stay untouched.\nMP4 uses H.264 + AAC. WebM uses VP9 + Opus.'
+        }
       >
         <ReadOnlyChoiceRow>
           <ReadOnlyChoice
@@ -244,22 +251,28 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
           <ReadOnlyChoice
             selected={config.destinationMode === 'custom_folder'}
             role="button"
-            onClick={() => onPatch({ destinationMode: 'custom_folder' })}
+            onClick={() => void chooseFolder()}
           >
             Custom
           </ReadOnlyChoice>
         </ReadOnlyChoiceRow>
-        <div className="flex h-11 items-center">
-          <InlineValue
-            aria-label="Destination"
-            value={destinationValue}
-            onChange={(value) => {
-              if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
-              else if (config.destinationMode === 'suffix') onPatch({ suffix: value });
-              else onPatch({ customFolderPath: value });
-            }}
+        {config.destinationMode === 'custom_folder' ? (
+          <FolderPickerField
+            path={config.customFolderPath}
+            onPick={() => void chooseFolder()}
           />
-        </div>
+        ) : (
+          <div className="flex h-[var(--d-control)] items-center">
+            <InlineValue
+              aria-label="Destination"
+              value={destinationValue}
+              onChange={(value) => {
+                if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
+                else onPatch({ suffix: value });
+              }}
+            />
+          </div>
+        )}
       </FieldSection>
     </div>
   );

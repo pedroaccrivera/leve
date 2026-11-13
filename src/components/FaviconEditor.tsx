@@ -5,6 +5,7 @@ import { Button } from './ui/Button';
 import { Choice, ChoiceRow } from './ui/Choice';
 import { FieldLabel } from './ui/FieldSection';
 import { TextInput } from './ui/TextInput';
+import { FolderPickerField } from './ui/FolderPickerField';
 import { QueueActions } from './QueueActions';
 import { cx } from '../utils/cx';
 import { formatBytes } from '../utils/formatters';
@@ -83,6 +84,12 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
       window.clearTimeout(timer);
     };
   }, [selectedItem, config, onResolvedBackground]);
+
+  /** One folder for the whole batch, chosen from an explicit action. */
+  const chooseFolder = async () => {
+    const folder = await window.electronAPI?.selectDestinationFolder?.();
+    if (folder) onPatchConfig({ destinationMode: 'custom_folder', customFolderPath: folder });
+  };
 
   const sourceBaseName = useMemo(
     () => (selectedItem ? selectedItem.name.replace(/\.[^.]+$/, '') : ''),
@@ -260,27 +267,28 @@ export const FaviconEditor: React.FC<FaviconEditorProps> = ({
             <Choice
               selected={config.destinationMode === 'custom_folder'}
               disabled={disabled}
-              onClick={() => onPatchConfig({ destinationMode: 'custom_folder' })}
+              onClick={() => void chooseFolder()}
             >
               Custom
             </Choice>
           </ChoiceRow>
-          <TextInput
-            aria-label="Destination"
-            disabled={disabled}
-            value={
-              config.destinationMode === 'subfolder'
-                ? config.subfolderName
-                : config.destinationMode === 'same_folder'
-                  ? sourceBaseName
-                  : (config.customFolderPath ?? '')
-            }
-            onChange={(event) => {
-              if (config.destinationMode === 'subfolder') onPatchConfig({ subfolderName: event.target.value });
-              else if (config.destinationMode === 'custom_folder')
-                onPatchConfig({ customFolderPath: event.target.value });
-            }}
-          />
+          {config.destinationMode === 'custom_folder' ? (
+            <FolderPickerField
+              path={config.customFolderPath}
+              onPick={() => void chooseFolder()}
+              disabled={disabled}
+            />
+          ) : (
+            <TextInput
+              aria-label="Destination"
+              disabled={disabled}
+              value={config.destinationMode === 'subfolder' ? config.subfolderName : sourceBaseName}
+              onChange={(event) => {
+                if (config.destinationMode === 'subfolder')
+                  onPatchConfig({ subfolderName: event.target.value });
+              }}
+            />
+          )}
         </div>
       </div>
 

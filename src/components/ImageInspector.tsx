@@ -4,6 +4,7 @@ import { Choice, ChoiceRow, ChoiceStack } from './ui/Choice';
 import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
 import { TextInput } from './ui/TextInput';
+import { FolderPickerField } from './ui/FolderPickerField';
 import { presetNameFor, WIDTH_PRESETS } from '../utils/presets';
 
 const COMPRESSION: { id: CompressionLevel; label: string }[] = [
@@ -71,21 +72,21 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
   };
 
   const destinationValue =
-    config.destinationMode === 'subfolder'
-      ? config.subfolderName
-      : config.destinationMode === 'suffix'
-        ? config.suffix
-        : (config.customFolderPath ?? '');
+    config.destinationMode === 'subfolder' ? config.subfolderName : config.suffix;
 
   const handleDestinationChange = (value: string) => {
     if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
-    else if (config.destinationMode === 'suffix') onPatch({ suffix: value });
-    else onPatch({ customFolderPath: value });
+    else onPatch({ suffix: value });
   };
 
-  const pickFolder = async () => {
+  /**
+   * One folder for the whole batch. The picker opens from an explicit action
+   * (choosing `Custom` or clicking the field) and never from focus, so it is
+   * asked once — cancelling keeps the previous destination.
+   */
+  const chooseFolder = async () => {
     const folder = await window.electronAPI?.selectDestinationFolder?.();
-    if (folder) onPatch({ customFolderPath: folder, destinationMode: 'custom_folder' });
+    if (folder) onPatch({ destinationMode: 'custom_folder', customFolderPath: folder });
   };
 
   return (
@@ -196,7 +197,11 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
       <FieldSection
         index="04"
         title="Save new files to"
-        note="Next to each source. Originals stay untouched."
+        note={
+          config.destinationMode === 'custom_folder'
+            ? 'Every file in the batch is saved to this folder. Originals stay untouched.'
+            : 'Next to each source. Originals stay untouched.'
+        }
       >
         <ChoiceRow>
           {DESTINATIONS.map((option) => (
@@ -204,21 +209,30 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
               key={option.id}
               disabled={disabled}
               selected={config.destinationMode === option.id}
-              onClick={() => onPatch({ destinationMode: option.id })}
+              onClick={() =>
+                option.id === 'custom_folder'
+                  ? void chooseFolder()
+                  : onPatch({ destinationMode: option.id })
+              }
             >
               {option.label}
             </Choice>
           ))}
         </ChoiceRow>
-        <TextInput
-          value={destinationValue}
-          disabled={disabled}
-          aria-label="Destination"
-          onChange={(event) => handleDestinationChange(event.target.value)}
-          onFocus={() => {
-            if (config.destinationMode === 'custom_folder') void pickFolder();
-          }}
-        />
+        {config.destinationMode === 'custom_folder' ? (
+          <FolderPickerField
+            path={config.customFolderPath}
+            onPick={() => void chooseFolder()}
+            disabled={disabled}
+          />
+        ) : (
+          <TextInput
+            value={destinationValue}
+            disabled={disabled}
+            aria-label="Destination"
+            onChange={(event) => handleDestinationChange(event.target.value)}
+          />
+        )}
       </FieldSection>
     </div>
   );

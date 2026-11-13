@@ -125,6 +125,25 @@ As alturas de linha foram reduzidas nos tiers condensados (`--d-row` 100 → 84 
 diminuir essa rolagem; o editor de favicon (preview de 256 px + strip + blocos) é o caso mais alto e
 rola como no próprio frame do design (1060 px).
 
+## 3.5 Destino customizado: uma pasta para o lote
+
+**Bug:** o campo de destino abria o seletor nativo no `onFocus` quando o modo era `custom_folder`.
+Como o foco volta ao campo depois de fechar o diálogo, ele reabria — na prática, o app pedia um
+caminho repetidamente (parecia "por arquivo"). O motor nunca pediu nada: `determineOutputPath`
+sempre usou `config.customFolderPath` para todos os arquivos
+(`imageProcessor.ts:48`, `videoProcessor.ts`, `icoProcessor.ts:359`).
+
+**Correção:** o seletor passou a abrir apenas por **ação explícita** — ao escolher `Custom` ou ao
+clicar no campo. Nada de `onFocus`. O caminho é guardado **uma vez** na receita e vale para o lote
+inteiro; cancelar o diálogo mantém o destino anterior em vez de deixar o modo com caminho vazio.
+
+Novo primitivo `FolderPickerField` (campo com ícone de pasta, mostrando o caminho escolhido ou
+`Choose folder…`), aplicado nos **três** fluxos — antes, vídeos e favicon exibiam um input de texto
+vazio onde a pessoa teria de digitar o caminho à mão. A nota da seção passa a dizer
+*"Every file in the batch is saved to this folder."* quando o modo é custom.
+
+Fixture `?fixture=images-custom-folder` reproduz o estado para conferência visual.
+
 ## 4. Arquivos
 
 **Criados**
@@ -145,6 +164,7 @@ src/components/ui/Button.tsx       md/lg por token
 src/components/ui/TextInput.tsx    altura por token (input e valor resolvido)
 src/components/ui/Slider.tsx       hit area por token (trilha/knob inalterados)
 src/components/ui/Checkbox.tsx     descrição oculta no compact (title nativo mantém a copy)
+src/components/ui/FolderPickerField.tsx  **novo** — pasta única do lote, aberta por ação explícita
 src/components/WorkbenchLayout.tsx paddings por token + overflow-x-hidden
 src/components/Header.tsx          altura da nav por token
 src/components/ActionFooter.tsx    altura do footer + padding por token

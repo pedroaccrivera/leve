@@ -45,7 +45,7 @@ export const ProcessingCard: React.FC<ProcessingCardProps> = ({
           key={item.label}
           className={
             item.state === 'current'
-              ? 't-label uppercase text-signal'
+              ? 't-label uppercase text-signal-text'
               : 't-label uppercase text-muted'
           }
         >

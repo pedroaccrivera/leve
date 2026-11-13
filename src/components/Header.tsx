@@ -1,5 +1,6 @@
 import React from 'react';
 import { ThemeSwitch } from './ui/ThemeSwitch';
+import { HueControl } from './ui/HueControl';
 import { useTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
@@ -22,7 +23,8 @@ export const Header: React.FC<HeaderProps> = ({ tabs }) => {
 
       <div className="no-drag">{tabs}</div>
 
-      <div className="no-drag flex w-[360px] items-center justify-end">
+      <div className="no-drag group flex w-[360px] items-center justify-end gap-2">
+        <HueControl />
         <ThemeSwitch
           themeName={resolvedTheme === 'dark' ? 'Ink' : 'Paper'}
           onToggle={toggleTheme}

@@ -71,6 +71,18 @@
   --c-scrollbar: rgba(154, 159, 145, 0.55);
   --c-scrollbar-hover: rgba(88, 97, 83, 0.75);
 
+  /*
+   * Signal-derived surfaces for the tone control. They follow the rotated
+   * `--c-signal` automatically, so the control keeps the app's tone.
+   */
+  --c-signal-soft: color-mix(in oklab, var(--c-signal) 18%, var(--c-panel));
+  --c-signal-edge: color-mix(in oklab, var(--c-signal) 40%, var(--c-control));
+  /*
+   * Signal used as *text*: pulled towards `ink`, so it darkens on Paper and
+   * brightens on Ink — the accent stays legible on either surface.
+   */
+  --c-signal-text: color-mix(in oklab, var(--c-signal) 62%, var(--c-ink));
+
   /* Transparency checkerboard (favicon preview). */
   --checker-a: #ffffff;
   --checker-b: #e2e6db;
@@ -97,7 +109,6 @@
   --c-overlay-fade: rgba(23, 27, 24, 0);
   --c-scrollbar: rgba(115, 127, 113, 0.5);
   --c-scrollbar-hover: rgba(185, 194, 181, 0.75);
-
   --checker-a: #1d221e;
   --checker-b: #2b322c;
 

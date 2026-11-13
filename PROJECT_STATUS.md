@@ -119,3 +119,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.4.0` | Chore — Release 1.4.0 (Favicon Editor & Header) | Merged | [docs/branches/chore-release-1.4.0.md](docs/branches/chore-release-1.4.0.md) |
 | `feat/fieldwork-ui` | Feature — Fieldwork / Refined UI Overhaul (Figma 1:1) | Merged | [docs/branches/feat-fieldwork-ui.md](docs/branches/feat-fieldwork-ui.md) |
 | `chore/release-1.5.0` | Chore — Release 1.5.0 (Fieldwork UI) | Merged | [docs/branches/chore-release-1.5.0.md](docs/branches/chore-release-1.5.0.md) |
+| `feat/ui-fit-and-hue` | Feature — Vertical fit (density tiers) + choice gutters | In Progress | [docs/branches/feat-ui-fit-and-hue.md](docs/branches/feat-ui-fit-and-hue.md) |

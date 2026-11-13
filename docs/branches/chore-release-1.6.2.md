@@ -49,7 +49,7 @@ Publish flow: merge into `main`, tag `v1.6.2`, push the tag. The
 - Visual check of the `ready` state against the image and favicon recipes: same primitives, same
   selection states, same section hierarchy.
 - CI run for the pushed tag → **success** on both jobs:
-  [43498510753](https://github.com/pedroaccrivera/leve/actions/runs/43498510753) (macOS arm64 + Windows x64).
+  [43495120094](https://github.com/pedroaccrivera/leve/actions/runs/43495120094) (macOS arm64 + Windows x64).
 - Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.2>
   (public, not a draft, release notes generated).
   - `leve-1.6.2-mac-arm64.dmg` — 152,772,789 B

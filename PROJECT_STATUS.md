@@ -134,4 +134,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `refactor/video-inspector-consistency` | Refactor — Video recipe on the shared controls | Merged | [docs/branches/refactor-video-inspector-consistency.md](docs/branches/refactor-video-inspector-consistency.md) |
 | `chore/release-1.6.2` | Chore — Release 1.6.2 (Consistent video recipe) | Merged | [docs/branches/chore-release-1.6.2.md](docs/branches/chore-release-1.6.2.md) |
 | `feat/favicon-per-logo` | Feature — Favicon editor: thumbnails + per-logo recipe | Merged | [docs/branches/feat-favicon-per-logo.md](docs/branches/feat-favicon-per-logo.md) |
-| `chore/release-1.6.3` | Chore — Release 1.6.3 (Favicon editor fixes + README) | In Progress | [docs/branches/chore-release-1.6.3.md](docs/branches/chore-release-1.6.3.md) |
+| `chore/release-1.6.3` | Chore — Release 1.6.3 (Favicon editor fixes + README) | Merged | [docs/branches/chore-release-1.6.3.md](docs/branches/chore-release-1.6.3.md) |

@@ -67,6 +67,11 @@ const indexHtml = path.join(process.env.DIST, 'index.html');
 
 async function createWindow() {
   const appIcon = resolveAppIcon();
+  // macOS takes the dock icon from the bundle, which in dev is Electron's own;
+  // set it explicitly so the artwork is what you see while running the app.
+  if (appIcon && process.platform === 'darwin' && !app.isPackaged) {
+    app.dock?.setIcon(appIcon);
+  }
   win = new BrowserWindow({
     title: 'leve — 100% Local Image Resizer & Compressor',
     ...(appIcon ? { icon: appIcon } : {}),

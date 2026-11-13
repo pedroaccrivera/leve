@@ -11,6 +11,6 @@ import { cx } from '../utils/cx';
  */
 export const WindowBar: React.FC<{ className?: string }> = ({ className }) => (
   <div className={cx('titlebar-drag-region flex h-7 shrink-0 items-center bg-paper', className)}>
-    <span className="t-mono pl-[76px] text-muted">leve / LOCAL MEDIA TOOLKIT</span>
+    <span className="t-mono pl-[76px] text-muted">LOCAL MEDIA TOOLKIT</span>
   </div>
 );

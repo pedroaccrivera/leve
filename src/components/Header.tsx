@@ -22,8 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ tabs }) => {
 
       <div className="no-drag">{tabs}</div>
 
-      <div className="no-drag flex w-[360px] items-center justify-end gap-4">
-        <span className="t-mono text-muted">100% local</span>
+      <div className="no-drag flex w-[360px] items-center justify-end">
         <ThemeSwitch
           themeName={resolvedTheme === 'dark' ? 'Ink' : 'Paper'}
           onToggle={toggleTheme}

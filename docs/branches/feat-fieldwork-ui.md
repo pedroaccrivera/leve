@@ -79,12 +79,23 @@ src/components/ImageInspector.tsx
 src/components/VideoInspector.tsx
 src/components/FaviconInspector.tsx
 src/utils/cx.ts                       clsx + tailwind-merge
+src/utils/colors.ts                   CSS colour validation + hex normalisation (favicon background)
 src/utils/presets.ts                  width presets, storage helpers
 src/utils/devFixtures.ts              dev-only reference states
 src/vite-env.d.ts
 scripts/screenshot.cjs                dev screenshot harness (1280 × 800)
+scripts/build-icon.cjs                dev icon build (Figma SVGs → png/icns/ico/favicon)
 vite.preview.config.ts                renderer-only preview config (no Electron plugin)
 docs/plans/fieldwork-ui-overhaul.md   the approved plan
+```
+
+### Regenerated assets (Figma frame `78:469`)
+
+```
+assets/icon.png        1024×1024 master (source of truth, transparent corners)
+assets/icon.icns       10 slots — optical drawings in 16/32/64
+assets/icon.ico        256/128/64/48/32/24/16 — PNG-in-ICO, written without a dependency
+public/icon.png        64×64 optical (window + browser favicon)
 ```
 
 ### Rewritten
@@ -210,6 +221,19 @@ Bugs found and fixed during the visual pass:
   `resolveFaviconBackground` (`parseCssColor` in `electron/services/icoProcessor.ts`); an
   unparseable value falls back to white instead of producing a transparent icon.
   The field no longer force-uppercases non-hex values (`hsl(...)` keeps its case).
+- **Window bar** carries only `LOCAL MEDIA TOOLKIT` (the `leve /` prefix was dropped).
+- **Theme switch** is icon-only: the `100% local` note is gone and the control is a 44 × 44 square
+  so it matches the other icon controls. The design draws the same sun in both themes, so the
+  mark stays constant; the theme name survives as the accessible label and tooltip.
+- **Application icon** rebuilt from the Figma frame `78:469` ("leve / l. — Refined"):
+  a 512-px master (`#171B18` rounded square, `#F5F3EC` stem, `#E6F45C` full stop) plus the
+  design's **optical drawings** for 16/24/32/64 px, which have a shorter stem and a tighter dot.
+  Those optical drawings are used for the small `.icns`/`.ico`/favicon slots instead of scaling the
+  master down, following the frame's "optical sizes / not just scaled down" note.
+  `assets/icon.png` (1024), `assets/icon.icns` (10 slots), `assets/icon.ico` (7 sizes, written
+  directly as a PNG-in-ICO container — no new dependency) and `public/icon.png` (64) are regenerated
+  by `scripts/build-icon.cjs`. The DMG background now uses the ink canvas (`#171b18`) instead of the
+  retired navy, and the macOS dock shows the artwork in dev via `app.dock.setIcon()`.
 
 ---
 

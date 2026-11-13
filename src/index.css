@@ -1,8 +1,15 @@
+@import './styles/fonts.css';
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Titlebar Drag Region */
+/* ---------------------------------------------------------------------------
+ * App chrome
+ * ------------------------------------------------------------------------ */
+
+/* Frameless macOS window: the 28 px window bar and the nav drag the window. */
 .titlebar-drag-region {
   -webkit-app-region: drag;
 }
@@ -11,144 +18,94 @@
   -webkit-app-region: no-drag;
 }
 
-/*
- * App header: brand (left) · media tabs (center) · actions (right).
- * The center column is capped to the content column width (`max-w-2xl` on
- * `main`) minus the space the brand and the actions need, so the tabs stay
- * centered over the DropZone and the settings cards at any window size.
- */
-.app-header-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, min(42rem, 100% - 22rem)) minmax(0, 1fr);
-  align-items: center;
-  column-gap: 0.75rem;
-}
-
-/*
- * Progressive blur behind the header: the compounded backdrop blur is very
- * strong at the top and fades to zero at the bottom edge. Three stacked
- * layers, each masked so the strongest blur reaches the least far. The
- * negative z-index keeps the effect behind the header content (brand, tabs,
- * actions) but above the scrolled page content.
- */
-.app-header-blur,
-.app-header-tint {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.app-header-blur {
-  overflow: hidden;
-}
-
-.app-header-blur > i {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-
-.app-header-blur > i:nth-child(1) {
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-}
-
-.app-header-blur > i:nth-child(2) {
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 65%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 65%);
-}
-
-.app-header-blur > i:nth-child(3) {
-  -webkit-backdrop-filter: blur(44px) saturate(170%);
-  backdrop-filter: blur(44px) saturate(170%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 38%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 38%);
-}
-
-/* Soft tint so the header keeps its text readable over blurred content. */
-.app-header-tint {
-  background: linear-gradient(
-    to bottom,
-    rgba(248, 250, 252, 0.82) 0%,
-    rgba(248, 250, 252, 0.45) 55%,
-    rgba(248, 250, 252, 0) 100%
-  );
-}
-
-.dark .app-header-tint {
-  background: linear-gradient(
-    to bottom,
-    rgba(19, 23, 36, 0.88) 0%,
-    rgba(19, 23, 36, 0.48) 55%,
-    rgba(19, 23, 36, 0) 100%
-  );
-}
-
-/* Custom scrollbars */
+/* ---------------------------------------------------------------------------
+ * Scrollbars — thin, tinted with the current theme
+ * ------------------------------------------------------------------------ */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(56, 70, 107, 0.5);
-  border-radius: 4px;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(75, 94, 145, 0.8);
-}
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(203, 213, 225, 0.8);
-  border-radius: 4px;
+  background: var(--c-scrollbar);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 1);
+  background: var(--c-scrollbar-hover);
+  background-clip: content-box;
 }
 
-body {
-  margin: 0;
+/* ---------------------------------------------------------------------------
+ * Native colour input, used as the swatch of the favicon background field.
+ * Flat 44 × 44 block so it matches the other controls.
+ * ------------------------------------------------------------------------ */
+.fieldwork-color-input {
+  -webkit-appearance: none;
+  appearance: none;
   padding: 0;
-  user-select: none;
-  -webkit-user-select: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  border-radius: 0;
+  background: transparent;
 }
 
-/* Transparency checkerboard used by the favicon editor */
+.fieldwork-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.fieldwork-color-input::-webkit-color-swatch {
+  border: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Range slider (padding / corner radius)
+ * Track: 2 px, ink up to the knob then `subtle`. Knob: 16 px ink.
+ * ------------------------------------------------------------------------ */
+.fieldwork-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--c-ink) 0 var(--slider-pct, 0%),
+    var(--c-subtle) var(--slider-pct, 0%) 100%
+  );
+}
+
+.fieldwork-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -7px;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: var(--c-ink);
+}
+
+.fieldwork-slider:disabled::-webkit-slider-thumb {
+  background: var(--c-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Transparency checkerboard (favicon preview)
+ * ------------------------------------------------------------------------ */
 .favicon-checkerboard {
-  background-color: #ffffff;
+  background-color: var(--checker-a);
   background-image:
-    linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
-    linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
-    linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+    linear-gradient(45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-b) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-b) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 
-.dark .favicon-checkerboard {
-  background-color: #0f1420;
-  background-image:
-    linear-gradient(45deg, #1e2740 25%, transparent 25%),
-    linear-gradient(-45deg, #1e2740 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #1e2740 75%),
-    linear-gradient(-45deg, transparent 75%, #1e2740 75%);
-}
-
-/* Favicon editor reveal + preview transitions */
+/* ---------------------------------------------------------------------------
+ * Reveal / preview transitions
+ * ------------------------------------------------------------------------ */
 @keyframes favicon-studio-reveal {
   from {
     opacity: 0;

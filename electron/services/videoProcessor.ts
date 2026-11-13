@@ -79,6 +79,23 @@ function runFfprobe(filePath: string): Promise<{ width?: number; height?: number
   });
 }
 
+/**
+ * Container + codec family for a job.
+ *
+ * `original` keeps the source container when it is one ffmpeg can mux web
+ * video into (mp4 / mov / m4v / webm); anything else falls back to MP4.
+ * WebM containers use VP9 + Opus, the rest H.264 + AAC.
+ */
+function resolveVideoTarget(inputPath: string, config: VideoConfig): { ext: string; webm: boolean } {
+  if (config.outputFormat === 'webm') return { ext: '.webm', webm: true };
+  if (config.outputFormat !== 'original') return { ext: '.mp4', webm: false };
+
+  const sourceExt = path.extname(inputPath).toLowerCase();
+  if (sourceExt === '.webm') return { ext: '.webm', webm: true };
+  if (['.mp4', '.mov', '.m4v'].includes(sourceExt)) return { ext: sourceExt, webm: false };
+  return { ext: '.mp4', webm: false };
+}
+
 export function determineVideoOutputPath(
   inputPath: string,
   config: VideoConfig
@@ -86,7 +103,7 @@ export function determineVideoOutputPath(
   const parsed = path.parse(inputPath);
   const dir = parsed.dir;
   const name = parsed.name;
-  const targetExt = config.outputFormat === 'webm' ? '.webm' : '.mp4';
+  const targetExt = resolveVideoTarget(inputPath, config).ext;
 
   if (config.destinationMode === 'custom_folder' && config.customFolderPath) {
     return path.join(config.customFolderPath, `${name}${targetExt}`);
@@ -122,7 +139,7 @@ function buildFfmpegArgs(
   const maxW = Math.max(16, Math.round(config.maxWidth || 1280));
   args.push('-vf', `scale=min(iw\\,${maxW}):-2`);
 
-  if (config.outputFormat === 'webm') {
+  if (resolveVideoTarget(inputPath, config).webm) {
     // VP9 — good web compression, slower encode.
     const crf = config.quality === 'light' ? '15'
       : config.quality === 'aggressive' ? '38' : '30';

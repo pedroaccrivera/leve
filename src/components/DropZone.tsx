@@ -1,30 +1,96 @@
-import React, { useState, useEffect } from 'react';
-import { Upload, FolderPlus, Plus, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Upload } from 'lucide-react';
 import type { ImageItem, VideoItem } from '../types';
+import { cx } from '../utils/cx';
+import { Button } from './ui/Button';
 
 export type DropMediaType = 'images' | 'videos' | 'favicon';
+
+/**
+ * Native pickers shared by the drop surface and the queue action row.
+ */
+export const useFilePickers = (
+  mediaType: DropMediaType,
+  onAddItems: (items: ImageItem[]) => void,
+  onAddVideoItems?: (items: VideoItem[]) => void
+) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const selectFiles = async () => {
+    try {
+      setIsLoading(true);
+      if (!window.electronAPI) return;
+      if (mediaType === 'videos') {
+        const items = await window.electronAPI.selectVideoFiles();
+        if (items?.length) onAddVideoItems?.(items);
+      } else {
+        const items = await window.electronAPI.selectFiles();
+        if (items?.length) onAddItems(items);
+      }
+    } catch (err) {
+      console.error('[DropZone] Error selecting files:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const selectFolder = async () => {
+    try {
+      setIsLoading(true);
+      if (!window.electronAPI) return;
+      if (mediaType === 'videos') {
+        const items = await window.electronAPI.selectVideoFolder();
+        if (items?.length) onAddVideoItems?.(items);
+      } else {
+        const items = await window.electronAPI.selectFolder();
+        if (items?.length) onAddItems(items);
+      }
+    } catch (err) {
+      console.error('[DropZone] Error selecting folder:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { selectFiles, selectFolder, isLoading };
+};
 
 interface DropZoneProps {
   onAddItems: (items: ImageItem[]) => void;
   onAddVideoItems?: (items: VideoItem[]) => void;
   mediaType?: DropMediaType;
-  isCompact?: boolean;
+  /** `large` = empty state, `compact` = dashed "add by dropping" strip. */
+  variant?: 'large' | 'compact';
+  title?: string;
+  subtitle?: string;
+  /** The large variant shows the 40 px upload mark (Images only in the design). */
+  showIcon?: boolean;
+  compactTitle?: string;
+  compactSubtitle?: string;
 }
 
+/**
+ * Drag-and-drop surface with the native file/folder pickers.
+ * Visual language: dashed `control` border on a `surface` fill, square.
+ */
 export const DropZone: React.FC<DropZoneProps> = ({
   onAddItems,
   onAddVideoItems,
   mediaType = 'images',
-  isCompact = false,
+  variant = 'large',
+  title,
+  subtitle,
+  showIcon = true,
+  compactTitle,
+  compactSubtitle,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasElectronAPI, setHasElectronAPI] = useState(true);
-
-  useEffect(() => {
-    const available = typeof window !== 'undefined' && Boolean(window.electronAPI);
-    setHasElectronAPI(available);
-  }, []);
+  const { selectFiles, selectFolder, isLoading: isPicking } = useFilePickers(
+    mediaType,
+    onAddItems,
+    onAddVideoItems
+  );
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -49,13 +115,13 @@ export const DropZone: React.FC<DropZoneProps> = ({
     try {
       setIsLoading(true);
       const paths = files
-        .map((f: any) => {
+        .map((f: File & { path?: string }) => {
           if (window.electronAPI?.getPathForFile) {
             return window.electronAPI.getPathForFile(f);
           }
           return f.path;
         })
-        .filter(Boolean);
+        .filter(Boolean) as string[];
 
       if (paths.length && window.electronAPI) {
         if (mediaType === 'videos') {
@@ -73,155 +139,50 @@ export const DropZone: React.FC<DropZoneProps> = ({
     }
   };
 
-  const handleSelectFiles = async () => {
-    try {
-      setIsLoading(true);
-      if (window.electronAPI) {
-        if (mediaType === 'videos') {
-          const items = await window.electronAPI.selectVideoFiles();
-          if (items && items.length) {
-            onAddVideoItems?.(items);
-          }
-        } else {
-          const items = await window.electronAPI.selectFiles();
-          if (items && items.length) {
-            onAddItems(items);
-          }
-        }
-      }
-    } catch (err) {
-      console.error('[DropZone] Error selecting files:', err);
-    } finally {
-      setIsLoading(false);
-    }
+  const dropHandlers = {
+    onDragOver: handleDragOver,
+    onDragLeave: handleDragLeave,
+    onDrop: handleDrop,
   };
 
-  const handleSelectFolder = async () => {
-    try {
-      setIsLoading(true);
-      if (window.electronAPI) {
-        if (mediaType === 'videos') {
-          const items = await window.electronAPI.selectVideoFolder();
-          if (items && items.length) {
-            onAddVideoItems?.(items);
-          }
-        } else {
-          const items = await window.electronAPI.selectFolder();
-          if (items && items.length) {
-            onAddItems(items);
-          }
-        }
-      }
-    } catch (err) {
-      console.error('[DropZone] Error selecting folder:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const noun = mediaType === 'videos' ? 'videos' : mediaType === 'favicon' ? 'image or logo' : 'images';
-  const dropLabel =
-    mediaType === 'favicon'
-      ? 'Drag & drop an image or logo here'
-      : `Drag & drop ${noun} or folders here`;
-  const compactLabel =
-    mediaType === 'favicon'
-      ? 'Drop another image or logo here'
-      : `Drop more ${noun} or folders here`;
+  if (variant === 'compact') {
+    return (
+      <div
+        {...dropHandlers}
+        className={cx(
+          'flex h-[100px] items-center gap-4 border border-dashed bg-surface px-6 transition-colors',
+          isDragging ? 'border-ink' : 'border-control'
+        )}
+      >
+        <Upload className="h-6 w-6 shrink-0 text-ink" strokeWidth={2} />
+        <div className="flex flex-col gap-1">
+          <span className="t-control text-ink">{compactTitle}</span>
+          <span className="t-small text-muted">{compactSubtitle}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full">
-      {!hasElectronAPI && (
-        <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-500 dark:text-amber-300 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500" />
-          <span>Electron engine connecting...</span>
-        </div>
+    <div
+      {...dropHandlers}
+      className={cx(
+        'flex h-[320px] flex-col items-center justify-center gap-5 border border-dashed bg-surface transition-colors',
+        isDragging ? 'border-ink' : 'border-control'
       )}
-
-      {isCompact ? (
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`border border-dashed rounded-xl py-3 px-4 text-center transition-all flex items-center justify-between ${
-            isDragging
-              ? 'border-brand-500 bg-brand-500/10'
-              : 'border-slate-300 dark:border-darkBorder bg-slate-100/60 dark:bg-darkCard/50 hover:border-slate-400 dark:hover:border-slate-600'
-          }`}
-        >
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-darkTextMuted">
-            <Upload className="w-4 h-4 text-brand-500" />
-            <span>{compactLabel}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleSelectFiles}
-              disabled={isLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-darkCard hover:bg-slate-50 dark:hover:bg-darkCardHover border border-slate-300 dark:border-darkBorder text-slate-700 dark:text-slate-200 text-xs font-medium rounded-lg transition-all cursor-pointer shadow-sm disabled:opacity-50"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Add Files
-            </button>
-            <button
-              type="button"
-              onClick={handleSelectFolder}
-              disabled={isLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-darkCard hover:bg-slate-50 dark:hover:bg-darkCardHover border border-slate-300 dark:border-darkBorder text-slate-700 dark:text-slate-200 text-xs font-medium rounded-lg transition-all cursor-pointer shadow-sm disabled:opacity-50"
-            >
-              <FolderPlus className="w-3.5 h-3.5" />
-              Add Folder
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`border border-dashed rounded-2xl py-12 px-6 text-center transition-all flex flex-col items-center justify-center ${
-            isDragging
-              ? 'border-brand-500 bg-brand-500/10 scale-[0.99]'
-              : 'border-slate-300 dark:border-[#283556] bg-slate-50/50 dark:bg-darkCard/30 hover:border-slate-400 dark:hover:border-[#384a77]'
-          }`}
-        >
-          {/* Upload Icon */}
-          <div className="w-12 h-12 flex items-center justify-center text-slate-400 dark:text-slate-400 mb-3">
-            <Upload className="w-8 h-8 stroke-[1.75]" />
-          </div>
-
-          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
-            {dropLabel}
-          </h3>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleSelectFiles}
-              disabled={isLoading}
-              className="px-4 py-2 bg-white dark:bg-[#222b44] hover:bg-slate-100 dark:hover:bg-[#2b3656] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200 dark:border-[#313e63] shadow-sm transition-all cursor-pointer disabled:opacity-50"
-            >
-              Select Files
-            </button>
-            <button
-              type="button"
-              onClick={handleSelectFolder}
-              disabled={isLoading}
-              className="px-4 py-2 bg-white dark:bg-[#222b44] hover:bg-slate-100 dark:hover:bg-[#2b3656] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200 dark:border-[#313e63] shadow-sm transition-all cursor-pointer disabled:opacity-50"
-            >
-              Select Folder
-            </button>
-          </div>
-
-          {isLoading && (
-            <div className="mt-3 text-xs text-brand-500 animate-pulse">
-              Scanning files...
-            </div>
-          )}
-        </div>
-      )}
+    >
+      {showIcon && <Upload className="h-10 w-10 text-ink" strokeWidth={2} />}
+      <h3 className="t-title text-ink">{title}</h3>
+      <p className="t-body text-muted">{subtitle}</p>
+      <div className="flex w-[344px] items-start gap-3">
+        <Button variant="primary" size="lg" className="w-[166px]" onClick={selectFiles} disabled={isLoading || isPicking}>
+          Select files
+        </Button>
+        <Button variant="secondary" size="lg" className="w-[166px]" onClick={selectFolder} disabled={isLoading || isPicking}>
+          Select folder
+        </Button>
+      </div>
+      {(isLoading || isPicking) && <span className="t-small text-muted">Scanning files…</span>}
     </div>
   );
 };

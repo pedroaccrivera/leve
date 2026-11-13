@@ -1,53 +1,43 @@
 import React from 'react';
-import { FileImage, FileVideo, Globe } from 'lucide-react';
 import type { MediaTab } from '../types';
+import { cx } from '../utils/cx';
+
+const TABS: { id: MediaTab; index: string; label: string }[] = [
+  { id: 'images', index: '01', label: 'Images' },
+  { id: 'videos', index: '02', label: 'Videos' },
+  { id: 'favicon', index: '03', label: 'Favicon' },
+];
 
 interface MediaTabsProps {
   activeTab: MediaTab;
   onChange: (tab: MediaTab) => void;
   disabled?: boolean;
-  className?: string;
 }
 
-const TABS = [
-  { id: 'images', label: 'Images', Icon: FileImage },
-  { id: 'videos', label: 'Videos', Icon: FileVideo },
-  { id: 'favicon', label: 'Favicon', Icon: Globe },
-] as const;
-
-export const MediaTabs: React.FC<MediaTabsProps> = ({
-  activeTab,
-  onChange,
-  disabled = false,
-  className = '',
-}) => {
-  return (
-    <div
-      role="tablist"
-      aria-label="Media type"
-      className={`no-drag w-full flex items-center gap-1 p-1 bg-slate-200/60 dark:bg-[#1a2138] border border-slate-200 dark:border-[#283254] rounded-xl ${className}`}
-    >
-      {TABS.map(({ id, label, Icon }) => {
-        const active = activeTab === id;
-        return (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            disabled={disabled}
-            onClick={() => onChange(id)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer disabled:cursor-not-allowed ${
-              active
-                ? 'bg-white dark:bg-[#283556] text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 dark:text-darkTextMuted hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            <Icon className="w-3.5 h-3.5" />
-            <span>{label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-};
+/** Pinned media tabs: 144 × 48 each, 4 px gutters, active = signal fill. */
+export const MediaTabs: React.FC<MediaTabsProps> = ({ activeTab, onChange, disabled = false }) => (
+  <div role="tablist" aria-label="Media type" className="flex items-stretch gap-1">
+    {TABS.map((tab) => {
+      const active = tab.id === activeTab;
+      return (
+        <button
+          key={tab.id}
+          role="tab"
+          type="button"
+          aria-selected={active}
+          disabled={disabled && !active}
+          onClick={() => onChange(tab.id)}
+          className={cx(
+            'flex h-12 w-36 shrink-0 items-center justify-center gap-2 p-3 transition-colors duration-150',
+            active
+              ? 'border-b-2 border-ink bg-signal text-on-signal'
+              : 'border-b border-subtle hover:bg-surface disabled:cursor-not-allowed disabled:opacity-60'
+          )}
+        >
+          <span className={cx('t-mono', active ? 'text-on-signal' : 'text-muted')}>{tab.index}</span>
+          <span className="t-control">{tab.label}</span>
+        </button>
+      );
+    })}
+  </div>
+);

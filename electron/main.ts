@@ -67,16 +67,23 @@ const indexHtml = path.join(process.env.DIST, 'index.html');
 
 async function createWindow() {
   const appIcon = resolveAppIcon();
+  // macOS takes the dock icon from the bundle, which in dev is Electron's own;
+  // set it explicitly so the artwork is what you see while running the app.
+  if (appIcon && process.platform === 'darwin' && !app.isPackaged) {
+    app.dock?.setIcon(appIcon);
+  }
   win = new BrowserWindow({
     title: 'leve — 100% Local Image Resizer & Compressor',
     ...(appIcon ? { icon: appIcon } : {}),
-    width: 1080,
-    height: 860,
-    minWidth: 840,
-    minHeight: 680,
+    width: 1280,
+    height: 800,
+    minWidth: 1040,
+    minHeight: 720,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    trafficLightPosition: process.platform === 'darwin' ? { x: 18, y: 18 } : undefined,
-    backgroundColor: '#121624',
+    // The 28 px window bar carries the identity line at x = 76, so the real
+    // traffic lights sit at x = 20 (design) and stay inside the bar.
+    trafficLightPosition: process.platform === 'darwin' ? { x: 20, y: 8 } : undefined,
+    backgroundColor: '#171b18',
     webPreferences: {
       preload,
       contextIsolation: true,

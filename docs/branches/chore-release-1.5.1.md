@@ -1,7 +1,7 @@
 # Branch `chore/release-1.5.1` — Release 1.5.1 (UI fit & fixes)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress — version bumped, awaiting merge + tag
+- **Status:** Merged into `main` (tagged `v1.5.1`)
 - **Base:** `main` @ `56a2831`
 
 ## 1. Goal and Scope
@@ -78,6 +78,6 @@ Publish flow: merge into `main`, tag `v1.5.1`, push the tag. The
 
 | Commit | Message |
 | :--- | :--- |
-| _(pending)_ | `chore(release): bump version to 1.5.1` |
-| _(pending)_ | `chore: merge chore/release-1.5.1 into main` |
-| _(pending)_ | `docs: mark chore/release-1.5.1 as merged` |
+| `0d4c11c` | `chore(release): bump version to 1.5.1` |
+| `aa2681e` | `chore: merge chore/release-1.5.1 into main` |
+| _(this docs commit)_ | `docs: mark chore/release-1.5.1 as merged` |

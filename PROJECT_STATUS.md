@@ -121,4 +121,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.5.0` | Chore — Release 1.5.0 (Fieldwork UI) | Merged | [docs/branches/chore-release-1.5.0.md](docs/branches/chore-release-1.5.0.md) |
 | `feat/ui-fit-and-hue` | Feature — Vertical fit (density tiers) + choice gutters | Merged | [docs/branches/feat-ui-fit-and-hue.md](docs/branches/feat-ui-fit-and-hue.md) |
 | `feat/hue-selector` | Feature — Hue (tone) selector | In Progress | — |
-| `chore/release-1.5.1` | Chore — Release 1.5.1 (UI fit & fixes) | In Progress | [docs/branches/chore-release-1.5.1.md](docs/branches/chore-release-1.5.1.md) |
+| `chore/release-1.5.1` | Chore — Release 1.5.1 (UI fit & fixes) | Merged | [docs/branches/chore-release-1.5.1.md](docs/branches/chore-release-1.5.1.md) |

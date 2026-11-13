@@ -16,6 +16,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     try {
+      // Dev-only override so reference screens can be captured per theme.
+      if (import.meta.env.DEV) {
+        const forced = new URLSearchParams(window.location.search).get('theme');
+        if (forced === 'paper') return 'light';
+        if (forced === 'ink') return 'dark';
+      }
       const saved = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
       if (saved && ['dark', 'light', 'system'].includes(saved)) {
         return saved;
@@ -23,7 +29,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (e) {
       console.error('Error reading theme from storage:', e);
     }
-    return 'dark'; // Default to dark mode matching the design
+    return 'dark'; // Default to the Ink theme, matching the design
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('dark');
@@ -45,11 +51,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (isDark) {
         root.classList.add('dark');
         root.classList.remove('light');
-        document.body.style.backgroundColor = '#131724';
       } else {
         root.classList.remove('dark');
         root.classList.add('light');
-        document.body.style.backgroundColor = '#f8fafc';
       }
     };
 

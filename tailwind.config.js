@@ -1,3 +1,8 @@
+/*
+ * Fieldwork theme — semantic tokens exposed to Tailwind.
+ * Every colour resolves to a CSS variable so the Paper (:root) and Ink
+ * (.dark) themes switch without any `dark:` variant in component code.
+ */
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
@@ -8,26 +13,35 @@ export default {
   theme: {
     extend: {
       colors: {
-        darkBg: '#131724',
-        darkCard: '#1b2238',
-        darkCardHover: '#202944',
-        darkBorder: '#283254',
-        darkInput: '#181e32',
-        darkTextMuted: '#8c9ab8',
-        brand: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
-        }
-      }
+        paper: 'var(--c-paper)',
+        panel: 'var(--c-panel)',
+        surface: 'var(--c-surface)',
+        subtle: 'var(--c-subtle)',
+        line: 'var(--c-line)',
+        control: 'var(--c-control)',
+        ink: 'var(--c-ink)',
+        muted: 'var(--c-muted)',
+        signal: 'var(--c-signal)',
+        'on-signal': 'var(--c-on-signal)',
+        danger: 'var(--c-danger)',
+        warning: 'var(--c-warning)',
+        success: 'var(--c-success)',
+      },
+      fontFamily: {
+        display: ['"Space Grotesk"', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
+      borderRadius: {
+        md: '8px',
+        lg: '12px',
+      },
+      spacing: {
+        '4.5': '1.125rem',
+      },
+      transitionTimingFunction: {
+        fieldwork: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
     },
   },
   plugins: [],

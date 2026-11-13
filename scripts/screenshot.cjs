@@ -6,7 +6,7 @@
  *   LEVE_FIXTURE=images-ready LEVE_THEME=ink LEVE_OUT=/tmp/shot.png \
  *     npx electron scripts/screenshot.cjs
  */
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,6 +18,26 @@ const height = Number(process.env.LEVE_HEIGHT || 800);
 const tab = process.env.LEVE_TAB || '';
 
 app.disableHardwareAcceleration();
+
+/*
+ * Dev-only: this harness runs the renderer alone, so it has no main process
+ * to answer IPC. Mirror the app's thumbnail handler (electron/main.ts) when a
+ * state needs real filmstrip images.
+ */
+if (process.env.LEVE_STUB_THUMBNAILS === '1') {
+  const sharp = require(path.join(__dirname, '..', 'node_modules', 'sharp'));
+  ipcMain.handle('image:getThumbnail', async (_event, filePath) => {
+    try {
+      const buffer = await sharp(filePath)
+        .resize({ width: 140, height: 140, fit: 'cover' })
+        .jpeg({ quality: 70 })
+        .toBuffer();
+      return `data:image/jpeg;base64,${buffer.toString('base64')}`;
+    } catch {
+      return '';
+    }
+  });
+}
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({
@@ -106,6 +126,18 @@ app.whenReady().then(async () => {
     }
   }
 
+  // Select a logo in the filmstrip (1-based) to check per-logo recipes.
+  if (process.env.LEVE_SELECT_LOGO) {
+    await win.webContents.executeJavaScript(`
+      (() => {
+        const buttons = [...document.querySelectorAll('button')].filter((b) => (b.getAttribute('title') || '').startsWith('Remove '));
+        const target = buttons[Number('${process.env.LEVE_SELECT_LOGO}') - 1];
+        if (target) target.click();
+      })();
+    `);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+
   // Reveal the tone trigger. CSS :hover cannot be forced from a script, so a
   // capture-only rule gives the collapsed slot the width the hover rule gives
   // it (the element animates that width, hence the !important + settle time).
@@ -121,6 +153,19 @@ app.whenReady().then(async () => {
       })();
     `);
     await new Promise((resolve) => setTimeout(resolve, 350));
+  }
+
+  // Seed or clear the dev fixture the real app reads on boot.
+  if (process.env.LEVE_PERSIST_FIXTURE === '1' || process.env.LEVE_CLEAR_FIXTURE === '1') {
+    const name = process.env.LEVE_CLEAR_FIXTURE === '1' ? null : fixture;
+    await win.webContents.executeJavaScript(`
+      (() => {
+        const name = ${JSON.stringify(name)};
+        if (name) localStorage.setItem('leve_dev_fixture', name);
+        else localStorage.removeItem('leve_dev_fixture');
+      })();
+    `);
+    console.log('fixture bridge ->', name);
   }
 
   const image = await win.webContents.capturePage();

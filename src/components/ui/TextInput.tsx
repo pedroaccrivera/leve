@@ -15,7 +15,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
   ({ leading, className, ...rest }, ref) => (
     <div
       className={cx(
-        'flex h-11 items-center gap-2 rounded-md border border-control bg-surface px-2.5 py-2',
+        'flex h-[var(--d-control)] items-center gap-2 rounded-md border border-control bg-surface px-2.5 py-2',
         'has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink',
         className
       )}

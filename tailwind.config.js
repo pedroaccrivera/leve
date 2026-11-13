@@ -12,6 +12,15 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        /*
+         * Height-based density tiers. `compact` and `short` are max-height
+         * queries emitted after the base utilities (and short after compact),
+         * so later tiers win when both match.
+         */
+        compact: { raw: '(max-height: 999px)' },
+        short: { raw: '(max-height: 759px)' },
+      },
       colors: {
         paper: 'var(--c-paper)',
         panel: 'var(--c-panel)',

@@ -622,7 +622,7 @@ export const App: React.FC = () => {
     }
 
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-[var(--d-block)]">
         <IntroBlock {...imageIntro()} />
 
         {isProcessing && activeImage ? (
@@ -790,7 +790,7 @@ export const App: React.FC = () => {
     const waitingVideos = videoItems.filter((item) => item.status === 'pending');
 
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-[var(--d-block)]">
         <IntroBlock
           label={
             isProcessingVideo
@@ -976,7 +976,7 @@ export const App: React.FC = () => {
     }
 
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-[var(--d-block)]">
         <IntroBlock
           label={
             isProcessingFavicon

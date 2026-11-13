@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import type { CompressionLevel, OutputFormat, OutputDestinationMode, ResizeConfig } from '../types';
 import { Choice, ChoiceRow } from './ui/Choice';
-import { FieldNote, FieldSection } from './ui/FieldSection';
+import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
 import { TextInput } from './ui/TextInput';
 import { presetNameFor, WIDTH_PRESETS } from '../utils/presets';
@@ -89,10 +89,10 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[var(--d-section)]">
       <div className="flex flex-col gap-1">
         <h2 className="t-section text-ink">Image recipe</h2>
-        <p className="t-small text-muted">Shared settings · applies to every image</p>
+        <p className="short:hidden t-small text-muted">Shared settings · applies to every image</p>
       </div>
 
       <FieldSection index="01" title="Output width">
@@ -149,7 +149,11 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
         label="Never enlarge smaller files"
       />
 
-      <FieldSection index="02" title="Compression">
+      <FieldSection
+        index="02"
+        title="Compression"
+        note={`${COMPRESSION_NOTES[config.compressionLevel]}\nLossless is available for PNG and WebP.`}
+      >
         <ChoiceRow>
           {COMPRESSION.map((option) => (
             <Choice
@@ -162,8 +166,6 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
             </Choice>
           ))}
         </ChoiceRow>
-        <FieldNote>{COMPRESSION_NOTES[config.compressionLevel]}</FieldNote>
-        <FieldNote>Lossless is available for PNG and WebP.</FieldNote>
       </FieldSection>
 
       <FieldSection index="03" title="Output format">
@@ -189,7 +191,11 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
         description="Remove EXIF, camera details and GPS"
       />
 
-      <FieldSection index="04" title="Save new files to">
+      <FieldSection
+        index="04"
+        title="Save new files to"
+        note="Next to each source. Originals stay untouched."
+      >
         <ChoiceRow>
           {DESTINATIONS.map((option) => (
             <Choice
@@ -211,7 +217,6 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
             if (config.destinationMode === 'custom_folder') void pickFolder();
           }}
         />
-        <FieldNote>Next to each source. Originals stay untouched.</FieldNote>
       </FieldSection>
     </div>
   );

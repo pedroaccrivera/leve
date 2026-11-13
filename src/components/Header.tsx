@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({ tabs }) => {
   const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
-    <header className="titlebar-drag-region relative z-20 flex h-[72px] shrink-0 items-center justify-between border-b border-subtle bg-paper px-8">
+    <header className="titlebar-drag-region relative z-20 flex h-[var(--d-nav)] shrink-0 items-center justify-between border-b border-subtle bg-paper px-[var(--d-page-x)]">
       <div className="flex w-[360px] items-center">
         <h1 className="t-title text-ink">leve</h1>
       </div>

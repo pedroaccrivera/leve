@@ -11,7 +11,7 @@ export const IntroBlock: React.FC<{ label: string; title: string; subtitle: stri
   title,
   subtitle,
 }) => (
-  <div className="flex flex-col gap-3">
+  <div className="flex flex-col gap-[var(--d-intro-gap)]">
     <span className="t-mono text-muted">{label}</span>
     <h2 className="t-display whitespace-pre-line text-ink">{title}</h2>
     <p className="t-body text-muted">{subtitle}</p>
@@ -22,9 +22,9 @@ export const IntroBlock: React.FC<{ label: string; title: string; subtitle: stri
  * Numbered principles (Images): hairline, then mono index + statement.
  * ------------------------------------------------------------------------ */
 export const Principles: React.FC<{ items: string[]; className?: string }> = ({ items, className }) => (
-  <div className={cx('flex flex-col gap-4', className)}>
+  <div className={cx('flex flex-col gap-[var(--d-list-gap)]', className)}>
     <Divider />
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col gap-[var(--d-list-gap)]">
       {items.map((item, index) => (
         <li key={item} className="flex items-start gap-5">
           <span className="t-mono text-muted">{String(index + 1).padStart(2, '0')}</span>
@@ -42,9 +42,9 @@ export const PrincipleList: React.FC<{
   items: { label: string; description: string }[];
   className?: string;
 }> = ({ items, className }) => (
-  <ul className={cx('flex flex-col gap-6', className)}>
+  <ul className={cx('flex flex-col gap-[var(--d-list-gap)]', className)}>
     {items.map((item) => (
-      <li key={item.label} className="flex flex-col gap-2">
+      <li key={item.label} className="flex flex-col gap-[var(--d-field)]">
         <FieldLabel>{item.label}</FieldLabel>
         <FieldNote>{item.description}</FieldNote>
       </li>

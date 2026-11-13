@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { FaviconConfig, FaviconSize } from '../types';
 import { FAVICON_SIZES } from '../types';
 import { Choice, ChoiceRow } from './ui/Choice';
-import { FieldNote, FieldSection } from './ui/FieldSection';
+import { FieldSection } from './ui/FieldSection';
 import { Slider, SliderRow } from './ui/Slider';
 import { ResolvedValue } from './ui/TextInput';
 import { displayColor, isCssColor, toHexColor } from '../utils/colors';
@@ -83,13 +83,13 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[var(--d-section)]">
       <div className="flex flex-col gap-1">
         <h2 className="t-section text-ink">Favicon recipe</h2>
-        <p className="t-small text-muted">Shared settings · applies to every logo</p>
+        <p className="short:hidden t-small text-muted">Shared settings · applies to every logo</p>
       </div>
 
-      <FieldSection index="01" title="Fit">
+      <FieldSection index="01" title="Fit" note="Keep the whole logo. Crop may trim the edges.">
         <ChoiceRow>
           <Choice
             selected={config.fit === 'contain'}
@@ -106,7 +106,6 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
             Crop to fill
           </Choice>
         </ChoiceRow>
-        <FieldNote>Keep the whole logo. Crop may trim the edges.</FieldNote>
         <SliderRow label="Padding · Fit inside only" value={`${Math.round(config.padding * 100)}%`}>
           <Slider
             min={0}
@@ -142,7 +141,7 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
         </ChoiceRow>
       </FieldSection>
 
-      <FieldSection index="03" title="Background">
+      <FieldSection index="03" title="Background" note="Choose Custom to edit the hex color.">
         <ChoiceRow>
           {BACKGROUNDS.slice(0, 3).map((option) => (
             <Choice
@@ -213,10 +212,13 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
             {RESOLVED_BACKGROUNDS[config.backgroundMode]} → {resolvedBackground ?? '#FFFFFF'}
           </ResolvedValue>
         )}
-        <FieldNote>Choose Custom to edit the hex color.</FieldNote>
       </FieldSection>
 
-      <FieldSection index="04" title="Sizes in each .ico">
+      <FieldSection
+        index="04"
+        title="Sizes in each .ico"
+        note="Raster sizes above the source are skipped."
+      >
         <ChoiceRow>
           {FAVICON_SIZES.map((size) => (
             <Choice
@@ -246,7 +248,6 @@ export const FaviconInspector: React.FC<FaviconInspectorProps> = ({
             Lean · 16–64
           </Choice>
         </ChoiceRow>
-        <FieldNote>Raster sizes above the source are skipped.</FieldNote>
       </FieldSection>
     </div>
   );

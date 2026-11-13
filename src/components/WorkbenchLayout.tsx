@@ -15,7 +15,7 @@ export const WorkbenchLayout: React.FC<{
   <div className="flex min-h-0 flex-1 items-stretch">
     <div
       className={cx(
-        'flex min-w-0 flex-1 flex-col overflow-y-auto px-10 pb-10 pt-8',
+        'flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-[var(--d-page-x)] pb-[var(--d-page-bottom)] pt-[var(--d-page-top)]',
         workspaceClassName
       )}
     >
@@ -23,7 +23,7 @@ export const WorkbenchLayout: React.FC<{
     </div>
     <aside
       className={cx(
-        'w-[428px] shrink-0 overflow-y-auto border-l border-subtle px-[30px] pb-10 pt-7',
+        'w-[428px] shrink-0 overflow-y-auto overflow-x-hidden border-l border-subtle px-[var(--d-inspector-x)] pb-[var(--d-inspector-bottom)] pt-[var(--d-inspector-top)]',
         inspectorClassName
       )}
     >

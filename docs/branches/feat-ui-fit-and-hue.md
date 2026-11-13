@@ -1,7 +1,7 @@
 # `feat/ui-fit-and-hue` — Encaixe vertical + densidade (leva 2)
 
 - **Type:** Feature — layout / densidade
-- **Status:** In Progress — F1 e F2 implementados, aguardando aprovação de merge
+- **Status:** Merged into `main` (F1 + F2)
 - **Base:** `main` @ `a368469` (release `1.5.0`)
 - **Plano aprovado:** [docs/plans/ui-pass-2.md](../plans/ui-pass-2.md)
 
@@ -201,6 +201,12 @@ scripts/screenshot.cjs             LEVE_MEASURE=1 e LEVE_HEIGHT=<px>
 | 5 | `--d-control-sm` 28 px no compact/short | só o *hit area* de slider e do bloco de valor resolvido; trilha e knob seguem iguais |
 | 6 | Rows de lista menores nos tiers condensados | reduz a rolagem dos estados com fila sem mudar o desenho da linha |
 | 7 | F3/F4 não implementados | combinado: primeiro o estudo/plano; o hue entra depois, na mesma branch |
+
+## 6.1 Merge record
+
+- Aprovado pelo usuário após as revisões de rolagem horizontal e do destino customizado.
+- Merge em `main` com `--no-ff`; o F3 (seletor de tom) continua em branch própria
+  (`feat/hue-selector`), para manter uma branch por feature.
 
 ## 7. Pendente nesta branch
 

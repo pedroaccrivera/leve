@@ -55,8 +55,15 @@ Publish flow: merge into `main`, tag `v1.6.3`, push the tag. The
   horizontal overflow; the strip renders the three artworks; selecting the 1st logo shows
   `0% / Square / White` and the 3rd shows `50% / Circle / Transparent`; the footer reads
   "3 logos. A recipe each.".
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [43498758772](https://github.com/pedroaccrivera/leve/actions/runs/43498758772) (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.3>
+  (public, not a draft, release notes generated).
+  - `leve-1.6.3-mac-arm64.dmg` — 152,771,577 B
+  - `leve-1.6.3-mac-arm64.zip` — 147,575,669 B
+  - `leve-1.6.3-win-x64.exe` — 127,633,251 B
+  - `leve-1.6.3-win-x64-portable.exe` — 127,483,483 B
+- Sizes are within ~1 KB of `v1.6.2` — the release adds UI code only.
 
 ## 4. Decision Log and Commit History
 
@@ -64,8 +71,10 @@ Publish flow: merge into `main`, tag `v1.6.3`, push the tag. The
   README. **F4 (micro-interactions) remains planned for `1.7.0`.**
 - **README scope:** only the Homebrew instructions and the stale preset claim were touched; the rest
   of the document was left for a dedicated pass.
-- **Homebrew cask:** still updated for this release so existing cask users keep getting upgrades —
-  say the word if the tap should be retired instead.
+- **Homebrew cask:** still updated for this release so existing cask users keep getting upgrades
+  (`1.6.2 → 1.6.3`, zip `sha256` `f21f33e9…2c329de`, 147,575,669 B — size and hash verified against
+  the release asset before committing). The README no longer advertises the cask; say the word if the
+  tap should be retired too.
 
 | Commit | Message |
 | :--- | :--- |

@@ -44,7 +44,7 @@ export const BatchReport: React.FC<BatchReportProps> = ({
   onDismiss,
   trailingNote,
 }) => (
-  <div className="flex flex-col gap-6">
+  <div className="flex flex-col gap-[var(--d-block)]">
     <div className="flex flex-col gap-3">
       <span className="t-mono text-muted">{introLabel}</span>
       <h2 className="t-display whitespace-pre-line text-ink">{title}</h2>
@@ -69,7 +69,7 @@ export const BatchReport: React.FC<BatchReportProps> = ({
           <span className="t-title w-full truncate text-ink">{cell.value}</span>
         </div>
       ))}
-      {receiptVariant === 'panel' && <div className="h-[104px]" aria-hidden="true" />}
+      {receiptVariant === 'panel' && <div className="h-[var(--d-receipt)]" aria-hidden="true" />}
     </div>
 
     <p className="t-small text-muted">{note}</p>
@@ -78,7 +78,7 @@ export const BatchReport: React.FC<BatchReportProps> = ({
       {rows.map((row, index) => (
         <React.Fragment key={`${row.name}-${index}`}>
           <Divider />
-          <div className="flex items-start gap-0 py-5">
+          <div className="flex items-start gap-0 py-[var(--d-row-y)]">
             <span className="w-[120px] shrink-0">
               <StatusChip tone={row.tone} mark={row.mark}>
                 {row.label}

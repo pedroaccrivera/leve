@@ -167,7 +167,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
     <div
       {...dropHandlers}
       className={cx(
-        'flex h-[320px] flex-col items-center justify-center gap-5 border border-dashed bg-surface transition-colors',
+        'flex h-[var(--d-dropzone)] flex-col items-center justify-center gap-5 border border-dashed bg-surface transition-colors',
         isDragging ? 'border-ink' : 'border-control'
       )}
     >

@@ -2,9 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Check } from 'lucide-react';
 import type { VideoConfig, VideoQuality } from '../types';
 import { ReadOnlyChoice, ReadOnlyChoiceRow } from './ui/Choice';
-import { FieldNote, FieldSection } from './ui/FieldSection';
+import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
 import { RecipeUsed } from './BatchReport';
+import { FolderPickerField } from './ui/FolderPickerField';
 
 const QUALITY: { id: VideoQuality; label: string }[] = [
   { id: 'light', label: 'Good quality' },
@@ -108,17 +109,19 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
   const widthValue = draft ?? (widthIsCustom ? String(config.maxWidth) : `${config.maxWidth} px · maximum width`);
 
   const destinationValue =
-    config.destinationMode === 'subfolder'
-      ? config.subfolderName
-      : config.destinationMode === 'suffix'
-        ? config.suffix
-        : (config.customFolderPath ?? '');
+    config.destinationMode === 'subfolder' ? config.subfolderName : config.suffix;
+
+  /** One folder for the whole batch, chosen from an explicit action. */
+  const chooseFolder = async () => {
+    const folder = await window.electronAPI?.selectDestinationFolder?.();
+    if (folder) onPatch({ destinationMode: 'custom_folder', customFolderPath: folder });
+  };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[var(--d-section)]">
       <div className="flex flex-col gap-1">
         <h2 className="t-section text-ink">Video recipe</h2>
-        <p className="t-small text-muted">Shared settings · applies to every video</p>
+        <p className="short:hidden t-small text-muted">Shared settings · applies to every video</p>
       </div>
 
       <FieldSection index="01" title="Maximum width">
@@ -166,7 +169,7 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
         <span className="t-control text-ink">Smaller videos are never enlarged</span>
       </div>
 
-      <FieldSection index="02" title="Compression">
+      <FieldSection index="02" title="Compression" note={QUALITY_NOTES[config.quality]}>
         <ReadOnlyChoiceRow>
           {QUALITY.map((option) => (
             <ReadOnlyChoice
@@ -179,7 +182,6 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
             </ReadOnlyChoice>
           ))}
         </ReadOnlyChoiceRow>
-        <FieldNote>{QUALITY_NOTES[config.quality]}</FieldNote>
       </FieldSection>
 
       <FieldSection index="03" title="Output format">
@@ -222,7 +224,15 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
         description="Keep the original audio"
       />
 
-      <FieldSection index="04" title="Save new files to">
+      <FieldSection
+        index="04"
+        title="Save new files to"
+        note={
+          config.destinationMode === 'custom_folder'
+            ? 'Every file in the batch is saved to this folder. Originals stay untouched.\nMP4 uses H.264 + AAC. WebM uses VP9 + Opus.'
+            : 'Next to each source. Originals stay untouched.\nMP4 uses H.264 + AAC. WebM uses VP9 + Opus.'
+        }
+      >
         <ReadOnlyChoiceRow>
           <ReadOnlyChoice
             selected={config.destinationMode === 'subfolder'}
@@ -241,24 +251,28 @@ export const VideoInspector: React.FC<VideoInspectorProps> = ({
           <ReadOnlyChoice
             selected={config.destinationMode === 'custom_folder'}
             role="button"
-            onClick={() => onPatch({ destinationMode: 'custom_folder' })}
+            onClick={() => void chooseFolder()}
           >
             Custom
           </ReadOnlyChoice>
         </ReadOnlyChoiceRow>
-        <div className="flex h-11 items-center">
-          <InlineValue
-            aria-label="Destination"
-            value={destinationValue}
-            onChange={(value) => {
-              if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
-              else if (config.destinationMode === 'suffix') onPatch({ suffix: value });
-              else onPatch({ customFolderPath: value });
-            }}
+        {config.destinationMode === 'custom_folder' ? (
+          <FolderPickerField
+            path={config.customFolderPath}
+            onPick={() => void chooseFolder()}
           />
-        </div>
-        <FieldNote>Next to each source. Originals stay untouched.</FieldNote>
-        <FieldNote>MP4 uses H.264 + AAC. WebM uses VP9 + Opus.</FieldNote>
+        ) : (
+          <div className="flex h-[var(--d-control)] items-center">
+            <InlineValue
+              aria-label="Destination"
+              value={destinationValue}
+              onChange={(value) => {
+                if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
+                else onPatch({ suffix: value });
+              }}
+            />
+          </div>
+        )}
       </FieldSection>
     </div>
   );

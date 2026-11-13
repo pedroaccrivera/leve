@@ -24,7 +24,7 @@ export const Choice: React.FC<ChoiceProps> = ({
     type={type}
     aria-pressed={selected}
     className={cx(
-      'flex h-11 min-w-11 flex-1 items-center justify-center border p-2 transition-colors duration-150',
+      'flex h-[var(--d-control)] min-w-11 flex-1 items-center justify-center border p-2 transition-colors duration-150',
       mono ? 't-mono' : 't-control',
       selected
         ? 'border-ink bg-ink text-paper'
@@ -38,6 +38,14 @@ export const Choice: React.FC<ChoiceProps> = ({
 /** Equal-width row of choices — 4 px gutters, as designed. */
 export const ChoiceRow: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...rest }) => (
   <div className={cx('flex items-stretch gap-1', className)} {...rest} />
+);
+
+/**
+ * Stacked rows of choices. The design keeps the same 4 px gutter between rows
+ * (row 1 at y=0, row 2 at y=48 with 44 px controls) as between columns.
+ */
+export const ChoiceStack: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...rest }) => (
+  <div className={cx('flex flex-col gap-1', className)} {...rest} />
 );
 
 /**
@@ -56,7 +64,7 @@ export const ReadOnlyChoice: React.FC<ReadOnlyChoiceProps> = ({
 }) => (
   <div
     className={cx(
-      'flex h-11 min-w-11 flex-1 items-center justify-center border-b p-2 t-control text-ink',
+      'flex h-[var(--d-control)] min-w-11 flex-1 items-center justify-center border-b p-2 t-control text-ink',
       selected ? 'border-b-2 border-ink bg-subtle' : 'border-subtle',
       className
     )}

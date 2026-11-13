@@ -7,8 +7,8 @@ type ButtonSize = 'sm' | 'md' | 'lg';
 /** Heights match the design: sm = 34 px (compact), md = 44 px, lg = 48 px. */
 const sizes: Record<ButtonSize, string> = {
   sm: 'h-[34px] px-4 py-2',
-  md: 'h-11 px-4 py-2.5',
-  lg: 'h-12 px-4 py-3',
+  md: 'h-[var(--d-control)] px-4 py-2.5',
+  lg: 'h-[var(--d-control-lg)] px-4 py-3',
 };
 
 const variants: Record<ButtonVariant, string> = {

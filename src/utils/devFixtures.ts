@@ -137,6 +137,15 @@ export function fixtureState(name: string): FixtureState | null {
         activeIndex: 1,
         config: { outputFormat: 'webp' },
       };
+    case 'images-custom-folder':
+      return {
+        items: IMAGE_FILES.map(([file, w, h, size], index) => image(index + 1, file, w, h, size)),
+        config: {
+          outputFormat: 'webp',
+          destinationMode: 'custom_folder',
+          customFolderPath: '/Users/you/Exports/Web',
+        },
+      };
     case 'images-report':
       return {
         items: [

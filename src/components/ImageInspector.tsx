@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
 import type { CompressionLevel, OutputFormat, OutputDestinationMode, ResizeConfig } from '../types';
-import { Choice, ChoiceRow } from './ui/Choice';
-import { FieldNote, FieldSection } from './ui/FieldSection';
+import { Choice, ChoiceRow, ChoiceStack } from './ui/Choice';
+import { FieldSection } from './ui/FieldSection';
 import { Checkbox } from './ui/Checkbox';
 import { TextInput } from './ui/TextInput';
+import { FolderPickerField } from './ui/FolderPickerField';
 import { presetNameFor, WIDTH_PRESETS } from '../utils/presets';
 
 const COMPRESSION: { id: CompressionLevel; label: string }[] = [
@@ -71,28 +72,28 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
   };
 
   const destinationValue =
-    config.destinationMode === 'subfolder'
-      ? config.subfolderName
-      : config.destinationMode === 'suffix'
-        ? config.suffix
-        : (config.customFolderPath ?? '');
+    config.destinationMode === 'subfolder' ? config.subfolderName : config.suffix;
 
   const handleDestinationChange = (value: string) => {
     if (config.destinationMode === 'subfolder') onPatch({ subfolderName: value });
-    else if (config.destinationMode === 'suffix') onPatch({ suffix: value });
-    else onPatch({ customFolderPath: value });
+    else onPatch({ suffix: value });
   };
 
-  const pickFolder = async () => {
+  /**
+   * One folder for the whole batch. The picker opens from an explicit action
+   * (choosing `Custom` or clicking the field) and never from focus, so it is
+   * asked once — cancelling keeps the previous destination.
+   */
+  const chooseFolder = async () => {
     const folder = await window.electronAPI?.selectDestinationFolder?.();
-    if (folder) onPatch({ customFolderPath: folder, destinationMode: 'custom_folder' });
+    if (folder) onPatch({ destinationMode: 'custom_folder', customFolderPath: folder });
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[var(--d-section)]">
       <div className="flex flex-col gap-1">
         <h2 className="t-section text-ink">Image recipe</h2>
-        <p className="t-small text-muted">Shared settings · applies to every image</p>
+        <p className="short:hidden t-small text-muted">Shared settings · applies to every image</p>
       </div>
 
       <FieldSection index="01" title="Output width">
@@ -111,35 +112,37 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
             if (raw && Number.isFinite(parsed) && parsed > 0) onCustomWidthChange(parsed);
           }}
         />
-        <ChoiceRow>
-          {WIDTH_PRESETS.slice(0, 3).map((preset) => (
-            <Choice
-              key={preset.width}
-              mono
-              disabled={disabled}
-              selected={!widthIsCustom && config.targetWidth === preset.width}
-              onClick={() => onSelectPreset(preset.width)}
-            >
-              {preset.width}
+        <ChoiceStack>
+          <ChoiceRow>
+            {WIDTH_PRESETS.slice(0, 3).map((preset) => (
+              <Choice
+                key={preset.width}
+                mono
+                disabled={disabled}
+                selected={!widthIsCustom && config.targetWidth === preset.width}
+                onClick={() => onSelectPreset(preset.width)}
+              >
+                {preset.width}
+              </Choice>
+            ))}
+          </ChoiceRow>
+          <ChoiceRow>
+            {WIDTH_PRESETS.slice(3).map((preset) => (
+              <Choice
+                key={preset.width}
+                mono
+                disabled={disabled}
+                selected={!widthIsCustom && config.targetWidth === preset.width}
+                onClick={() => onSelectPreset(preset.width)}
+              >
+                {preset.width}
+              </Choice>
+            ))}
+            <Choice mono disabled={disabled} selected={widthIsCustom} onClick={handleSelectCustom}>
+              Custom
             </Choice>
-          ))}
-        </ChoiceRow>
-        <ChoiceRow>
-          {WIDTH_PRESETS.slice(3).map((preset) => (
-            <Choice
-              key={preset.width}
-              mono
-              disabled={disabled}
-              selected={!widthIsCustom && config.targetWidth === preset.width}
-              onClick={() => onSelectPreset(preset.width)}
-            >
-              {preset.width}
-            </Choice>
-          ))}
-          <Choice mono disabled={disabled} selected={widthIsCustom} onClick={handleSelectCustom}>
-            Custom
-          </Choice>
-        </ChoiceRow>
+          </ChoiceRow>
+        </ChoiceStack>
       </FieldSection>
 
       <Checkbox
@@ -149,7 +152,11 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
         label="Never enlarge smaller files"
       />
 
-      <FieldSection index="02" title="Compression">
+      <FieldSection
+        index="02"
+        title="Compression"
+        note={`${COMPRESSION_NOTES[config.compressionLevel]}\nLossless is available for PNG and WebP.`}
+      >
         <ChoiceRow>
           {COMPRESSION.map((option) => (
             <Choice
@@ -162,8 +169,6 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
             </Choice>
           ))}
         </ChoiceRow>
-        <FieldNote>{COMPRESSION_NOTES[config.compressionLevel]}</FieldNote>
-        <FieldNote>Lossless is available for PNG and WebP.</FieldNote>
       </FieldSection>
 
       <FieldSection index="03" title="Output format">
@@ -189,29 +194,45 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
         description="Remove EXIF, camera details and GPS"
       />
 
-      <FieldSection index="04" title="Save new files to">
+      <FieldSection
+        index="04"
+        title="Save new files to"
+        note={
+          config.destinationMode === 'custom_folder'
+            ? 'Every file in the batch is saved to this folder. Originals stay untouched.'
+            : 'Next to each source. Originals stay untouched.'
+        }
+      >
         <ChoiceRow>
           {DESTINATIONS.map((option) => (
             <Choice
               key={option.id}
               disabled={disabled}
               selected={config.destinationMode === option.id}
-              onClick={() => onPatch({ destinationMode: option.id })}
+              onClick={() =>
+                option.id === 'custom_folder'
+                  ? void chooseFolder()
+                  : onPatch({ destinationMode: option.id })
+              }
             >
               {option.label}
             </Choice>
           ))}
         </ChoiceRow>
-        <TextInput
-          value={destinationValue}
-          disabled={disabled}
-          aria-label="Destination"
-          onChange={(event) => handleDestinationChange(event.target.value)}
-          onFocus={() => {
-            if (config.destinationMode === 'custom_folder') void pickFolder();
-          }}
-        />
-        <FieldNote>Next to each source. Originals stay untouched.</FieldNote>
+        {config.destinationMode === 'custom_folder' ? (
+          <FolderPickerField
+            path={config.customFolderPath}
+            onPick={() => void chooseFolder()}
+            disabled={disabled}
+          />
+        ) : (
+          <TextInput
+            value={destinationValue}
+            disabled={disabled}
+            aria-label="Destination"
+            onChange={(event) => handleDestinationChange(event.target.value)}
+          />
+        )}
       </FieldSection>
     </div>
   );

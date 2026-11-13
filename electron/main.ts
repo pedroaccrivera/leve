@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, screen, shell } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
@@ -72,13 +72,20 @@ async function createWindow() {
   if (appIcon && process.platform === 'darwin' && !app.isPackaged) {
     app.dock?.setIcon(appIcon);
   }
+
+  // Open at the design window (1280 × 800) but never larger than the screen's
+  // work area, so the app never has to be resized just to be usable.
+  const workArea = screen.getPrimaryDisplay().workAreaSize;
+  const width = Math.min(1280, workArea.width);
+  const height = Math.min(800, workArea.height);
+
   win = new BrowserWindow({
     title: 'leve — 100% Local Image Resizer & Compressor',
     ...(appIcon ? { icon: appIcon } : {}),
-    width: 1280,
-    height: 800,
+    width,
+    height,
     minWidth: 1040,
-    minHeight: 720,
+    minHeight: 640,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     // The 28 px window bar carries the identity line at x = 76, so the real
     // traffic lights sit at x = 20 (design) and stay inside the bar.

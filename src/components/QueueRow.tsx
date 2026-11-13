@@ -32,7 +32,7 @@ export const ImageQueueRow: React.FC<ImageQueueRowProps> = ({
   onRemove,
   className,
 }) => (
-  <div className={cx('flex h-[100px] items-center gap-4', className)}>
+  <div className={cx('flex h-[var(--d-row)] items-center gap-4', className)}>
     <div className="flex h-14 w-14 shrink-0 items-center justify-center bg-panel">
       <ImageIcon className="h-6 w-6 text-muted" strokeWidth={2} />
     </div>
@@ -80,7 +80,7 @@ export const VideoQueueRow: React.FC<VideoQueueRowProps> = ({
   onRemove,
   className,
 }) => (
-  <div className={cx('flex h-[92px] items-center gap-5', className)}>
+  <div className={cx('flex h-[var(--d-row)] items-center gap-5', className)}>
     <span className="t-mono w-14 shrink-0 text-muted">{index}</span>
 
     <div className="flex min-w-0 flex-1 flex-col gap-1">

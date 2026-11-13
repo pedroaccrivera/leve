@@ -23,7 +23,7 @@ export const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
         max={max}
         value={value}
         style={{ ['--slider-pct' as string]: `${pct}%` }}
-        className={cx('fieldwork-slider h-11 w-full cursor-pointer appearance-none bg-transparent', className)}
+        className={cx('fieldwork-slider h-[var(--d-control-sm)] w-full cursor-pointer appearance-none bg-transparent', className)}
         {...rest}
       />
     );

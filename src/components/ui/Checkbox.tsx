@@ -27,6 +27,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     aria-checked={checked}
     disabled={disabled}
     onClick={() => onChange(!checked)}
+    title={description}
     className={cx(
       'flex w-full gap-3 text-left transition-opacity',
       description ? 'items-start' : 'items-center',
@@ -44,7 +45,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     </span>
     <span className="flex min-w-0 flex-col">
       <span className="t-control text-ink">{label}</span>
-      {description && <span className="t-small text-muted">{description}</span>}
+      {description && <span className="compact:hidden t-small text-muted">{description}</span>}
     </span>
   </button>
 );

@@ -34,6 +34,37 @@
   --c-warning: #775016;
   --c-success: #28643d;
 
+  /*
+   * Density. One set of tokens drives every vertical measurement so the app
+   * can fit a short window without a single component knowing about it.
+   * The three tiers live in the max-height blocks below.
+   */
+  --d-page-x: 40px;
+  --d-page-top: 32px;
+  --d-page-bottom: 40px;
+  --d-block: 24px; /* gap between workbench blocks */
+  --d-section: 16px; /* gap between inspector sections */
+  --d-field: 8px; /* label → content, content → content */
+  --d-label-gap: 8px; /* hairline → section label */
+  --d-nav: 72px;
+  --d-footer: 92px;
+  --d-inspector-x: 30px;
+  --d-inspector-top: 28px;
+  --d-inspector-bottom: 40px;
+  --d-dropzone: 320px;
+  --d-intro-gap: 12px;
+  --d-list-gap: 16px;
+  --d-control: 44px;
+  --d-control-lg: 48px;
+  --d-control-sm: 44px; /* slider hit area, resolved-value block */
+  --d-row: 100px; /* queue row */
+  --d-row-y: 20px; /* report row padding */
+  --d-receipt: 104px; /* images receipt panel */
+  --t-display-size: 48px;
+  --t-display-leading: 52px;
+  --t-title-size: 28px;
+  --t-title-leading: 34px;
+
   /* Surfaces that sit on top of a blurred / scrolled region. */
   --c-overlay: rgba(245, 243, 236, 0.88);
   --c-overlay-fade: rgba(245, 243, 236, 0);
@@ -73,11 +104,87 @@
   color-scheme: dark;
 }
 
+/* ---------------------------------------------------------------------------
+ * Density tiers (window height)
+ *   tall    ≥ 880 px — the design as drawn
+ *   compact 760–879 — 800 px default window: tighter rhythm, notes → tooltip
+ *   short   ≤ 759 — 720p: controls drop to 40 px and everything tightens again
+ * ------------------------------------------------------------------------ */
+@media (max-height: 999px) {
+  :root {
+    --d-page-x: 32px;
+    --d-page-top: 20px;
+    --d-page-bottom: 20px;
+    --d-block: 16px;
+    --d-section: 4px;
+    --d-field: 4px;
+    --d-label-gap: 4px;
+    --d-nav: 68px;
+    --d-footer: 84px;
+    --d-inspector-x: 26px;
+    --d-inspector-top: 16px;
+    --d-inspector-bottom: 16px;
+    --d-dropzone: 240px;
+    --d-intro-gap: 10px;
+    --d-list-gap: 12px;
+    --d-control: 44px;
+    --d-control-lg: 46px;
+    --d-control-sm: 28px;
+    --d-row: 84px;
+    --d-row-y: 14px;
+    --d-receipt: 88px;
+    --t-display-size: 42px;
+    --t-display-leading: 46px;
+    --t-title-size: 26px;
+    --t-title-leading: 32px;
+  }
+}
+
+@media (max-height: 759px) {
+  :root {
+    --d-page-x: 28px;
+    --d-page-top: 14px;
+    --d-page-bottom: 14px;
+    --d-block: 12px;
+    --d-section: 4px;
+    --d-field: 4px;
+    --d-label-gap: 2px;
+    --d-nav: 64px;
+    --d-footer: 76px;
+    --d-inspector-x: 24px;
+    --d-inspector-top: 12px;
+    --d-inspector-bottom: 12px;
+    --d-dropzone: 216px;
+    --d-intro-gap: 8px;
+    --d-list-gap: 8px;
+    --d-control: 40px;
+    --d-control-lg: 42px;
+    --d-control-sm: 28px;
+    --d-row: 76px;
+    --d-row-y: 12px;
+    --d-receipt: 80px;
+    --t-display-size: 34px;
+    --t-display-leading: 38px;
+    --t-title-size: 24px;
+    --t-title-leading: 30px;
+  }
+}
+
 @layer base {
   html,
   body,
   #root {
     height: 100%;
+  }
+
+  /*
+   * The shell owns both axes: columns scroll on their own and the window
+   * itself never does, so a stray wide element can never introduce a
+   * horizontal scrollbar.
+   */
+  html,
+  body {
+    overflow: hidden;
   }
 
   body {
@@ -124,16 +231,16 @@
   .t-display {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 500;
-    font-size: 48px;
-    line-height: 52px;
+    font-size: var(--t-display-size);
+    line-height: var(--t-display-leading);
     letter-spacing: -2px;
   }
 
   .t-title {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 500;
-    font-size: 28px;
-    line-height: 34px;
+    font-size: var(--t-title-size);
+    line-height: var(--t-title-leading);
     letter-spacing: -0.6px;
   }
 

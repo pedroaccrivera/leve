@@ -64,8 +64,16 @@ Publish flow: merge into `main`, tag `v1.5.1`, push the tag. The
 - Layout matrix (`scripts/screenshot.cjs` with `LEVE_MEASURE=1`): workspace + inspector overflow `0`
   for the three tabs at 1060/900/800/720, and horizontal overflow `0` for the columns, the document
   and the body across 10 state/height/theme combinations.
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [43448975809](https://github.com/pedroaccrivera/leve/actions/runs/43448975809)
+  (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.5.1>
+  (public, not a draft, release notes generated).
+  - `leve-1.5.1-mac-arm64.dmg` — 152,777,198 B
+  - `leve-1.5.1-mac-arm64.zip` — 147,572,551 B
+  - `leve-1.5.1-win-x64.exe` — 127,630,493 B
+  - `leve-1.5.1-win-x64-portable.exe` — 127,480,719 B
+- Sizes are within ~10 KB of `v1.5.0` — the release is layout and behaviour only.
 
 ## 4. Decision Log and Commit History
 
@@ -75,6 +83,11 @@ Publish flow: merge into `main`, tag `v1.5.1`, push the tag. The
   reviewable before the tag triggers the public Release workflow.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged, matching the previous flow.
+- **Homebrew cask:** updated in `pedroaccrivera/homebrew-tap`
+  ([`37b605bf`](https://github.com/pedroaccrivera/homebrew-tap/commit/37b605bf9ab3bfc6791412736e47454a3079589b))
+  from `1.5.0` to `1.5.1`, with the published zip `sha256`
+  (`b9941501…1a3bf5`, 147,572,551 B — size and hash verified against the release asset before
+  committing).
 
 | Commit | Message |
 | :--- | :--- |

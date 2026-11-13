@@ -62,6 +62,18 @@ Windows x64 (installer/portable) to a public GitHub Release with generated relea
 - `node test/testVideoProcessor.js` → pass.
 - Visual parity: 14 states captured at 1280 × 800 through `scripts/screenshot.cjs` and compared
   with the Figma frames, both themes.
+- CI run for the pushed tag → **success** on both jobs:
+  [43434602826](https://github.com/pedroaccrivera/leve/actions/runs/43434602826)
+  (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.5.0>
+  (public, not a draft, release notes generated).
+  - `leve-1.5.0-mac-arm64.dmg` — 152,767,179 B
+  - `leve-1.5.0-mac-arm64.zip` — 147,571,050 B
+  - `leve-1.5.0-win-x64.exe` — 127,629,232 B
+  - `leve-1.5.0-win-x64-portable.exe` — 127,479,468 B
+- macOS artifacts shrank versus `v1.4.0` (dmg −2.96 MB, zip −1.73 MB): the rebuilt `.icns`
+  (83 KB vs 1.32 MB) and `.ico` (7.7 KB vs 285 KB) are vector-derived flat artwork, which more than
+  offsets the ~193 KB of bundled typefaces.
 
 ## 4. Decision Log and Commit History
 

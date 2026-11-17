@@ -135,3 +135,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.2` | Chore — Release 1.6.2 (Consistent video recipe) | Merged | [docs/branches/chore-release-1.6.2.md](docs/branches/chore-release-1.6.2.md) |
 | `feat/favicon-per-logo` | Feature — Favicon editor: thumbnails + per-logo recipe | Merged | [docs/branches/feat-favicon-per-logo.md](docs/branches/feat-favicon-per-logo.md) |
 | `chore/release-1.6.3` | Chore — Release 1.6.3 (Favicon editor fixes + README) | Merged | [docs/branches/chore-release-1.6.3.md](docs/branches/chore-release-1.6.3.md) |
+| `refactor/report-actions-in-footer` | Refactor — Batch report actions in the footer | Merged | [docs/branches/refactor-report-actions-in-footer.md](docs/branches/refactor-report-actions-in-footer.md) |

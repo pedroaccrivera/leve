@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from './ui/Button';
 import { Divider, FieldLabel } from './ui/FieldSection';
 import { StatusChip } from './ui/StatusChip';
 import { cx } from '../utils/cx';
@@ -26,8 +25,7 @@ export interface BatchReportProps {
   receiptVariant?: 'panel' | 'plain';
   note: string;
   rows: ReportRow[];
-  onStartNewBatch: () => void;
-  onDismiss: () => void;
+  /** Batch actions live in the action footer, next to "Open output folder". */
   trailingNote?: string;
 }
 
@@ -40,8 +38,6 @@ export const BatchReport: React.FC<BatchReportProps> = ({
   receiptVariant = 'plain',
   note,
   rows,
-  onStartNewBatch,
-  onDismiss,
   trailingNote,
 }) => (
   <div className="flex flex-col gap-[var(--d-block)]">
@@ -96,15 +92,6 @@ export const BatchReport: React.FC<BatchReportProps> = ({
         </React.Fragment>
       ))}
       <Divider />
-    </div>
-
-    <div className="flex items-center gap-4">
-      <Button variant="secondary" size="lg" className="w-[228px]" onClick={onStartNewBatch}>
-        Start a new batch
-      </Button>
-      <Button variant="secondary" size="lg" onClick={onDismiss}>
-        Dismiss report
-      </Button>
     </div>
 
     {trailingNote && <p className="t-small text-muted">{trailingNote}</p>}

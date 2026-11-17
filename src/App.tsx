@@ -668,8 +668,6 @@ export const App: React.FC = () => {
           ]}
           note="Only successful outputs are saved. Skipped and failed keep their originals."
           rows={imageReportRows}
-          onStartNewBatch={clearQueue}
-          onDismiss={() => setReportOpen(false)}
         />
       );
     }
@@ -832,8 +830,6 @@ export const App: React.FC = () => {
           ]}
           note="Only completed outputs are saved. Your source videos stay in place."
           rows={videoReportRows}
-          onStartNewBatch={clearQueue}
-          onDismiss={() => setReportOpen(false)}
         />
       );
     }
@@ -1022,8 +1018,6 @@ export const App: React.FC = () => {
           ]}
           note={`Saved in ${faviconConfig.subfolderName}/ next to the sources. No raster size was enlarged.`}
           rows={faviconReportRows}
-          onStartNewBatch={clearQueue}
-          onDismiss={() => setReportOpen(false)}
         />
       );
     }
@@ -1174,6 +1168,12 @@ export const App: React.FC = () => {
                 : 'New files only · name collisions never overwrite.'
           }
         >
+          <Button variant="secondary" size="lg" onClick={clearQueue}>
+            Start a new batch
+          </Button>
+          <Button variant="secondary" size="lg" onClick={() => setReportOpen(false)}>
+            Dismiss report
+          </Button>
           <Button variant="primary" size="lg" className="w-[280px]" onClick={openOutputFolder}>
             <span>Open output folder</span>
             <ArrowUpRight className="h-4 w-4" strokeWidth={2} />

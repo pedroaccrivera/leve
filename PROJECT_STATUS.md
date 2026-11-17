@@ -140,4 +140,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `refactor/tabs-to-header-rule` | Refactor — Media tabs fill the header | Merged | [docs/branches/refactor-tabs-to-header-rule.md](docs/branches/refactor-tabs-to-header-rule.md) |
 | `chore/release-1.6.5` | Chore — Release 1.6.5 (Media tabs fill the header) | Merged | [docs/branches/chore-release-1.6.5.md](docs/branches/chore-release-1.6.5.md) |
 | `refactor/header-as-titlebar` | Refactor — Header is the window bar (`leve.`) | In Progress | [docs/branches/refactor-header-as-titlebar.md](docs/branches/refactor-header-as-titlebar.md) |
-| `style/window-paddings` | Style — One window gutter for the outer paddings | In Progress | [docs/branches/style-window-paddings.md](docs/branches/style-window-paddings.md) |
+| `style/window-paddings` | Style — One window gutter for the outer paddings | Merged | [docs/branches/style-window-paddings.md](docs/branches/style-window-paddings.md) |

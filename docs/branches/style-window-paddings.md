@@ -1,7 +1,7 @@
 # `style/window-paddings` — Paddings externos padronizados
 
 - **Type:** Style — layout
-- **Status:** In Progress — implementado e verificado, aguardando merge
+- **Status:** Merged into `main` (included in release `1.6.6`)
 - **Base:** `refactor/header-as-titlebar` (`7e67746`) — entra na release **1.6.6**
 - **Plano:** [window-paddings.md](../plans/window-paddings.md)
 
@@ -94,6 +94,12 @@ PROJECT_STATUS.md
 | 5 | Header 68 e botão 44 (não 66/40) | 12/12 exatos; 66 quebraria a escala 72/68/64 dos tiers |
 | 5.1 | Lights: só 1 px de compensação vertical | medido no app real: o macOS posiciona o círculo no ponto configurado; o −1 alinha o centro |
 | 6 | `edges` no `LEVE_MEASURE` | o alinhamento vira teste, não impressão |
+
+## 5.1 Merge record
+
+- Aprovado pelo usuário depois de conferir o app real (lights em x = 20,04, centro y = 34,07).
+- Merge em `main` com `--no-ff`, depois da `refactor/header-as-titlebar`; release `1.6.6` — ver
+  [chore-release-1.6.6.md](chore-release-1.6.6.md).
 
 ## 6. Commit history
 

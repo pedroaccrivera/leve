@@ -20,6 +20,11 @@ logo ao lado), `LOCAL MEDIA TOOLKIT` sai e a marca ganha o ponto final no acento
 - **O header é a titlebar.** Ele já era `titlebar-drag-region` com `no-drag` nas abas, no seletor de
   tema e na paleta, então arrastar/duplo-clique continuam funcionando. A barra inteira (à esquerda e à
   direita das abas) arrasta.
+
+> **Nota (pós-`style/window-paddings`):** a hairline do header deixou de ser `border-b` e virou um
+> pseudo-elemento de 1 px, então a caixa tem exatamente `--d-nav` e o respiro do botão de tema é
+> 12/12 (antes 11,5/12,5). O `-mb-px` das abas saiu junto — ver
+> [style-window-paddings.md](style-window-paddings.md).
 - **Traffic lights na linha da marca.** `trafficLightPosition` de `{ x: 20, y: 8 }` para o centro do
   header: `y = nav/2 − 6` (12 px de diâmetro). Como `--d-nav` segue os tiers (72 · 68 · 64), o main
   process recalcula a posição no evento `resize` com `setWindowButtonPosition`, então as lights ficam

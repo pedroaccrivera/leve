@@ -44,7 +44,7 @@ docs/branches/refactor-tabs-to-header-rule.md
 | # | Decisão | Justificativa |
 |---|---|---|
 | 1 | Rótulo centralizado na altura toda | o centro do cabeçalho é a linha do wordmark e do seletor de tema, então o alinhamento do design se mantém |
-| 2 | `-mb-px` no bloco das abas | faz a borda da aba coincidir com a hairline do cabeçalho, sem uma linha dupla de 1 px |
+| 2 | `-mb-px` no bloco das abas | faz a borda da aba coincidir com a hairline do cabeçalho, sem uma linha dupla de 1 px — **substituído** na `style/window-paddings` pela hairline em pseudo-elemento, que dispensa a sobreposição |
 | 3 | `items-stretch` no header | permite `h-full` nas abas sem posicionamento absoluto |
 
 ## 5.1 Merge record

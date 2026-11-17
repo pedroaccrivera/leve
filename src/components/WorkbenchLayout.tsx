@@ -2,9 +2,11 @@ import React from 'react';
 import { cx } from '../utils/cx';
 
 /**
- * Workbench: media workspace (fluid, 40 px gutters) + batch inspector
- * (fixed 428 px, 30 px gutters, hairline between). Both columns scroll on
- * their own; the window itself never scrolls.
+ * Workbench: media workspace (fluid, page gutters) + batch inspector
+ * (fixed 428 px, hairline between). The inspector's left inset is measured from
+ * that hairline, but its right edge is the window edge, so it uses the page
+ * gutter — that lines its fields up with the theme button and the footer CTA.
+ * Both columns scroll on their own; the window itself never scrolls.
  */
 export const WorkbenchLayout: React.FC<{
   workspace: React.ReactNode;
@@ -23,7 +25,7 @@ export const WorkbenchLayout: React.FC<{
     </div>
     <aside
       className={cx(
-        'w-[428px] shrink-0 overflow-y-auto overflow-x-hidden border-l border-subtle px-[var(--d-inspector-x)] pb-[var(--d-inspector-bottom)] pt-[var(--d-inspector-top)]',
+        'w-[428px] shrink-0 overflow-y-auto overflow-x-hidden border-l border-subtle pb-[var(--d-inspector-bottom)] pl-[var(--d-inspector-x)] pr-[var(--d-page-x)] pt-[var(--d-inspector-top)]',
         inspectorClassName
       )}
     >

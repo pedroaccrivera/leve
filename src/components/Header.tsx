@@ -22,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ tabs }) => {
   const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
-    <header className="titlebar-drag-region relative z-20 flex h-[var(--d-nav)] shrink-0 items-stretch justify-between border-b border-subtle bg-paper px-[var(--d-page-x)]">
+    <header className="titlebar-drag-region relative z-20 flex h-[var(--d-nav)] shrink-0 items-stretch justify-between bg-paper px-[var(--d-page-x)] after:absolute after:inset-x-0 after:bottom-0 after:-z-10 after:h-px after:bg-subtle after:content-['']">
       <div className="flex w-[360px] items-center pl-[var(--d-brand-offset)]">
         <h1 className="t-title text-ink" aria-label="leve">
           leve
@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ tabs }) => {
         </h1>
       </div>
 
-      <div className="no-drag -mb-px">{tabs}</div>
+      <div className="no-drag">{tabs}</div>
 
       <div className="no-drag group flex w-[360px] items-center justify-end gap-2">
         <HueControl />

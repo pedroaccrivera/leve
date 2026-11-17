@@ -9,7 +9,7 @@
  * App chrome
  * ------------------------------------------------------------------------ */
 
-/* Frameless macOS window: the 28 px window bar and the nav drag the window. */
+/* Frameless macOS window: the header is the window bar, so it drags. */
 .titlebar-drag-region {
   -webkit-app-region: drag;
 }

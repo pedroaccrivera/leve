@@ -40,6 +40,14 @@
    * The three tiers live in the max-height blocks below.
    */
   --d-page-x: 40px;
+  /*
+   * Where the wordmark starts. macOS draws the traffic lights over the header
+   * (x = 20 → 72), so the brand clears them; elsewhere it uses the page gutter.
+   * `--d-brand-offset` is the extra padding inside the 360 px left block, which
+   * keeps the tabs centred in the window on both platforms.
+   */
+  --d-brand-inset: var(--d-page-x);
+  --d-brand-offset: calc(var(--d-brand-inset) - var(--d-page-x));
   --d-page-top: 32px;
   --d-page-bottom: 40px;
   --d-block: 24px; /* gap between workbench blocks */
@@ -83,6 +91,12 @@
    */
   --c-signal-text: color-mix(in oklab, var(--c-signal) 62%, var(--c-ink));
 
+  /*
+   * The wordmark's full stop. Pure signal on Ink (it reads on dark); on Paper
+   * it uses the accent-as-text mix so the dot is not a pale wash on off-white.
+   */
+  --c-brand-stop: var(--c-signal-text);
+
   /* Transparency checkerboard (favicon preview). */
   --checker-a: #ffffff;
   --checker-b: #e2e6db;
@@ -101,6 +115,7 @@
   --c-muted: #b9c2b5;
   --c-signal: #e6f45c;
   --c-on-signal: #1b241d;
+  --c-brand-stop: var(--c-signal);
   --c-danger: #ffada0;
   --c-warning: #f5cc84;
   --c-success: #a3d8ac;
@@ -113,6 +128,10 @@
   --checker-b: #2b322c;
 
   color-scheme: dark;
+}
+
+:root[data-platform='mac'] {
+  --d-brand-inset: 84px; /* lights end at 72 px + a 12 px breath */
 }
 
 /* ---------------------------------------------------------------------------

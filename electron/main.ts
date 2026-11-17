@@ -37,6 +37,31 @@ process.env.VITE_PUBLIC = app.isPackaged
 
 let win: BrowserWindow | null = null;
 
+/**
+ * Traffic lights, macOS only.
+ *
+ * The header is the window bar now, so the buttons sit on its vertical centre
+ * (12 px buttons → 6 px above the centre). The header follows the density tiers
+ * (--d-nav: 72 / 68 / 64 by viewport height), so the position is re-synced on
+ * resize and the lights stay on the wordmark's line in every tier.
+ */
+const navHeightFor = (viewportHeight: number): number =>
+  viewportHeight <= 759 ? 64 : viewportHeight <= 999 ? 68 : 72;
+
+const syncTrafficLights = (browserWindow: BrowserWindow): void => {
+  if (process.platform !== 'darwin' || browserWindow.isDestroyed()) return;
+  const [, height] = browserWindow.getContentSize();
+  try {
+    browserWindow.setWindowButtonPosition({
+      x: 20,
+      y: Math.round(navHeightFor(height) / 2) - 6,
+    });
+  } catch {
+    // Older macOS builds without `setWindowButtonPosition` keep the initial
+    // constructor position, which is still centred in the default window.
+  }
+};
+
 // Dynamically locate the native preload file
 function resolvePreloadPath(): string {
   const direct = path.join(process.cwd(), 'electron/preload.cjs');
@@ -118,9 +143,12 @@ async function createWindow() {
     minWidth: 1040,
     minHeight: 640,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    // The 28 px window bar carries the identity line at x = 76, so the real
-    // traffic lights sit at x = 20 (design) and stay inside the bar.
-    trafficLightPosition: process.platform === 'darwin' ? { x: 20, y: 8 } : undefined,
+    // Centred in the header, which is now the window bar; `syncTrafficLights`
+    // keeps them centred when the window crosses a density tier.
+    trafficLightPosition:
+      process.platform === 'darwin'
+        ? { x: 20, y: Math.round(navHeightFor(height) / 2) - 6 }
+        : undefined,
     backgroundColor: '#171b18',
     webPreferences: {
       preload,
@@ -139,6 +167,11 @@ async function createWindow() {
   }
 
   win.setMenuBarVisibility(false);
+
+  // Density tiers change the header's height, so the buttons follow it.
+  const created = win;
+  created.on('resize', () => syncTrafficLights(created));
+  syncTrafficLights(created);
 }
 
 app.whenReady().then(createWindow);

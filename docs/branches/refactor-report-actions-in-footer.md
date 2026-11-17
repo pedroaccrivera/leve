@@ -1,7 +1,7 @@
 # `refactor/report-actions-in-footer` — Ações do relatório no footer
 
 - **Type:** Refactor — layout
-- **Status:** In Progress — implementado e verificado, aguardando merge
+- **Status:** Merged into `main` (included in release `1.6.4`)
 - **Base:** `main` @ `c2ff26d` (release `1.6.3`)
 
 ## 1. Pedido
@@ -47,6 +47,12 @@ docs/branches/refactor-report-actions-in-footer.md
 | 1 | Mover, não duplicar | o print indica realocação; manter nos dois lugares poluiria o relatório |
 | 2 | Status do footer flexível em vez de 700 px fixos | os três botões não caberiam em 1280 com o bloco fixo |
 | 3 | Secundários com largura natural, CTA primário em 280 px | mantém a hierarquia do design (um sinal, um CTA) |
+
+## 5.1 Merge record
+
+- Aprovado pelo usuário após a conferência do footer em 1280×800.
+- Merge em `main` com `--no-ff`; release `1.6.4` — ver
+  [chore-release-1.6.4.md](chore-release-1.6.4.md).
 
 ## 6. Commit history
 

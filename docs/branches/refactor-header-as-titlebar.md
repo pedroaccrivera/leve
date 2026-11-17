@@ -1,7 +1,7 @@
 # `refactor/header-as-titlebar` — O header vira a titlebar
 
 - **Type:** Refactor — layout / identidade
-- **Status:** In Progress — implementado e verificado, aguardando merge
+- **Status:** Merged into `main` (included in release `1.6.6`)
 - **Base:** `main` @ `611ac80` (release `1.6.5`)
 - **Plano:** [header-as-titlebar.md](../plans/header-as-titlebar.md)
 
@@ -92,6 +92,12 @@ PROJECT_STATUS.md
 | 4 | `--c-brand-stop`: signal no Ink, signal-text no Paper | o ponto precisa ler nos dois temas mantendo o acento |
 | 5 | `aria-label="leve"` + `aria-hidden` no ponto | leitor de tela não anuncia "ponto" |
 | 6 | Windows/Linux mantêm frame nativo | sem lights desenhadas sobre o header; nada muda além da barra removida |
+
+## 5.1 Merge record
+
+- Aprovado pelo usuário após revisar o app em execução (dev server).
+- Merge em `main` com `--no-ff`, antes da `style/window-paddings`; release `1.6.6` — ver
+  [chore-release-1.6.6.md](chore-release-1.6.6.md).
 
 ## 6. Commit history
 

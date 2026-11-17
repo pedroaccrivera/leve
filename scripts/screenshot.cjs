@@ -66,18 +66,21 @@ app.whenReady().then(async () => {
   await new Promise((resolve) => setTimeout(resolve, 2200));
 
   // The OS draws the traffic lights outside the web contents, so capturePage
-  // never sees them. Draw them at the exact coordinates the window uses
-  // (trafficLightPosition x=20, y=8; 12 px buttons with a 20 px pitch) to check
-  // the window-bar spacing.
+  // never sees them. Draw them at the coordinates the window uses: x = 20 with
+  // a 20 px pitch, y = the header's centre (12 px buttons) for the density tier
+  // this viewport height lands in (72 / 68 / 64), matching `syncTrafficLights`.
   if (process.env.LEVE_MOCK_TRAFFIC === '1') {
     await win.webContents.executeJavaScript(`
       (() => {
+        const viewport = window.innerHeight;
+        const nav = viewport <= 759 ? 64 : viewport <= 999 ? 68 : 72;
+        const top = Math.round(nav / 2) - 6;
         const layer = document.createElement('div');
-        layer.style.cssText = 'position:fixed;top:0;left:0;width:1280px;height:28px;z-index:9999;pointer-events:none';
+        layer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:' + nav + 'px;z-index:9999;pointer-events:none';
         [0, 20, 40].forEach((offset, index) => {
           const dot = document.createElement('i');
           dot.style.cssText =
-            'position:absolute;top:8px;width:12px;height:12px;border-radius:9999px;left:' + (20 + offset) + 'px;background:' +
+            'position:absolute;top:' + top + 'px;width:12px;height:12px;border-radius:9999px;left:' + (20 + offset) + 'px;background:' +
             ['#ff5f57', '#febc2e', '#28c840'][index];
           layer.appendChild(dot);
         });

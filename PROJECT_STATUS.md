@@ -139,3 +139,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.4` | Chore — Release 1.6.4 (Report actions in the footer) | Merged | [docs/branches/chore-release-1.6.4.md](docs/branches/chore-release-1.6.4.md) |
 | `refactor/tabs-to-header-rule` | Refactor — Media tabs fill the header | Merged | [docs/branches/refactor-tabs-to-header-rule.md](docs/branches/refactor-tabs-to-header-rule.md) |
 | `chore/release-1.6.5` | Chore — Release 1.6.5 (Media tabs fill the header) | Merged | [docs/branches/chore-release-1.6.5.md](docs/branches/chore-release-1.6.5.md) |
+| `refactor/header-as-titlebar` | Refactor — Header is the window bar (`leve.`) | Merged | [docs/branches/refactor-header-as-titlebar.md](docs/branches/refactor-header-as-titlebar.md) |

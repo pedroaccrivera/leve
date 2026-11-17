@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import type {
   BatchSummary,
@@ -12,7 +12,6 @@ import type {
 } from './types';
 import { FAVICON_SIZES } from './types';
 import { useTheme } from './context/ThemeContext';
-import { WindowBar } from './components/WindowBar';
 import { Header } from './components/Header';
 import { MediaTabs } from './components/MediaTabs';
 import { WorkbenchLayout } from './components/WorkbenchLayout';
@@ -81,10 +80,6 @@ const countLabel = (count: number, singular: string, plural: string) =>
 
 export const App: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const isMac = useMemo(
-    () => typeof navigator !== 'undefined' && /Mac/i.test(navigator.userAgent),
-    []
-  );
 
   const [mediaTab, setMediaTab] = useState<MediaTab>(() => {
     if (import.meta.env.DEV) {
@@ -1477,7 +1472,6 @@ export const App: React.FC = () => {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-paper text-ink" data-theme={resolvedTheme}>
-      {isMac && <WindowBar />}
       <Header
         tabs={
           <MediaTabs activeTab={mediaTab} onChange={setMediaTab} disabled={anyProcessing} />

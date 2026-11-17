@@ -12,18 +12,22 @@
 const { app, BrowserWindow } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('url');
 
 const root = path.join(__dirname, '..');
 const fixture = process.env.LEVE_FIXTURE || '';
 const out = process.env.LEVE_OUT || path.join(process.cwd(), 'shot-app.png');
 const clear = process.env.LEVE_CLEAR_FIXTURE === '1';
 
-// Boot the application itself: it creates its window and registers the IPC.
-require(path.join(root, 'dist-electron', 'main.js'));
-
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-app.whenReady().then(async () => {
+void (async () => {
+  // Boot the application itself: it creates its window and registers the IPC.
+  // `dist-electron/main.js` is an ES module, so it loads with `import()`
+  // instead of `require()`.
+  await import(pathToFileURL(path.join(root, 'dist-electron', 'main.js')).href);
+
+  await app.whenReady();
   await wait(2500);
   const win = BrowserWindow.getAllWindows()[0];
   if (!win) {
@@ -56,4 +60,4 @@ app.whenReady().then(async () => {
   console.log('APP_CAPTURE ' + JSON.stringify({ fixture: clear ? null : fixture, ...report }));
   console.log('saved', out);
   app.exit(0);
-});
+})();

@@ -59,15 +59,27 @@ Publish flow: merge into `main`, tag `v1.6.7`, push the tag. The
 - **Real app** (Electron, 1280 × 800, CoreGraphics mouse events): hovering the theme button revealed
   the palette trigger, hovering the empty area hid it, and dragging from the empty area moved the
   window from `y = 129` to `y = 229` (restored to `129`).
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- **CI run** [`44198590804`](https://github.com/pedroaccrivera/leve/actions/runs/44198590804) →
+  `completed / success`; both matrix jobs green (`Build · leve-mac-arm64`,
+  `Build · leve-win-x64`).
+- **Published release:** <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.7> (public, 4
+  assets):
+  - `leve-1.6.7-mac-arm64.dmg` — 152,773,015 B
+  - `leve-1.6.7-mac-arm64.zip` — 147,576,058 B ·
+    `sha256 f6ccbe3f03b99cbdae3ccb3fe274eb7074bdee440bc12552fd6674fe1c33e5c4` (downloaded and
+    hashed locally, matches the cask)
+  - `leve-1.6.7-win-x64.exe` — 127,633,705 B
+  - `leve-1.6.7-win-x64-portable.exe` — 127,483,934 B
 
 ## 4. Decision Log and Commit History
 
 - **Patch:** one interaction fix on the existing header. **F4 (micro-interactions) remains planned for
   `1.7.0`.**
-- **Homebrew cask:** updated silently as usual after the release assets exist (the README still does
-  not advertise the tap).
+- **Homebrew cask:** updated silently as usual — `1.6.6 → 1.6.7` in
+  `pedroaccrivera/homebrew-tap` at commit
+  [`c48e84e`](https://github.com/pedroaccrivera/homebrew-tap/commit/c48e84eacf7c45999514d3f1f42742b1c5ffa1de)
+  (`version 1.6.7`, `sha256 f6ccbe3f…3e5c4`; size and hash verified against the release asset before
+  the commit). The README still does not advertise the tap.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged.
 
@@ -75,4 +87,5 @@ Publish flow: merge into `main`, tag `v1.6.7`, push the tag. The
 | :--- | :--- |
 | `f31ad01` | `chore(release): bump version to 1.6.7` |
 | `50eb5b6` | `chore: merge chore/release-1.6.7 into main` |
-| _(this docs commit)_ | `docs: mark chore/release-1.6.7 as merged` |
+| `18826d6` | `docs: mark chore/release-1.6.7 as merged` (tagged `v1.6.7`) |
+| _(this docs commit)_ | `docs(release): record v1.6.7 CI run, assets and cask bump` |

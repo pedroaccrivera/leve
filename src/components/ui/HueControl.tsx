@@ -11,11 +11,15 @@ const SPECTRUM =
  * App tone control, inline in the header (design: "an expanded button, not a
  * separate settings panel").
  *
- * Collapsed: nothing but the theme switch. Hovering the group reveals a
- * palette button to its left; clicking it expands the same slot into a
+ * Collapsed: nothing but the theme switch. Hovering that 44 px button reveals
+ * a palette button to its left; clicking it expands the same slot into a
  * 262 × 42 spectrum with a precision marker and the hue value. Moving the
  * slider rotates every colour in the app; hovering the value swaps it for a
  * reset that returns to the designed tone. The choice is saved on change.
+ *
+ * The spacing is a margin on whichever slot is visible, not a flex `gap` on
+ * the root: a gap survives a zero-width child and would leave a phantom hover
+ * target beside the theme switch even while the palette is collapsed.
  */
 export const HueControl: React.FC<{ className?: string }> = ({ className }) => {
   const { hue, setHue, resetHue, isDefault } = useHue();
@@ -41,12 +45,14 @@ export const HueControl: React.FC<{ className?: string }> = ({ className }) => {
   const percent = (hue / 360) * 100;
 
   return (
-    <div ref={rootRef} className={cx('flex items-center gap-2', className)}>
-      {/* Palette trigger — revealed by hovering the theme switch beside it. */}
+    <div ref={rootRef} className={cx('flex items-center', className)}>
+      {/* Palette trigger — revealed only by the theme switch beside it. */}
       <div
         className={cx(
-          'overflow-hidden transition-[width] duration-200 ease-fieldwork',
-          open ? 'w-0' : 'w-0 group-hover:w-11'
+          'overflow-hidden transition-[width,margin] duration-200 ease-fieldwork',
+          open
+            ? 'w-0'
+            : 'w-0 group-hover:mr-2 group-hover:w-11 focus-within:mr-2 focus-within:w-11'
         )}
         aria-hidden={open}
       >
@@ -65,8 +71,8 @@ export const HueControl: React.FC<{ className?: string }> = ({ className }) => {
       {/* Expanded spectrum. */}
       <div
         className={cx(
-          'overflow-hidden transition-[width] duration-200 ease-fieldwork',
-          open ? 'w-[262px]' : 'w-0'
+          'overflow-hidden transition-[width,margin] duration-200 ease-fieldwork',
+          open ? 'mr-2 w-[262px]' : 'w-0'
         )}
         aria-hidden={!open}
       >

@@ -151,7 +151,7 @@ app.whenReady().then(async () => {
         if (!button || !button.parentElement) return;
         const style = document.createElement('style');
         const attr = button.parentElement.setAttribute('data-tone-trigger', '');
-        style.textContent = '[data-tone-trigger] { width: 44px !important; transition: none !important; }';
+        style.textContent = '[data-tone-trigger] { width: 44px !important; margin-right: 8px !important; transition: none !important; }';
         document.head.appendChild(style);
       })();
     `);
@@ -298,6 +298,32 @@ app.whenReady().then(async () => {
             themeGapBottom: hRect && tRect ? round(hRect.bottom - tRect.bottom) : null,
             ctaGapTop: fRect && cRect ? round(cRect.top - fRect.top) : null,
             ctaGapBottom: fRect && cRect ? round(fRect.bottom - cRect.bottom) : null,
+          };
+        })(),
+        // The empty part of the right header column must fall through to the
+        // drag region; only the visible control cluster may capture the pointer.
+        dragArea: (() => {
+          const header = document.querySelector('header');
+          if (!header) return null;
+          const theme = [...header.querySelectorAll('button')].find((b) =>
+            (b.getAttribute('aria-label') || '').startsWith('Switch to')
+          );
+          if (!theme) return null;
+          const cluster = theme.parentElement;
+          const block = cluster.parentElement;
+          const headerRect = header.getBoundingClientRect();
+          const blockRect = block.getBoundingClientRect();
+          const x = Math.round(blockRect.left + 80);
+          const y = Math.round(headerRect.top + headerRect.height / 2);
+          const hit = document.elementFromPoint(x, y);
+          const round = (n) => Math.round(n * 100) / 100;
+          return {
+            blockPointer: getComputedStyle(block).pointerEvents,
+            clusterPointer: getComputedStyle(cluster).pointerEvents,
+            clusterWidth: round(cluster.getBoundingClientRect().width),
+            themeWidth: round(theme.getBoundingClientRect().width),
+            emptyHit: hit ? hit.tagName : null,
+            emptyRegion: hit ? getComputedStyle(hit).webkitAppRegion : null,
           };
         })(),
         horizontal: [

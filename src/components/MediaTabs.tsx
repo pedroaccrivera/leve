@@ -14,9 +14,16 @@ interface MediaTabsProps {
   disabled?: boolean;
 }
 
-/** Pinned media tabs: 144 × 48 each, 4 px gutters, active = signal fill. */
+/**
+ * Pinned media tabs.
+ *
+ * 144 px wide and the header's full height, so the fill reaches both the top
+ * of the bar and its bottom rule with the label centred in the whole block
+ * (the same vertical line as the wordmark and the theme switch). The active
+ * tab fills with signal and carries the 2 px ink underline.
+ */
 export const MediaTabs: React.FC<MediaTabsProps> = ({ activeTab, onChange, disabled = false }) => (
-  <div role="tablist" aria-label="Media type" className="flex items-stretch gap-1">
+  <div role="tablist" aria-label="Media type" className="flex h-full items-stretch gap-1">
     {TABS.map((tab) => {
       const active = tab.id === activeTab;
       return (
@@ -28,10 +35,10 @@ export const MediaTabs: React.FC<MediaTabsProps> = ({ activeTab, onChange, disab
           disabled={disabled && !active}
           onClick={() => onChange(tab.id)}
           className={cx(
-            'flex h-12 w-36 shrink-0 items-center justify-center gap-2 p-3 transition-colors duration-150',
+            'flex h-full w-36 shrink-0 items-center justify-center gap-2 border-b transition-colors duration-150',
             active
-              ? 'border-b-2 border-ink bg-signal text-on-signal'
-              : 'border-b border-subtle hover:bg-surface disabled:cursor-not-allowed disabled:opacity-60'
+              ? 'border-ink border-b-2 bg-signal text-on-signal'
+              : 'border-subtle hover:bg-surface disabled:cursor-not-allowed disabled:opacity-60'
           )}
         >
           <span className={cx('t-mono', active ? 'text-on-signal' : 'text-muted')}>{tab.index}</span>

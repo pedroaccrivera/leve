@@ -48,15 +48,23 @@ Publish flow: merge into `main`, tag `v1.6.4`, push the tag. The
   the document or the body.
 - Visual check of the footer at 1280 × 800: the three buttons fit with the status text on the left,
   no truncation and the primary CTA keeps its place.
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [44185354690](https://github.com/pedroaccrivera/leve/actions/runs/44185354690) (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.4>
+  (public, not a draft, release notes generated).
+  - `leve-1.6.4-mac-arm64.dmg` — 152,770,006 B
+  - `leve-1.6.4-mac-arm64.zip` — 147,575,548 B
+  - `leve-1.6.4-win-x64.exe` — 127,633,408 B
+  - `leve-1.6.4-win-x64-portable.exe` — 127,483,635 B
+- Sizes are within ~120 B of `v1.6.3` — the release moves a button row.
 
 ## 4. Decision Log and Commit History
 
 - **Patch:** a layout refactor of an existing screen. **F4 (micro-interactions) remains planned for
   `1.7.0`.**
-- **Homebrew cask:** still updated so existing cask users keep getting upgrades (the README no longer
-  advertises it).
+- **Homebrew cask:** still updated so existing cask users keep getting upgrades (`1.6.3 → 1.6.4`, zip
+  `sha256` `90fb8fc7…c39bee`, 147,575,548 B — size and hash verified against the release asset before
+  committing). The README no longer advertises it.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged, matching the previous flow.
 

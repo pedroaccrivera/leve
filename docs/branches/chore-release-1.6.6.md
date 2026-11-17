@@ -62,14 +62,27 @@ Publish flow: merge into `main`, tag `v1.6.6`, push the tag. The
   the same gutters; zero horizontal overflow in the columns, the document or the body.
 - **Real app** (production window): traffic lights at x = 20,04 and centre y = 34,07; header drags;
   no 28 px strip; `leve.` with the accent dot.
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- **CI run** [`44195139373`](https://github.com/pedroaccrivera/leve/actions/runs/44195139373) →
+  `completed / success`; both matrix jobs green (`Build · leve-mac-arm64`,
+  `Build · leve-win-x64`).
+- **Published release:** <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.6> (public, 4
+  assets):
+  - `leve-1.6.6-mac-arm64.dmg` — 152,789,843 B
+  - `leve-1.6.6-mac-arm64.zip` — 147,575,921 B ·
+    `sha256 d860e6af1581104569bf574ba3f7bd913dc0b5aea0f79e04badfd018ddf31e82` (downloaded and
+    hashed locally, matches the cask)
+  - `leve-1.6.6-win-x64.exe` — 127,633,524 B
+  - `leve-1.6.6-win-x64-portable.exe` — 127,483,754 B
 
 ## 4. Decision Log and Commit History
 
 - **Patch:** two layout iterations on existing screens. **F4 (micro-interactions) remains planned for
   `1.7.0`.**
-- **Homebrew cask:** still updated (the README no longer advertises it).
+- **Homebrew cask:** updated silently as usual — `1.6.5 → 1.6.6` in
+  `pedroaccrivera/homebrew-tap` at commit
+  [`bfc500e`](https://github.com/pedroaccrivera/homebrew-tap/commit/bfc500e600b31ea6f8495aeee33908ab3a92b7bd)
+  (`version 1.6.6`, `sha256 d860e6af…31e82`; size and hash verified against the release asset before
+  the commit). The README still does not advertise the tap.
 - **Merge order:** `refactor/header-as-titlebar` first, then `style/window-paddings` (cut from it).
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged.
@@ -78,4 +91,5 @@ Publish flow: merge into `main`, tag `v1.6.6`, push the tag. The
 | :--- | :--- |
 | `a5e2336` | `chore(release): bump version to 1.6.6` |
 | `d9765d6` | `chore: merge chore/release-1.6.6 into main` |
-| _(this docs commit)_ | `docs: mark chore/release-1.6.6 as merged` |
+| `5d07041` | `docs: mark chore/release-1.6.6 as merged` (tagged `v1.6.6`) |
+| _(this docs commit)_ | `docs(release): record v1.6.6 CI run, assets and cask bump` |

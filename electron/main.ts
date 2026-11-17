@@ -53,8 +53,11 @@ const syncTrafficLights = (browserWindow: BrowserWindow): void => {
   const [, height] = browserWindow.getContentSize();
   try {
     browserWindow.setWindowButtonPosition({
+      // macOS draws the 12 px circle at the given point (its antialiased edge
+      // reads 0–1 px inside), so x stays at the design's 20 and y is 1 px above
+      // the naive centre to land the circle on the header's centre line.
       x: 20,
-      y: Math.round(navHeightFor(height) / 2) - 6,
+      y: Math.round(navHeightFor(height) / 2) - 7,
     });
   } catch {
     // Older macOS builds without `setWindowButtonPosition` keep the initial
@@ -144,10 +147,11 @@ async function createWindow() {
     minHeight: 640,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     // Centred in the header, which is now the window bar; `syncTrafficLights`
-    // keeps them centred when the window crosses a density tier.
+    // keeps them centred when the window crosses a density tier (see the
+    // 1 px compensation in `syncTrafficLights`).
     trafficLightPosition:
       process.platform === 'darwin'
-        ? { x: 20, y: Math.round(navHeightFor(height) / 2) - 6 }
+        ? { x: 20, y: Math.round(navHeightFor(height) / 2) - 7 }
         : undefined,
     backgroundColor: '#171b18',
     webPreferences: {

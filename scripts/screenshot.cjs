@@ -263,6 +263,43 @@ app.whenReady().then(async () => {
           const btn = [...document.querySelectorAll('button')].find((b) => (b.textContent || '').trim().startsWith('No images selected'));
           return btn ? getComputedStyle(btn).backgroundColor : null;
         })(),
+        // Outer paddings: the theme button, the footer CTA and the inspector's
+        // fields must share the page gutter, and each control must breathe the
+        // same amount above and below inside its bar.
+        edges: (() => {
+          const header = document.querySelector('header');
+          const footer = document.querySelector('footer');
+          const r = (el) => (el ? el.getBoundingClientRect() : null);
+          const round = (n) => Math.round(n * 100) / 100;
+          const theme = header
+            ? [...header.querySelectorAll('button')].find((b) =>
+                (b.getAttribute('aria-label') || '').startsWith('Switch to')
+              )
+            : null;
+          const footerButtons = footer ? [...footer.querySelectorAll('button')] : [];
+          const cta = footerButtons.length ? footerButtons[footerButtons.length - 1] : null;
+          const fields = (aside ? [...aside.querySelectorAll('button, input')] : [])
+            .map(r)
+            .filter(Boolean);
+          const workspace = aside && aside.previousElementSibling;
+          const kicker = workspace && workspace.querySelector('.t-mono');
+          const hRect = r(header);
+          const fRect = r(footer);
+          const tRect = r(theme);
+          const cRect = r(cta);
+          return {
+            gutter: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--d-page-x')),
+            themeRight: tRect ? round(tRect.right) : null,
+            ctaRight: cRect ? round(cRect.right) : null,
+            inspectorRight: fields.length ? round(Math.max(...fields.map((x) => x.right))) : null,
+            workspaceLeft: kicker ? round(r(kicker).left) : null,
+            footerLeft: fRect && footer.firstElementChild ? round(r(footer.firstElementChild).left) : null,
+            themeGapTop: hRect && tRect ? round(tRect.top - hRect.top) : null,
+            themeGapBottom: hRect && tRect ? round(hRect.bottom - tRect.bottom) : null,
+            ctaGapTop: fRect && cRect ? round(cRect.top - fRect.top) : null,
+            ctaGapBottom: fRect && cRect ? round(fRect.bottom - cRect.bottom) : null,
+          };
+        })(),
         horizontal: [
           hOverflow(aside, 'inspector'),
           hOverflow(workspace, 'workspace'),

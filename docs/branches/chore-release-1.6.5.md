@@ -46,14 +46,23 @@ Publish flow: merge into `main`, tag `v1.6.5`, push the tag. The
   overflow in the columns, the document or the body.
 - Visual check of the header in both themes (the full-height fill, the merged underline, the label on
   the wordmark's line), plus a run of the app in dev for the user to review.
-- CI run for the pushed tag → _(pending)_
-- Published release: _(pending)_
+- CI run for the pushed tag → **success** on both jobs:
+  [44189189778](https://github.com/pedroaccrivera/leve/actions/runs/44189189778) (macOS arm64 + Windows x64).
+- Published release: <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.5>
+  (public, not a draft, release notes generated).
+  - `leve-1.6.5-mac-arm64.dmg` — 152,771,697 B
+  - `leve-1.6.5-mac-arm64.zip` — 147,575,563 B
+  - `leve-1.6.5-win-x64.exe` — 127,633,372 B
+  - `leve-1.6.5-win-x64-portable.exe` — 127,483,603 B
+- Sizes are within ~2 KB of `v1.6.4` — the release changes the header's height only.
 
 ## 4. Decision Log and Commit History
 
 - **Patch:** a layout refinement of the header. **F4 (micro-interactions) remains planned for
   `1.7.0`.**
-- **Homebrew cask:** still updated (the README no longer advertises it).
+- **Homebrew cask:** still updated (`1.6.4 → 1.6.5`, zip `sha256` `76a629b0…1af937`, 147,575,563 B —
+  size and hash verified against the release asset before committing). The README no longer
+  advertises it.
 - **Tag after the post-merge docs update:** the tag points at the commit that records the release as
   merged.
 

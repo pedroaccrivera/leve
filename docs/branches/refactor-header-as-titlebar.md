@@ -25,6 +25,11 @@ logo ao lado), `LOCAL MEDIA TOOLKIT` sai e a marca ganha o ponto final no acento
 > pseudo-elemento de 1 px, então a caixa tem exatamente `--d-nav` e o respiro do botão de tema é
 > 12/12 (antes 11,5/12,5). O `-mb-px` das abas saiu junto — ver
 > [style-window-paddings.md](style-window-paddings.md).
+>
+> **Nota (pós-`fix/palette-drag-area`):** o `no-drag` não cobre mais o bloco direito inteiro de
+> 360 px — só o cluster visível (tema + paleta) opta por sair do arrasto, e o vazio do bloco é
+> `pointer-events-none` para o clique atravessar até o header. Ver
+> [fix-palette-drag-area.md](fix-palette-drag-area.md).
 - **Traffic lights na linha da marca.** `trafficLightPosition` de `{ x: 20, y: 8 }` para o centro do
   header: `y = nav/2 − 6` (12 px de diâmetro). Como `--d-nav` segue os tiers (72 · 68 · 64), o main
   process recalcula a posição no evento `resize` com `setWindowButtonPosition`, então as lights ficam

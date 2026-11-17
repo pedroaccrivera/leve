@@ -11,9 +11,12 @@ interface HeaderProps {
  * The window bar and the navigation bar in one.
  *
  * macOS runs frameless (`titleBarStyle: 'hiddenInset'`), so the OS draws the
- * traffic lights inside this 72 px bar and the bar itself is the drag region;
- * the interactive parts opt out with `no-drag`. The wordmark clears the lights
- * through `--d-brand-offset` (0 outside macOS, which keeps its native frame).
+ * traffic lights inside this bar and the bar itself is the drag region. Only
+ * the visible controls opt out: the empty part of the right-hand column is
+ * `pointer-events-none`, so a press there falls through to the header and
+ * drags the window, while the control cluster stays `pointer-events-auto`.
+ * The wordmark clears the lights through `--d-brand-offset` (0 outside macOS,
+ * which keeps its native frame).
  *
  * The full stop is the accent, so the brand reads like the app icon (`l.`) and
  * follows the tone picked in the theme control.
@@ -34,12 +37,14 @@ export const Header: React.FC<HeaderProps> = ({ tabs }) => {
 
       <div className="no-drag">{tabs}</div>
 
-      <div className="no-drag group flex w-[360px] items-center justify-end gap-2">
-        <HueControl />
-        <ThemeSwitch
-          themeName={resolvedTheme === 'dark' ? 'Ink' : 'Paper'}
-          onToggle={toggleTheme}
-        />
+      <div className="pointer-events-none flex w-[360px] items-center justify-end">
+        <div className="no-drag group pointer-events-auto flex items-center">
+          <HueControl />
+          <ThemeSwitch
+            themeName={resolvedTheme === 'dark' ? 'Ink' : 'Paper'}
+            onToggle={toggleTheme}
+          />
+        </div>
       </div>
     </header>
   );

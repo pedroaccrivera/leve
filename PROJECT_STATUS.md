@@ -142,4 +142,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `refactor/header-as-titlebar` | Refactor — Header is the window bar (`leve.`) | Merged | [docs/branches/refactor-header-as-titlebar.md](docs/branches/refactor-header-as-titlebar.md) |
 | `style/window-paddings` | Style — One window gutter for the outer paddings | Merged | [docs/branches/style-window-paddings.md](docs/branches/style-window-paddings.md) |
 | `chore/release-1.6.6` | Chore — Release 1.6.6 (Header as window bar + window gutters) | Merged | [docs/branches/chore-release-1.6.6.md](docs/branches/chore-release-1.6.6.md) |
-| `fix/palette-drag-area` | Fix — Tone palette only from the theme button; header draggable | In Progress | [docs/branches/fix-palette-drag-area.md](docs/branches/fix-palette-drag-area.md) |
+| `fix/palette-drag-area` | Fix — Tone palette only from the theme button; header draggable | Merged | [docs/branches/fix-palette-drag-area.md](docs/branches/fix-palette-drag-area.md) |

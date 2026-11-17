@@ -1,7 +1,7 @@
 # `fix/palette-drag-area` — Paleta só no botão de tema, header arrastável
 
 - **Type:** Fix — UI / interação
-- **Status:** In Progress — implementado e verificado, aguardando merge
+- **Status:** Merged into `main` (included in release `1.6.7`)
 - **Base:** `main` @ `9091481` (depois da release `1.6.6`)
 
 ## 1. Pedido
@@ -102,7 +102,14 @@ PROJECT_STATUS.md
 | 6 | `dragArea` no `LEVE_MEASURE` | transforma "não arrasta" em valor medido (`none` / `auto` / `HEADER` / `drag`) |
 | 7 | Regra de captura com a mesma margem do hover | o print forçado não pode mostrar um vão diferente do real |
 
-## 7. Commit History
+## 7. Merge record
+
+- Aprovado pelo usuário depois de conferir o app real: arrastar pelo vazio do bloco moveu a janela e
+  o hover no vazio não abriu a paleta.
+- Merge em `main` com `--no-ff`; release `1.6.7` — ver
+  [chore-release-1.6.7.md](chore-release-1.6.7.md).
+
+## 8. Commit History
 
 | Commit | Message |
 | :--- | :--- |

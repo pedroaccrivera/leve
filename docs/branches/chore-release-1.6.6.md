@@ -1,7 +1,7 @@
 # Branch `chore/release-1.6.6` — Release 1.6.6 (Header as window bar + window gutters)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress — version bumped, awaiting merge + tag
+- **Status:** Merged into `main` (tagged `v1.6.6`)
 - **Base:** `main` @ `62e77d0`
 
 ## 1. Goal and Scope
@@ -76,6 +76,6 @@ Publish flow: merge into `main`, tag `v1.6.6`, push the tag. The
 
 | Commit | Message |
 | :--- | :--- |
-| _(pending)_ | `chore(release): bump version to 1.6.6` |
-| _(pending)_ | `chore: merge chore/release-1.6.6 into main` |
-| _(pending)_ | `docs: mark chore/release-1.6.6 as merged` |
+| `a5e2336` | `chore(release): bump version to 1.6.6` |
+| `d9765d6` | `chore: merge chore/release-1.6.6 into main` |
+| _(this docs commit)_ | `docs: mark chore/release-1.6.6 as merged` |

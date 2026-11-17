@@ -1,7 +1,7 @@
 # `refactor/tabs-to-header-rule` — Abas até a linha inferior do cabeçalho
 
 - **Type:** Refactor — layout
-- **Status:** In Progress — implementado e verificado, aguardando merge
+- **Status:** Merged into `main` (included in release `1.6.5`)
 - **Base:** `main` @ `2c77d1d` (release `1.6.4`)
 
 ## 1. Pedido
@@ -46,6 +46,12 @@ docs/branches/refactor-tabs-to-header-rule.md
 | 1 | Rótulo centralizado na altura toda | o centro do cabeçalho é a linha do wordmark e do seletor de tema, então o alinhamento do design se mantém |
 | 2 | `-mb-px` no bloco das abas | faz a borda da aba coincidir com a hairline do cabeçalho, sem uma linha dupla de 1 px |
 | 3 | `items-stretch` no header | permite `h-full` nas abas sem posicionamento absoluto |
+
+## 5.1 Merge record
+
+- Aprovado pelo usuário após revisar o app em execução (dev server).
+- Merge em `main` com `--no-ff`; release `1.6.5` — ver
+  [chore-release-1.6.5.md](chore-release-1.6.5.md).
 
 ## 6. Commit history
 

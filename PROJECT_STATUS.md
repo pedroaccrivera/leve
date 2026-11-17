@@ -137,4 +137,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.3` | Chore — Release 1.6.3 (Favicon editor fixes + README) | Merged | [docs/branches/chore-release-1.6.3.md](docs/branches/chore-release-1.6.3.md) |
 | `refactor/report-actions-in-footer` | Refactor — Batch report actions in the footer | Merged | [docs/branches/refactor-report-actions-in-footer.md](docs/branches/refactor-report-actions-in-footer.md) |
 | `chore/release-1.6.4` | Chore — Release 1.6.4 (Report actions in the footer) | Merged | [docs/branches/chore-release-1.6.4.md](docs/branches/chore-release-1.6.4.md) |
-| `refactor/tabs-to-header-rule` | Refactor — Media tabs reach the header rule | In Progress | [docs/branches/refactor-tabs-to-header-rule.md](docs/branches/refactor-tabs-to-header-rule.md) |
+| `refactor/tabs-to-header-rule` | Refactor — Media tabs fill the header | Merged | [docs/branches/refactor-tabs-to-header-rule.md](docs/branches/refactor-tabs-to-header-rule.md) |

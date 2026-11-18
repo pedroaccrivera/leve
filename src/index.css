@@ -83,6 +83,15 @@
   width: 16px;
   border-radius: 9999px;
   background: var(--c-ink);
+  transition: transform var(--t-ctl) var(--ease-fieldwork);
+}
+
+.fieldwork-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.fieldwork-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
 }
 
 .fieldwork-slider:disabled::-webkit-slider-thumb {

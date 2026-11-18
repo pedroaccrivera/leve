@@ -23,11 +23,14 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ themeName, onToggle, c
       aria-label={`Switch to ${nextTheme} theme`}
       title={`Switch to ${nextTheme} theme`}
       className={cx(
-        'flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-control bg-surface text-ink transition-colors duration-150 hover:bg-panel',
+        'group/sw flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-control bg-surface text-ink transition-colors duration-ctl hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
         className
       )}
     >
-      <Sun className="h-4 w-4" strokeWidth={2} />
+      <Sun
+        className="h-4 w-4 transition-transform duration-state ease-fieldwork group-hover/sw:rotate-[30deg]"
+        strokeWidth={2}
+      />
     </button>
   );
 };

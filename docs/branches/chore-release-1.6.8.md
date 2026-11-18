@@ -63,6 +63,31 @@ with generated release notes.
 - **Packaging** was validated end-to-end on the fix branch: local DMG build with
   `[afterPack] ad-hoc signature applied`, three DMG items, valid signature, and
   a real install on macOS 27.0.1 (26A434) after simulating Safari quarantine.
+- **CI run** [`44336074434`](https://github.com/pedroaccrivera/leve/actions/runs/44336074434) →
+  `completed / success`; both matrix jobs green (`Build · leve-mac-arm64`,
+  `Build · leve-win-x64`). The macOS log shows
+  `[afterPack] ad-hoc signing …/release/mac-arm64/leve.app` followed by
+  `[afterPack] ad-hoc signature applied`, then electron-builder skipping its own
+  pass (`CSC_IDENTITY_AUTO_DISCOVERY=false`) and leaving the ad-hoc seal in
+  place.
+- **Published release:** <https://github.com/pedroaccrivera/leve/releases/tag/v1.6.8>
+  (public, 4 assets):
+  - `leve-1.6.8-mac-arm64.dmg` — 152,430,670 B ·
+    `sha256 4f568c58c09ea685c250c78440a88399a1cf5675bab266fa80f89ee43bf13049`
+  - `leve-1.6.8-mac-arm64.zip` — 147,262,237 B ·
+    `sha256 0365d3ccbb5a67ffbe7aea946fd59c531a94aa29f5fab74525a5c6a3b7e365eb`
+  - `leve-1.6.8-win-x64.exe` — 127,633,762 B
+  - `leve-1.6.8-win-x64-portable.exe` — 127,483,993 B
+- **Downloaded artifacts verified locally:** sizes and hashes match the release
+  metadata. The ZIP's `leve.app` reports
+  `CFBundleShortVersionString` / `CFBundleVersion` = `1.6.8`,
+  `codesign --verify --deep --strict` → `valid on disk` /
+  `satisfies its Designated Requirement`, `codesign -dv` → `flags=0x2(adhoc)`,
+  `Sealed Resources version=2 rules=13 files=119`. The mounted DMG exposes only
+  `leve.app`, the `Applications` link and
+  `paste-the-content-into-terminal.txt` (54 B) containing exactly
+  `xattr -dr com.apple.quarantine /Applications/leve.app`; the app inside the
+  DMG also verifies.
 
 ## 4. Decision Log and Commit History
 
@@ -70,11 +95,19 @@ with generated release notes.
   planned for `1.7.0`.**
 - **Tag after the post-merge docs update:** the tag points at the commit that
   records the release as merged.
-- **Homebrew cask:** updated after CI publishes, once the ZIP hash can be
-  verified against the downloaded asset.
+- **Homebrew cask:** **not updated — the tap is archived.** The prepared bump
+  (`1.6.7 → 1.6.8`, `sha256 0365d3cc…65eb`, verified against the downloaded
+  ZIP) could not be pushed: `pedroaccrivera/homebrew-tap` was archived on
+  2026-11-18 at 00:12 UTC and rejects writes (`remote: This repository was
+  archived so it is read-only`, HTTP 403). The README does not advertise the
+  tap, so the release is unaffected. The prepared change is a two-line edit to
+  `Casks/leve.rb` if the tap is ever unarchived.
+- **Release notes:** generated automatically by the workflow; they include the
+  ad-hoc signing and helper changes from the merged fix branch.
 
 | Commit | Message |
 | :--- | :--- |
 | `7948d34` | `chore(release): bump version to 1.6.8` |
 | `0f7dfc3` | `chore: merge chore/release-1.6.8 into main` |
-| _(this commit)_ | `docs: mark chore/release-1.6.8 as merged` (tagged `v1.6.8`) |
+| `917e369` | `docs: mark chore/release-1.6.8 as merged` (tagged `v1.6.8`) |
+| _(this docs commit)_ | `docs(release): record v1.6.8 CI run, assets and cask status` |

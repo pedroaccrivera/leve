@@ -128,21 +128,26 @@ Download the **Latest** release (not older versions) for your platform:
 - macOS (Apple Silicon): `leve-<version>-mac-arm64.dmg`
 - Windows (x64): `leve-<version>-win-x64.exe` (installer) or `...-portable.exe`
 
-### macOS: "leve is damaged and can't be opened"
+### macOS: first launch
 
-The app is not Apple-signed yet, so Gatekeeper blocks the first launch after
-a browser download. The app itself is 100% local and safe. Easiest fix: in the
-installer window, double-click **Fix-leve** (right-click → Open on first use).
-It clears the quarantine flag and shows a confirmation dialog.
+The app is ad-hoc signed but not notarized by Apple yet, so Gatekeeper blocks
+the first launch after a browser download. The app itself is 100% local and
+safe.
 
-Manual alternative:
+1. Drag **leve** into **Applications**.
+2. Open **paste-the-content-into-terminal.txt** from the installer window.
+3. Copy the line, paste it into **Terminal** and press Return.
+4. Open **leve** normally.
+
+The file contains only:
 
 ```bash
-xattr -d com.apple.quarantine /Applications/leve.app
+xattr -dr com.apple.quarantine /Applications/leve.app
 ```
 
-Then open normally. (Proper Developer ID signing + notarization is planned;
-until then one of these steps is required.)
+macOS 26 and 27 removed the old right-click → Open shortcut, so this Terminal
+step is the reliable workaround until the app is notarized. (Proper Developer
+ID signing + notarization is planned.)
 
 ### Windows: SmartScreen warning
 

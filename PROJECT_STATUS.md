@@ -144,4 +144,6 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.6` | Chore — Release 1.6.6 (Header as window bar + window gutters) | Merged | [docs/branches/chore-release-1.6.6.md](docs/branches/chore-release-1.6.6.md) |
 | `fix/palette-drag-area` | Fix — Tone palette only from the theme button; header draggable | Merged | [docs/branches/fix-palette-drag-area.md](docs/branches/fix-palette-drag-area.md) |
 | `chore/release-1.6.7` | Chore — Release 1.6.7 (Palette drag area) | Merged | [docs/branches/chore-release-1.6.7.md](docs/branches/chore-release-1.6.7.md) |
+| `fix/macos-26-27-install` | Fix — macOS 26/27 install (ad-hoc signing + paste-to-Terminal helper) | Merged | [docs/branches/fix-macos-26-27-install.md](docs/branches/fix-macos-26-27-install.md) |
+| `chore/release-1.6.8` | Chore — Release 1.6.8 (macOS 26/27 install) | Merged | [docs/branches/chore-release-1.6.8.md](docs/branches/chore-release-1.6.8.md) |
 | `feat/microinteractions` | Feature — F4: microinterações (motion em tudo que existe) | In Progress | [docs/branches/feat-microinteractions.md](docs/branches/feat-microinteractions.md) |

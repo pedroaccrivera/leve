@@ -52,7 +52,13 @@ export default {
         '4.5': '1.125rem',
       },
       transitionTimingFunction: {
-        fieldwork: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fieldwork: 'var(--ease-fieldwork)',
+        exit: 'var(--ease-exit)',
+      },
+      transitionDuration: {
+        ctl: 'var(--t-ctl)',
+        state: 'var(--t-state)',
+        enter: 'var(--t-enter)',
       },
     },
   },

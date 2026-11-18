@@ -136,9 +136,22 @@
   animation: favicon-preview-fade 260ms ease-out both;
 }
 
+/* ---------------------------------------------------------------------------
+ * Reduced motion — one global switch.
+ *
+ * Durations collapse to a near-zero value instead of `none` so any code
+ * listening for transitionend/animationend still fires exactly once. This
+ * covers every transition and animation in the app, including the favicon
+ * reveals above.
+ * ------------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
-  .favicon-studio-reveal,
-  .favicon-preview-fade {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
 }

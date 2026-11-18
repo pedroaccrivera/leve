@@ -6,9 +6,11 @@ import type {
   FaviconItem,
   ImageItem,
   MediaTab,
+  OutputFormat,
   ResizeConfig,
   VideoConfig,
   VideoItem,
+  VideoOutputFormat,
 } from './types';
 import { FAVICON_SIZES } from './types';
 import { useTheme } from './context/ThemeContext';
@@ -77,6 +79,30 @@ const DEFAULT_FAVICON_CONFIG: FaviconConfig = {
 
 const countLabel = (count: number, singular: string, plural: string) =>
   count === 1 ? `1 ${singular}` : `${count} ${plural}`;
+
+/*
+ * Queue-row previews must mirror what the processors actually write. With
+ * `original`, the image keeps the source extension (imageProcessor keeps
+ * parsed.ext) and the video keeps the source container when ffmpeg can mux it
+ * for web — webm / mp4 / mov / m4v — falling back to mp4, the same rule as
+ * resolveVideoTarget in videoProcessor.
+ */
+const extOf = (name: string) => {
+  const dot = name.lastIndexOf('.');
+  return dot > -1 ? name.slice(dot + 1).toLowerCase() : '';
+};
+
+const imageTargetExt = (name: string, format: OutputFormat) =>
+  format === 'original' ? extOf(name) : format === 'jpeg' ? 'jpg' : format;
+
+const videoTargetExt = (name: string, format: VideoOutputFormat) => {
+  if (format === 'webm') return 'webm';
+  if (format !== 'original') return 'mp4';
+  const sourceExt = extOf(name);
+  return sourceExt === 'webm' || ['mp4', 'mov', 'm4v'].includes(sourceExt)
+    ? sourceExt
+    : 'mp4';
+};
 
 export const App: React.FC = () => {
   const { resolvedTheme } = useTheme();
@@ -750,7 +776,7 @@ export const App: React.FC = () => {
                       ? item.outputPath
                         ? `Saved as ${item.outputPath.split('/').slice(-2).join('/')}`
                         : undefined
-                      : `→ ${item.name.replace(/\.[^.]+$/, '')}.${config.outputFormat === 'original' ? 'webp' : config.outputFormat === 'jpeg' ? 'jpg' : config.outputFormat}`
+                      : `→ ${item.name.replace(/\.[^.]+$/, '')}.${imageTargetExt(item.name, config.outputFormat)}`
                   }
                   status={
                     item.status === 'done'
@@ -941,7 +967,7 @@ export const App: React.FC = () => {
                   note={
                     item.outputPath
                       ? `→ ${item.outputPath.split('/').slice(-2).join('/')}`
-                      : `→ ${videoConfig.destinationMode === 'subfolder' ? `${videoConfig.subfolderName}/` : ''}${item.name.replace(/\.[^.]+$/, '')}.${videoConfig.outputFormat === 'webm' ? 'webm' : 'mp4'}`
+                      : `→ ${videoConfig.destinationMode === 'subfolder' ? `${videoConfig.subfolderName}/` : ''}${item.name.replace(/\.[^.]+$/, '')}.${videoTargetExt(item.name, videoConfig.outputFormat)}`
                   }
                   status={
                     item.status === 'done'

@@ -14,6 +14,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 
 /** electron-builder Arch enum → directory name used by ffprobe-static. */
 const ARCH_NAMES = {
@@ -48,26 +49,71 @@ function directorySize(dir) {
   return total;
 }
 
+function findDarwinAppBundle(context) {
+  const { appOutDir, packager } = context;
+
+  const productFilename = packager?.appInfo?.productFilename;
+  const candidates = productFilename
+    ? [path.join(appOutDir, `${productFilename}.app`)]
+    : fs
+        .readdirSync(appOutDir)
+        .filter((name) => name.endsWith('.app'))
+        .map((name) => path.join(appOutDir, name));
+
+  const appBundle = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!appBundle) {
+    throw new Error(`[afterPack] macOS app bundle not found in ${appOutDir}`);
+  }
+  return appBundle;
+}
+
 function findResourcesDir(context) {
-  const { appOutDir, electronPlatformName, packager } = context;
+  const { appOutDir, electronPlatformName } = context;
 
   if (electronPlatformName === 'darwin') {
-    const productFilename = packager?.appInfo?.productFilename;
-    const candidates = productFilename
-      ? [path.join(appOutDir, `${productFilename}.app`)]
-      : fs
-          .readdirSync(appOutDir)
-          .filter((name) => name.endsWith('.app'))
-          .map((name) => path.join(appOutDir, name));
-
-    const appBundle = candidates.find((candidate) => fs.existsSync(candidate));
-    if (!appBundle) {
-      throw new Error(`[afterPack] macOS app bundle not found in ${appOutDir}`);
-    }
-    return path.join(appBundle, 'Contents', 'Resources');
+    return path.join(findDarwinAppBundle(context), 'Contents', 'Resources');
   }
 
   return path.join(appOutDir, 'resources');
+}
+
+/**
+ * Ad-hoc signs the macOS bundle after packing.
+ *
+ * The release workflow disables identity auto-discovery (there is no Apple
+ * Developer certificate), so electron-builder would otherwise skip signing
+ * entirely: the Electron binary keeps only its linker ad-hoc signature and
+ * the bundle has no seal. macOS 26/27 reports that state as "leve is damaged
+ * and can't be opened", and removing `com.apple.quarantine` alone does not
+ * repair it.
+ *
+ * Signing here gives the bundle a valid signature, so Gatekeeper treats it as
+ * a normal unsigned download and the quarantine removal command works. When a
+ * real Developer ID is configured, electron-builder signs after this hook and
+ * replaces the ad-hoc signature.
+ */
+async function adhocSignMacApp(appBundle) {
+  // Lazy import: Windows builds should not load the macOS signing tooling.
+  const { signAsync } = require('@electron/osx-sign');
+
+  // Cloud-synced folders (Google Drive, iCloud) and Finder add extended
+  // attributes to the freshly packed bundle that codesign rejects as
+  // "resource fork, Finder information, or similar detritus not allowed".
+  // Clear them before signing; codesign writes its own signature attributes.
+  execFileSync('xattr', ['-cr', appBundle], { stdio: 'inherit' });
+
+  console.log(`[afterPack] ad-hoc signing ${appBundle}`);
+  await signAsync({
+    app: appBundle,
+    identity: '-',
+    identityValidation: false,
+    platform: 'darwin',
+    // Hardened Runtime without a Developer ID blocks the unsigned Sharp
+    // native module at launch (library validation), so keep it off for the
+    // ad-hoc build. A real signing pass re-enables it.
+    optionsForFile: () => ({ hardenedRuntime: false }),
+  });
+  console.log('[afterPack] ad-hoc signature applied');
 }
 
 /**
@@ -157,5 +203,10 @@ module.exports = async function afterPack(context) {
   );
   for (const item of removed) {
     console.log(`[afterPack]   - ${path.relative(binDir, item.dir)} (${formatBytes(item.size)})`);
+  }
+
+  // Sign after the pruning above so the seal covers the final bundle.
+  if (electronPlatformName === 'darwin') {
+    await adhocSignMacApp(findDarwinAppBundle(context));
   }
 };

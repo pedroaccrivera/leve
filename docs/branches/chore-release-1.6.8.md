@@ -1,7 +1,7 @@
 # Branch `chore/release-1.6.8` — Release 1.6.8 (macOS 26/27 install)
 
 - **Type:** Chore — release versioning
-- **Status:** In Progress
+- **Status:** Merged into `main` (tagged `v1.6.8`)
 - **Base:** `main` @ `ccaf9b1`
 
 ## 1. Goal and Scope
@@ -75,4 +75,6 @@ with generated release notes.
 
 | Commit | Message |
 | :--- | :--- |
-| _(this branch)_ | `chore(release): bump version to 1.6.8` |
+| `7948d34` | `chore(release): bump version to 1.6.8` |
+| `0f7dfc3` | `chore: merge chore/release-1.6.8 into main` |
+| _(this commit)_ | `docs: mark chore/release-1.6.8 as merged` (tagged `v1.6.8`) |

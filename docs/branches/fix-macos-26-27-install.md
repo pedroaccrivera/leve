@@ -1,7 +1,7 @@
 # Branch `fix/macos-26-27-install` — Install on macOS 26/27
 
 - **Type:** Fix — macOS packaging + install instructions
-- **Status:** In Progress (awaiting merge approval)
+- **Status:** Merged into `main` (released in `v1.6.8`)
 - **Base:** `main` @ `857f80d`
 
 ## 1. Goal and Scope
@@ -117,5 +117,6 @@ hook and replaces the ad-hoc signature).
 
 | Commit | Message |
 | :--- | :--- |
-| _(this branch)_ | `fix(install): ad-hoc sign the macOS app and replace the blocked helper` |
-| _(this branch)_ | `docs: record the macos-26-27-install branch` |
+| `a2629ca` | `fix(install): ad-hoc sign the macOS app and replace the blocked helper` |
+| `5d00943` | `docs: record the macos-26-27-install branch` |
+| `0f07655` | `chore: merge fix/macos-26-27-install into main` |

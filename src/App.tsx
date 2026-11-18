@@ -1477,7 +1477,11 @@ export const App: React.FC = () => {
           <MediaTabs activeTab={mediaTab} onChange={setMediaTab} disabled={anyProcessing} />
         }
       />
+      {/* Keyed on the tab so a switch remounts the workbench and replays the
+          view-enter fade — the content is entirely different, so the scroll
+          positions should reset too. */}
       <WorkbenchLayout
+        key={mediaTab}
         workspace={
           isVideoTab ? videoWorkspace() : isFaviconTab ? faviconWorkspace() : imageWorkspace()
         }

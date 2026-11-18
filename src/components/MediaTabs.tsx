@@ -35,7 +35,7 @@ export const MediaTabs: React.FC<MediaTabsProps> = ({ activeTab, onChange, disab
           disabled={disabled && !active}
           onClick={() => onChange(tab.id)}
           className={cx(
-            'flex h-full w-36 shrink-0 items-center justify-center gap-2 border-b transition-colors duration-150',
+            'flex h-full w-36 shrink-0 items-center justify-center gap-2 border-b transition-[color,background-color,border-color] duration-state',
             active
               ? 'border-ink border-b-2 bg-signal text-on-signal'
               : 'border-subtle hover:bg-surface disabled:cursor-not-allowed disabled:opacity-60'

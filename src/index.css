@@ -113,6 +113,24 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * View enter — a workbench view fades in as it mounts (tab switch, state
+ * change). Opacity only: the container is a scroll area, transform would
+ * offset its children. Re-run by keying <WorkbenchLayout> on the tab.
+ * ------------------------------------------------------------------------ */
+@keyframes view-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.view-enter {
+  animation: view-enter var(--t-enter) var(--ease-fieldwork) both;
+}
+
+/* ---------------------------------------------------------------------------
  * Reveal / preview transitions
  * ------------------------------------------------------------------------ */
 @keyframes favicon-studio-reveal {

@@ -14,7 +14,7 @@ export const WorkbenchLayout: React.FC<{
   workspaceClassName?: string;
   inspectorClassName?: string;
 }> = ({ workspace, inspector, workspaceClassName, inspectorClassName }) => (
-  <div className="flex min-h-0 flex-1 items-stretch">
+  <div className="view-enter flex min-h-0 flex-1 items-stretch">
     <div
       className={cx(
         'flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-[var(--d-page-x)] pb-[var(--d-page-bottom)] pt-[var(--d-page-top)]',

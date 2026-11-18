@@ -20,7 +20,7 @@ export const StatusChip: React.FC<{ tone?: Tone; mark: string; children: React.R
   children,
   className,
 }) => (
-  <span className={cx('t-small whitespace-pre', tones[tone], className)}>
+  <span className={cx('chip-swap t-small whitespace-pre', tones[tone], className)}>
     {mark}
     {'  '}
     {children}

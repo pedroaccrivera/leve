@@ -1,4 +1,5 @@
 import React from 'react';
+import { cx } from '../utils/cx';
 import { ProgressBar } from './ui/ProgressBar';
 
 export interface ProcessingStage {
@@ -43,11 +44,10 @@ export const ProcessingCard: React.FC<ProcessingCardProps> = ({
       {stages.map((item) => (
         <span
           key={item.label}
-          className={
-            item.state === 'current'
-              ? 't-label uppercase text-signal-text'
-              : 't-label uppercase text-muted'
-          }
+          className={cx(
+            't-label uppercase transition-colors duration-state',
+            item.state === 'current' ? 'text-signal-text' : 'text-muted'
+          )}
         >
           {item.label}
           {item.state === 'done' ? ' ✓' : ''}

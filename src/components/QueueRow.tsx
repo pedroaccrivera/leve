@@ -32,7 +32,7 @@ export const ImageQueueRow: React.FC<ImageQueueRowProps> = ({
   onRemove,
   className,
 }) => (
-  <div className={cx('flex h-[var(--d-row)] items-center gap-4', className)}>
+  <div className={cx('row-enter flex h-[var(--d-row)] items-center gap-4 transition-colors duration-ctl hover:bg-surface', className)}>
     <div className="flex h-14 w-14 shrink-0 items-center justify-center bg-panel">
       <ImageIcon className="h-6 w-6 text-muted" strokeWidth={2} />
     </div>
@@ -45,7 +45,7 @@ export const ImageQueueRow: React.FC<ImageQueueRowProps> = ({
 
     <div className="flex w-[200px] shrink-0 items-center justify-end gap-3">
       <span className="flex-1 text-right">
-        <StatusChip tone={status.tone} mark={status.mark}>
+        <StatusChip key={status.tone} tone={status.tone} mark={status.mark}>
           {status.label}
         </StatusChip>
       </span>
@@ -80,7 +80,7 @@ export const VideoQueueRow: React.FC<VideoQueueRowProps> = ({
   onRemove,
   className,
 }) => (
-  <div className={cx('flex h-[var(--d-row)] items-center gap-5', className)}>
+  <div className={cx('row-enter flex h-[var(--d-row)] items-center gap-5 transition-colors duration-ctl hover:bg-surface', className)}>
     <span className="t-mono w-14 shrink-0 text-muted">{index}</span>
 
     <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -90,7 +90,7 @@ export const VideoQueueRow: React.FC<VideoQueueRowProps> = ({
     </div>
 
     <div className="flex shrink-0 items-center gap-3">
-      <StatusChip tone={status.tone} mark={status.mark}>
+      <StatusChip key={status.tone} tone={status.tone} mark={status.mark}>
         {status.label}
       </StatusChip>
       {onRemove && (

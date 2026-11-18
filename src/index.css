@@ -131,6 +131,38 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Queue rows enter (4 px slide + fade) and their status chip re-enters
+ * (plain fade) when the tone changes — keyed on the tone at the call site.
+ * ------------------------------------------------------------------------ */
+@keyframes row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row-enter {
+  animation: row-enter var(--t-enter) var(--ease-fieldwork) both;
+}
+
+@keyframes chip-swap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.chip-swap {
+  animation: chip-swap var(--t-state) var(--ease-exit) both;
+}
+
+/* ---------------------------------------------------------------------------
  * Reveal / preview transitions
  * ------------------------------------------------------------------------ */
 @keyframes favicon-studio-reveal {

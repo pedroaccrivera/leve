@@ -126,3 +126,23 @@ PROJECT_STATUS.md
 | `2787392` | `feat(ui): the queue, dropzone and progress card answer state` |
 | `b2d4aa1` | `feat(ui): report rows enter with a capped 40 ms cascade` |
 | `b7ed66c` | `style(ui): audit pass — reveals and tooltip on the motion tokens` |
+| `8a58cc9` | `docs: record the microinteractions branch` |
+| `6a4eba0` | `chore: sync feat/microinteractions with v1.6.8 (macOS install fix + release bookkeeping)` |
+
+## 10. Sync with v1.6.8
+
+`main` released `v1.6.8` (`917e369`) while this branch was in flight, so the
+branch was merged with `main` (`--no-ff`, no conflicts besides the
+`PROJECT_STATUS.md` branch table, resolved by keeping all rows). What came in:
+
+- `fix/macos-26-27-install`: ad-hoc signing in `scripts/afterPack.cjs`
+  (`@electron/osx-sign`, identity `-`, Hardened Runtime off, `xattr -cr`
+  before codesign); `Fix-leve.command` and `README-If-blocked.txt` replaced by
+  `paste-the-content-into-terminal.txt` (`xattr -dr`); README first-launch
+  section rewritten.
+- `chore/release-1.6.8` + `d8a5949`: version bump to `1.6.8` and the release
+  record (CI, assets, cask status).
+
+Verification after the merge: `npm install` up to date, `tsc --noEmit` clean,
+all 3 test suites pass. No `src/` file was touched by v1.6.8, so the motion
+pass is unaffected.

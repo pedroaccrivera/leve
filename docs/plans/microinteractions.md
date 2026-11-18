@@ -1,6 +1,7 @@
 # Plano — 1.7.0 / F4: Microinterações
 
-> **Status:** aguardando aprovação. Nada implementado ainda.
+> **Status:** aprovado (D1–D9) e implementado na branch `feat/microinteractions` — ver
+> [docs/branches/feat-microinteractions.md](../branches/feat-microinteractions.md).
 >
 > Baseia-se no estudo de motion aprovado em [ui-pass-2.md](ui-pass-2.md) §4 (auditoria, princípios e
 > skills). Este plano transforma o estudo em escopo, fases e critérios de aceite para a release

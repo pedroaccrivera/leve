@@ -29,7 +29,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       type={type}
       disabled={disabled}
       className={cx(
-        'inline-flex shrink-0 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md t-control transition-colors duration-150',
+        'inline-flex shrink-0 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md t-control transition-[color,background-color,border-color,opacity,transform] duration-ctl ease-fieldwork focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink active:scale-[0.99]',
         sizes[size],
         disabled
           ? 'cursor-not-allowed border border-transparent bg-subtle text-ink'

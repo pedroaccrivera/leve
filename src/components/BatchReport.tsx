@@ -74,7 +74,12 @@ export const BatchReport: React.FC<BatchReportProps> = ({
       {rows.map((row, index) => (
         <React.Fragment key={`${row.name}-${index}`}>
           <Divider />
-          <div className="flex items-start gap-0 py-[var(--d-row-y)]">
+          {/* Rows enter with a ≤ 40 ms cascade; the delay caps at the 10th row
+              so a long report doesn't end in a long tail (D5). */}
+          <div
+            className="row-enter flex items-start gap-0 py-[var(--d-row-y)]"
+            style={{ animationDelay: `${Math.min(index, 10) * 40}ms` }}
+          >
             <span className="w-[120px] shrink-0">
               <StatusChip tone={row.tone} mark={row.mark}>
                 {row.label}

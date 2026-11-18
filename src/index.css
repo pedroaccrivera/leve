@@ -83,6 +83,15 @@
   width: 16px;
   border-radius: 9999px;
   background: var(--c-ink);
+  transition: transform var(--t-ctl) var(--ease-fieldwork);
+}
+
+.fieldwork-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.fieldwork-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
 }
 
 .fieldwork-slider:disabled::-webkit-slider-thumb {
@@ -104,12 +113,62 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * View enter — a workbench view fades in as it mounts (tab switch, state
+ * change). Opacity only: the container is a scroll area, transform would
+ * offset its children. Re-run by keying <WorkbenchLayout> on the tab.
+ * ------------------------------------------------------------------------ */
+@keyframes view-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.view-enter {
+  animation: view-enter var(--t-enter) var(--ease-fieldwork) both;
+}
+
+/* ---------------------------------------------------------------------------
+ * Queue rows enter (4 px slide + fade) and their status chip re-enters
+ * (plain fade) when the tone changes — keyed on the tone at the call site.
+ * ------------------------------------------------------------------------ */
+@keyframes row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row-enter {
+  animation: row-enter var(--t-enter) var(--ease-fieldwork) both;
+}
+
+@keyframes chip-swap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.chip-swap {
+  animation: chip-swap var(--t-state) var(--ease-exit) both;
+}
+
+/* ---------------------------------------------------------------------------
  * Reveal / preview transitions
  * ------------------------------------------------------------------------ */
 @keyframes favicon-studio-reveal {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.985);
+    transform: translateY(8px) scale(0.985);
   }
   to {
     opacity: 1;
@@ -118,7 +177,7 @@
 }
 
 .favicon-studio-reveal {
-  animation: favicon-studio-reveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: favicon-studio-reveal var(--t-enter) var(--ease-fieldwork) both;
 }
 
 @keyframes favicon-preview-fade {
@@ -133,12 +192,25 @@
 }
 
 .favicon-preview-fade {
-  animation: favicon-preview-fade 260ms ease-out both;
+  animation: favicon-preview-fade var(--t-enter) var(--ease-fieldwork) both;
 }
 
+/* ---------------------------------------------------------------------------
+ * Reduced motion — one global switch.
+ *
+ * Durations collapse to a near-zero value instead of `none` so any code
+ * listening for transitionend/animationend still fires exactly once. This
+ * covers every transition and animation in the app, including the favicon
+ * reveals above.
+ * ------------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
-  .favicon-studio-reveal,
-  .favicon-preview-fade {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -15,7 +15,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       aria-label={label}
       title={label}
       className={cx(
-        'flex h-11 w-11 shrink-0 items-center justify-center text-ink transition-colors duration-150 hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-11 w-11 shrink-0 items-center justify-center text-ink transition-[color,background-color,opacity,transform] duration-ctl ease-fieldwork focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink hover:bg-surface active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
       {...rest}

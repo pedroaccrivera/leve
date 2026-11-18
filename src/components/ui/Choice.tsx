@@ -24,7 +24,7 @@ export const Choice: React.FC<ChoiceProps> = ({
     type={type}
     aria-pressed={selected}
     className={cx(
-      'flex h-[var(--d-control)] min-w-11 flex-1 items-center justify-center border p-2 transition-colors duration-150',
+      'flex h-[var(--d-control)] min-w-11 flex-1 items-center justify-center border p-2 transition-[color,background-color,border-color,opacity,transform] duration-ctl ease-fieldwork focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink active:scale-[0.99]',
       mono ? 't-mono' : 't-control',
       selected
         ? 'border-ink bg-ink text-paper'
@@ -64,7 +64,7 @@ export const ReadOnlyChoice: React.FC<ReadOnlyChoiceProps> = ({
 }) => (
   <div
     className={cx(
-      'flex h-[var(--d-control)] min-w-11 flex-1 items-center justify-center border-b p-2 t-control text-ink',
+      'flex h-[var(--d-control)] min-w-11 flex-1 items-center justify-center border-b p-2 t-control text-ink transition-colors duration-ctl',
       selected ? 'border-b-2 border-ink bg-subtle' : 'border-subtle',
       className
     )}

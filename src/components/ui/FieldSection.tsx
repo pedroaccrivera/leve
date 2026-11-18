@@ -49,7 +49,7 @@ export const FieldSection: React.FC<FieldSectionProps> = ({
              */}
             <span
               role="tooltip"
-              className="pointer-events-none absolute right-0 top-5 z-40 w-[248px] whitespace-pre-line border border-subtle bg-panel p-2 t-small text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+              className="pointer-events-none absolute right-0 top-5 z-40 w-[248px] whitespace-pre-line border border-subtle bg-panel p-2 t-small text-ink opacity-0 shadow-lg transition-opacity duration-ctl group-hover:opacity-100 group-focus-within:opacity-100"
             >
               {note}
             </span>

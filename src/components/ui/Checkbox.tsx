@@ -29,7 +29,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     onClick={() => onChange(!checked)}
     title={description}
     className={cx(
-      'flex w-full gap-3 text-left transition-opacity',
+      'flex w-full gap-3 text-left transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
       description ? 'items-start' : 'items-center',
       disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
       className
@@ -37,11 +37,18 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   >
     <span
       className={cx(
-        'flex h-5 w-5 shrink-0 items-center justify-center border',
+        'flex h-5 w-5 shrink-0 items-center justify-center border transition-colors duration-ctl',
         checked ? 'border-ink bg-ink' : 'border-control bg-surface'
       )}
     >
-      {checked && <Check className="h-3.5 w-3.5 text-paper" strokeWidth={2.5} />}
+      <Check
+        aria-hidden={!checked}
+        className={cx(
+          'h-3.5 w-3.5 text-paper transition-[transform,opacity] duration-ctl ease-fieldwork',
+          checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
+        )}
+        strokeWidth={2.5}
+      />
     </span>
     <span className="flex min-w-0 flex-col">
       <span className="t-control text-ink">{label}</span>

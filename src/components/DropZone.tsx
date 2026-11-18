@@ -150,11 +150,17 @@ export const DropZone: React.FC<DropZoneProps> = ({
       <div
         {...dropHandlers}
         className={cx(
-          'flex h-[100px] items-center gap-4 border border-dashed bg-surface px-6 transition-colors',
-          isDragging ? 'border-ink' : 'border-control'
+          'flex h-[100px] items-center gap-4 border border-dashed bg-surface px-6 transition-[background-color,border-color] duration-ctl',
+          isDragging ? 'border-ink bg-panel' : 'border-control'
         )}
       >
-        <Upload className="h-6 w-6 shrink-0 text-ink" strokeWidth={2} />
+        <Upload
+          className={cx(
+            'h-6 w-6 shrink-0 text-ink transition-transform duration-enter ease-fieldwork',
+            isDragging && '-translate-y-1'
+          )}
+          strokeWidth={2}
+        />
         <div className="flex flex-col gap-1">
           <span className="t-control text-ink">{compactTitle}</span>
           <span className="t-small text-muted">{compactSubtitle}</span>
@@ -167,11 +173,19 @@ export const DropZone: React.FC<DropZoneProps> = ({
     <div
       {...dropHandlers}
       className={cx(
-        'flex h-[var(--d-dropzone)] flex-col items-center justify-center gap-5 border border-dashed bg-surface transition-colors',
-        isDragging ? 'border-ink' : 'border-control'
+        'flex h-[var(--d-dropzone)] flex-col items-center justify-center gap-5 border border-dashed bg-surface transition-[background-color,border-color] duration-ctl',
+        isDragging ? 'border-ink bg-panel' : 'border-control'
       )}
     >
-      {showIcon && <Upload className="h-10 w-10 text-ink" strokeWidth={2} />}
+      {showIcon && (
+        <Upload
+          className={cx(
+            'h-10 w-10 text-ink transition-transform duration-enter ease-fieldwork',
+            isDragging && '-translate-y-1'
+          )}
+          strokeWidth={2}
+        />
+      )}
       <h3 className="t-title text-ink">{title}</h3>
       <p className="t-body text-muted">{subtitle}</p>
       <div className="flex w-[344px] items-start gap-3">

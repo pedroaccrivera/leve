@@ -54,6 +54,21 @@
   --d-section: 16px; /* gap between inspector sections */
   --d-field: 8px; /* label → content, content → content */
   --d-label-gap: 8px; /* hairline → section label */
+  /*
+   * Motion. Three durations and two curves: 120 ms is control feedback
+   * (press, hover, a checkbox drawing), 180 ms is a state change (active tab,
+   * a chip swapping, a selection) and 240 ms is content entering (queue rows,
+   * a view). Entrances ease with `--ease-fieldwork`'s curve; exits use
+   * `--ease-exit` because the user's attention is already moving on. Progress
+   * bars stay linear and nothing should ever need more than 320 ms (review
+   * rule, not token). Motion only ever rides `transform` and `opacity`.
+   */
+  --t-ctl: 120ms;
+  --t-state: 180ms;
+  --t-enter: 240ms;
+  --ease-fieldwork: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: ease-out;
+
   --d-nav: 72px;
   --d-footer: 92px;
   --d-inspector-x: 30px;

@@ -19,6 +19,13 @@ const tab = process.env.LEVE_TAB || '';
 
 app.disableHardwareAcceleration();
 
+// Emulate prefers-reduced-motion for the reduced-motion capture: the Blink
+// switch makes the media query match before the app loads, exactly like the
+// OS setting.
+if (process.env.LEVE_REDUCED_MOTION === '1') {
+  app.commandLine.appendSwitch('force-prefers-reduced-motion');
+}
+
 /*
  * Dev-only: this harness runs the renderer alone, so it has no main process
  * to answer IPC. Mirror the app's thumbnail handler (electron/main.ts) when a
@@ -216,6 +223,16 @@ app.whenReady().then(async () => {
         workspace: box(workspace),
         inspector: box(aside),
         gutters,
+        // Resolved motion tokens: the durations components reference.
+        motion: (() => {
+          const cs = getComputedStyle(document.documentElement);
+          return {
+            ctl: cs.getPropertyValue('--t-ctl').trim(),
+            state: cs.getPropertyValue('--t-state').trim(),
+            enter: cs.getPropertyValue('--t-enter').trim(),
+            reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+          };
+        })(),
         rootStyle: document.documentElement.getAttribute('style'),
         // Independent WCAG check on real elements: text colour vs its own
         // background, which is what the user actually reads.

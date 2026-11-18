@@ -147,4 +147,4 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `fix/macos-26-27-install` | Fix — macOS 26/27 install (ad-hoc signing + paste-to-Terminal helper) | Merged | [docs/branches/fix-macos-26-27-install.md](docs/branches/fix-macos-26-27-install.md) |
 | `chore/release-1.6.8` | Chore — Release 1.6.8 (macOS 26/27 install) | Merged | [docs/branches/chore-release-1.6.8.md](docs/branches/chore-release-1.6.8.md) |
 | `feat/microinteractions` | Feature — F4: microinterações (motion em tudo que existe) | Merged | [docs/branches/feat-microinteractions.md](docs/branches/feat-microinteractions.md) |
-| `chore/release-1.7.0` | Chore — Release 1.7.0 (F4: microinterações) | In Progress | [docs/branches/chore-release-1.7.0.md](docs/branches/chore-release-1.7.0.md) |
+| `chore/release-1.7.0` | Chore — Release 1.7.0 (F4: microinterações) | Merged | [docs/branches/chore-release-1.7.0.md](docs/branches/chore-release-1.7.0.md) |

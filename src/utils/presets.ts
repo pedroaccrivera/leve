@@ -10,7 +10,6 @@ export const WIDTH_PRESETS: WidthPreset[] = [
   { width: 1280, name: 'HD' },
   { width: 1920, name: 'Full HD' },
   { width: 2560, name: '2K QHD' },
-  { width: 3840, name: '4K UHD' },
 ];
 
 export const presetNameFor = (width: number): string | undefined =>

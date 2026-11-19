@@ -15,6 +15,7 @@ const fixture = process.env.LEVE_FIXTURE || '';
 const theme = process.env.LEVE_THEME || 'ink';
 const out = process.env.LEVE_OUT || path.join(process.cwd(), 'shot.png');
 const height = Number(process.env.LEVE_HEIGHT || 800);
+const width = Number(process.env.LEVE_WIDTH || 1280);
 const tab = process.env.LEVE_TAB || '';
 
 app.disableHardwareAcceleration();
@@ -48,7 +49,7 @@ if (process.env.LEVE_STUB_THUMBNAILS === '1') {
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({
-    width: 1280,
+    width,
     height,
     show: true,
     frame: false,

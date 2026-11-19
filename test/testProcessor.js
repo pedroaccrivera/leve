@@ -252,6 +252,34 @@ async function runTest() {
   }
   console.log(`✓ Refused to enlarge ${tinyStat.size} B file (output discarded, skipped=true)`);
 
+  // Test 4: Original width (targetWidth 0) keeps the source dimensions and still compresses
+  console.log('\n[Test 4] Original width (targetWidth 0, JPEG light, subfolder mode)...');
+  const res4 = await processSingleImage(item1, {
+    targetWidth: 0,
+    withoutEnlargement: false,
+    compressionLevel: 'light',
+    stripMetadata: false,
+    outputFormat: 'jpeg',
+    destinationMode: 'subfolder',
+    subfolderName: 'resized',
+    suffix: '-resized',
+  });
+  console.log('Result 4:', res4);
+
+  const meta4 = await getImageMetadata(res4.outputPath);
+  console.log(`Output 4 metadata: ${meta4.width}x${meta4.height} px, ${(meta4.size / 1024).toFixed(1)} KB, format: ${meta4.format}`);
+
+  if (meta4.width !== 3000 || meta4.height !== 2000) {
+    throw new Error(`Expected original dimensions 3000x2000, got ${meta4.width}x${meta4.height}`);
+  }
+  if (meta4.format !== 'jpeg') {
+    throw new Error(`Expected format jpeg, got ${meta4.format}`);
+  }
+  if (meta4.size >= initialStat.size) {
+    throw new Error(`Expected compression to shrink the file, got ${meta4.size} B vs source ${initialStat.size} B`);
+  }
+  console.log(`✓ Original dimensions kept: 3000x2000 px, compressed to ${(meta4.size / 1024).toFixed(1)} KB!`);
+
   // Cleanup test artifacts
   await fs.rm(testDir, { recursive: true, force: true });
   console.log('\n✓ All image processing tests passed successfully!');

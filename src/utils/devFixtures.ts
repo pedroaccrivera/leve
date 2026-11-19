@@ -140,6 +140,11 @@ export function fixtureState(name: string): FixtureState | null {
         items: IMAGE_FILES.map(([file, w, h, size], index) => image(index + 1, file, w, h, size)),
         config: { outputFormat: 'webp' },
       };
+    case 'images-original':
+      return {
+        items: IMAGE_FILES.map(([file, w, h, size], index) => image(index + 1, file, w, h, size)),
+        config: { outputFormat: 'webp', targetWidth: 0 },
+      };
     case 'images-processing':
       return {
         items: [
@@ -151,6 +156,18 @@ export function fixtureState(name: string): FixtureState | null {
         progress: { current: 2, total: 3 },
         activeIndex: 1,
         config: { outputFormat: 'webp' },
+      };
+    case 'images-processing-original':
+      return {
+        items: [
+          image(1, 'photo-01.jpg', 3000, 2000, 2.4 * 1024 * 1024, 'done'),
+          image(2, 'photo-02.jpg', 2400, 1600, 4.1 * 1024 * 1024, 'processing'),
+          image(3, 'photo-03.jpg', 1800, 1200, 5.9 * 1024 * 1024, 'pending'),
+        ],
+        isProcessing: true,
+        progress: { current: 2, total: 3 },
+        activeIndex: 1,
+        config: { outputFormat: 'webp', targetWidth: 0 },
       };
     case 'images-custom-folder':
       return {

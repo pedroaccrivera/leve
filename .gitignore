@@ -45,6 +45,9 @@ Thumbs.db
 .opencode/
 .stitch/
 
+# Personal drafts (not versioned)
+drafts/
+
 # Local icon drafts (kept out of git; release icons live in assets/)
 icon.png
 icon-v2.png

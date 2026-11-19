@@ -63,7 +63,12 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
   const [draft, setDraft] = useState<string | null>(null);
 
   const presetName = presetNameFor(config.targetWidth);
-  const widthValue = draft ?? `${config.targetWidth} px${presetName ? ` · ${presetName}` : ''}`;
+  const isOriginalWidth = config.targetWidth === 0;
+  const widthValue =
+    draft ??
+    (isOriginalWidth
+      ? 'Original'
+      : `${config.targetWidth} px${presetName ? ` · ${presetName}` : ''}`);
 
   const handleSelectCustom = () => {
     onSelectCustom();
@@ -103,7 +108,7 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
           inputMode="numeric"
           disabled={disabled}
           aria-label="Output width"
-          onFocus={() => setDraft(String(config.targetWidth))}
+          onFocus={() => setDraft(isOriginalWidth ? '' : String(config.targetWidth))}
           onBlur={() => setDraft(null)}
           onChange={(event) => {
             const raw = event.target.value.replace(/[^\d]/g, '');
@@ -138,6 +143,14 @@ export const ImageInspector: React.FC<ImageInspectorProps> = ({
                 {preset.width}
               </Choice>
             ))}
+            <Choice
+              mono
+              disabled={disabled}
+              selected={!widthIsCustom && config.targetWidth === 0}
+              onClick={() => onSelectPreset(0)}
+            >
+              Original
+            </Choice>
             <Choice mono disabled={disabled} selected={widthIsCustom} onClick={handleSelectCustom}>
               Custom
             </Choice>

@@ -148,3 +148,5 @@ Each feature, fix, or refactor branch has a dedicated documentation file in the 
 | `chore/release-1.6.8` | Chore — Release 1.6.8 (macOS 26/27 install) | Merged | [docs/branches/chore-release-1.6.8.md](docs/branches/chore-release-1.6.8.md) |
 | `feat/microinteractions` | Feature — F4: microinterações (motion em tudo que existe) | Merged | [docs/branches/feat-microinteractions.md](docs/branches/feat-microinteractions.md) |
 | `chore/release-1.7.0` | Chore — Release 1.7.0 (F4: microinterações) | Merged | [docs/branches/chore-release-1.7.0.md](docs/branches/chore-release-1.7.0.md) |
+| `fix/original-format-preview` | Fix — Queue preview shows the real output extension for Original | Merged (via `feat/original-width`) | [docs/branches/fix-original-format-preview.md](docs/branches/fix-original-format-preview.md) |
+| `feat/original-width` | Feature — Largura "Original" (manter dimensões, no lugar do 3840) | Merged | [docs/branches/feat-original-width.md](docs/branches/feat-original-width.md) |

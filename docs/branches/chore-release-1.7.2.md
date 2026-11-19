@@ -59,6 +59,18 @@ On `feat/original-width` (merged into `main` @ `859d75b` before the bump):
 
 ## Release record
 
-- **Tag:** `v1.7.2`
-- **Release:** _(pending — filled after CI/assets)_
-- **CI run:** _(pending)_
+- **Tag:** `v1.7.2` @ `c944b36` · `main` @ `c944b36`
+- **Release:** <https://github.com/pedroaccrivera/leve/releases/tag/v1.7.2> (public, 4 assets)
+- **CI run** [`44613437394`](https://github.com/pedroaccrivera/leve/actions/runs/44613437394):
+  success on both jobs (`leve-mac-arm64`, `leve-win-x64`).
+- **Assets:**
+
+| Asset | Size | Origin |
+| :-- | --: | :-- |
+| `leve-1.7.2-mac-arm64.dmg` | 152,429,500 B | CI |
+| `leve-1.7.2-mac-arm64.zip` | 147,263,375 B | CI · sha256 `5dba0f03…9de6` |
+| `leve-1.7.2-win-x64.exe` | 127,634,730 B | CI |
+| `leve-1.7.2-win-x64-portable.exe` | 127,484,951 B | CI |
+
+- **No cask bump**: the Homebrew tap is archived (read-only) after `1.6.7`;
+  GitHub Releases is the only distribution channel.

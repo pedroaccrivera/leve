@@ -736,7 +736,7 @@ export const App: React.FC = () => {
             </QueueList>
             <OutputBlock
               label="Your output / recipe locked"
-              summary={`${config.outputFormat === 'original' ? 'Original format' : config.outputFormat.toUpperCase()} · ${config.targetWidth} px maximum · ${config.compressionLevel === 'aggressive' ? 'Smallest' : config.compressionLevel === 'light' ? 'Light' : config.compressionLevel === 'lossless' ? 'Lossless' : 'Balanced'}`}
+              summary={`${config.outputFormat === 'original' ? 'Original format' : config.outputFormat.toUpperCase()} · ${config.targetWidth === 0 ? 'Original dimensions' : `${config.targetWidth} px maximum`} · ${config.compressionLevel === 'aggressive' ? 'Smallest' : config.compressionLevel === 'light' ? 'Light' : config.compressionLevel === 'lossless' ? 'Lossless' : 'Balanced'}`}
               note={`New copies in ${config.destinationMode === 'subfolder' ? config.subfolderName : config.destinationMode === 'suffix' ? 'the source folder' : 'your chosen folder'} next to each source.`}
             />
           </>
@@ -1352,7 +1352,7 @@ export const App: React.FC = () => {
               { label: 'Destination', value: `Subfolder · ${videoConfig.subfolderName}/` },
             ]
           : [
-              { label: 'Output width', value: `${config.targetWidth} px` },
+              { label: 'Output width', value: config.targetWidth === 0 ? 'Original' : `${config.targetWidth} px` },
               { label: 'Smaller sources', value: 'Kept at their original size' },
               {
                 label: 'Compression',
@@ -1432,7 +1432,7 @@ export const App: React.FC = () => {
       return (
         <RecipeUsed
           rows={[
-            { label: 'Output width', value: `${config.targetWidth} px` },
+            { label: 'Output width', value: config.targetWidth === 0 ? 'Original' : `${config.targetWidth} px` },
             { label: 'Smaller sources', value: 'Kept at their original size' },
             {
               label: 'Compression',
